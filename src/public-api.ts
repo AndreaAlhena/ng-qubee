@@ -3,5 +3,4 @@
  */
 
 export * from './lib/angular-query-builder.service';
-export * from './lib/angular-query-builder.component';
 export * from './lib/angular-query-builder.module';
