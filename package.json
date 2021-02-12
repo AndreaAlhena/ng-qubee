@@ -1,5 +1,10 @@
 {
-  "name": "angular-query-builder",
+  "name": "@andrewreborn/angular-query-builder",
+  "author": {
+    "name": "Andrea Tantimonaco",
+    "email": "learning@andreatantimonaco.me",
+    "url": "https://andreatantimonaco.me"
+  },
   "version": "0.0.1",
   "peerDependencies": {
     "@angular/common": "^11.0.9",
