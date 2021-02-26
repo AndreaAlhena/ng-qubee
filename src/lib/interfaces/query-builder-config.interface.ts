@@ -1,4 +1,4 @@
-export interface IQueryParams {
+export interface IQueryBuilderConfig {
     appends?: string;
     fields?: string;
     filters?: string;

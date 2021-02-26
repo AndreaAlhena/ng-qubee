@@ -8,14 +8,13 @@
   "version": "0.0.1",
   "peerDependencies": {
     "@angular/common": "^11.0.9",
-    "@angular/core": "^11.0.9",
-    "qs": "^6.9.6"
+    "@angular/core": "^11.0.9"
   },
   "dependencies": {
-    "tslib": "^2.0.0"
+    "tslib": "^2.0.0",
+    "qs": "^6.9.6"
   },
   "devDependencies": {
-    "@types/qs": "^6.9.5",
-    "qs": "^6.9.6"
+    "@types/qs": "^6.9.5"
   }
 }

@@ -1,4 +1,4 @@
-import { IQueryParams } from '../interfaces/query-params.interface';
+import { IQueryBuilderConfig } from '../interfaces/query-builder-config.interface';
 
 export class QueryBuilderOptions {
     public readonly appends: string;
@@ -9,7 +9,7 @@ export class QueryBuilderOptions {
     public readonly page: string;
     public readonly sort: string;
 
-    constructor(options: IQueryParams) {
+    constructor(options: IQueryBuilderConfig) {
         this.appends = options.appends || 'append';
         this.fields = options.fields || 'fields';
         this.filters = options.filters || 'filter';

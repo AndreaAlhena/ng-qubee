@@ -1,10 +1,12 @@
 import { Inject, Injectable, Optional } from '@angular/core';
 import { IFields } from './interfaces/fields.interface';
-import { IQueryParams } from './interfaces/query-params.interface';
+import { IQueryBuilderConfig } from './interfaces/query-builder-config.interface';
 import * as qs from 'qs';
 import { QueryBuilderOptions } from './models/query-builder-options';
 import { IFilters } from './interfaces/filters.interface';
 import { UnselectableModelError } from './errors/unselectable-model.error';
+import { ISort } from './interfaces/sort.interface';
+import { SortEnum } from './enums/sort.enum';
 
 @Injectable()
 export class AngularQueryBuilderService {
@@ -51,16 +53,16 @@ export class AngularQueryBuilderService {
   public page = 1;
 
   /**
-   * Sort results by the given fields
+   * Sort results by the given field
    */
-  public sorts: string[] = [];
+  public sort: ISort = {};
 
   /**
    * @var number Elements returned in each page (max)
    */
   public limit = 15;
 
-  constructor(@Inject('QUERY_PARAMS_CONFIG') @Optional() options: IQueryParams = {}) {
+  constructor(@Inject('QUERY_PARAMS_CONFIG') @Optional() options: IQueryBuilderConfig = {}) {
     this._options = new QueryBuilderOptions(options);
   }
 
@@ -149,12 +151,16 @@ export class AngularQueryBuilderService {
     return param;
   }
 
-  private _parseSorts(): string {
-    if (!this.sorts.length) {
-      return this._uri;
+  /**
+   * @todo Parse against multiple fields
+   */
+  private _parseSort(): string {
+    let param: string = '';
+
+    for (const field in this.sort) {
+      param = `${this._prepend()}${this._options.sort}=${this.sort[field] === SortEnum.DESC ? '-' : ''}${field}`;
     }
 
-    const param = `${this._prepend()}${this._options.sort}=${this.sorts}`;
     this._uri += param;
 
     return param;
@@ -171,7 +177,7 @@ export class AngularQueryBuilderService {
     this._parseIncludes();
     this._parseLimit();
     this._parsePage();
-    this._parseSorts();
+    this._parseSort();
 
     return this._uri;
   }
@@ -193,6 +199,10 @@ export class AngularQueryBuilderService {
     this.model = model;
 
     return `${this.baseUrl}${this._parse()}`;
+  }
+
+  public resetFilters(): void {
+    this._filters = {};
   }
 
   public where(key: string, value: string): this {

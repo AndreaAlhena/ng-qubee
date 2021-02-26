@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { AngularQueryBuilderService } from './angular-query-builder.service';
+import { SortEnum } from './enums/sort.enum';
 import { UnselectableModelError } from './errors/unselectable-model.error';
 
 describe('AngularQueryBuilderService', () => {
@@ -61,6 +62,22 @@ describe('AngularQueryBuilderService', () => {
     expect(ret).toContain('fields[users]=email,name');
     expect(ret).toContain('fields[settings]=field1,field2');
   });
+
+  it('should generate a URI with sorted fields ASC', () => {
+    service.sort = {
+      f: SortEnum.ASC
+    };
+
+    expect(service.generateUrl('users')).toContain('sort=f');
+  })
+
+  it('should generate a URI with sorted fields DESC', () => {
+    service.sort = {
+      f: SortEnum.DESC
+    };
+
+    expect(service.generateUrl('users')).toContain('sort=-f');
+  })
 
   it('should generate a URL if a base url is given', () => {
     service.baseUrl = 'https://domain.com';
