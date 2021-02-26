@@ -63,15 +63,24 @@ describe('AngularQueryBuilderService', () => {
     expect(ret).toContain('fields[settings]=field1,field2');
   });
 
-  it('should generate a URI with sorted fields ASC', () => {
+  it('should generate a URI with sorted field ASC', () => {
     service.sort = {
       f: SortEnum.ASC
     };
 
     expect(service.generateUrl('users')).toContain('sort=f');
-  })
+  });
 
-  it('should generate a URI with sorted fields DESC', () => {
+  it('should generate a URI with sorted fields mixed ASC and DESC', () => {
+    service.sort = {
+      f1: SortEnum.DESC,
+      f2: SortEnum.ASC
+    };
+
+    expect(service.generateUrl('users')).toContain('sort=-f1,f2');
+  });
+
+  it('should generate a URI with sorted field DESC', () => {
     service.sort = {
       f: SortEnum.DESC
     };

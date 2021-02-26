@@ -151,14 +151,26 @@ export class AngularQueryBuilderService {
     return param;
   }
 
-  /**
-   * @todo Parse against multiple fields
-   */
   private _parseSort(): string {
     let param: string = '';
+    const fields = Object.keys(this.sort);
 
-    for (const field in this.sort) {
-      param = `${this._prepend()}${this._options.sort}=${this.sort[field] === SortEnum.DESC ? '-' : ''}${field}`;
+    if (!fields.length) {
+      return param;
+    }
+
+    param = `${this._prepend()}${this._options.sort}=`;
+
+    fields.forEach((field, idx) => {
+      param += `${this.sort[field] === SortEnum.DESC ? '-' : ''}${field}`;
+
+      if (idx < fields.length - 1) {
+        param += ','
+      }
+    });
+
+    for (const field in fields) {
+      
     }
 
     this._uri += param;
