@@ -1,5 +1,5 @@
 {
-  "name": "angular-query-builder",
+  "name": "@andrewreborn/angular-query-builder",
   "version": "0.0.1",
   "peerDependencies": {
     "@angular/common": "^11.0.9",
