@@ -1,5 +1,6 @@
-import { createReducer, on } from "@ngrx/store";
+import { Action, createReducer, on, State } from "@ngrx/store";
 import * as QueryBuilderActions from "../actions/query-builder.actions";
+import { INestState } from "../interfaces/nest-state.interface";
 import { IQueryBuilderState } from "../interfaces/query-builder-state.interface";
 
 const initialState: IQueryBuilderState = {
@@ -14,7 +15,7 @@ const initialState: IQueryBuilderState = {
     uri: ''
 };
 
-export const queryBuilderReducer = createReducer(
+const _queryBuilderReducer = createReducer(
     initialState,
     on(QueryBuilderActions.addFields, (state, {fields}) => ({...state, fields: {...state.fields, ...fields}})),
     on(QueryBuilderActions.addFilters, (state, {filters}) => ({...state, filters: {...state.filters, ...filters}})),
@@ -75,3 +76,7 @@ export const queryBuilderReducer = createReducer(
     on(QueryBuilderActions.setPage, (state, {page}) => ({...state, page})),
     on(QueryBuilderActions.updateUri, (state, {uri}) => ({...state, uri}))
 );
+
+export function queryBuilderReducer(state: IQueryBuilderState | undefined, action: Action) {
+    return _queryBuilderReducer(state, action);
+}
