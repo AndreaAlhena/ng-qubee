@@ -2,11 +2,11 @@ import { ModuleWithProviders, NgModule } from '@angular/core';
 import { Store, StoreModule } from '@ngrx/store';
 import { NgQubeeService } from './ng-qubee.service';
 import { IConfig } from './interfaces/config.interface';
-import { IQueryBuilderState } from './interfaces/query-builder-state.interface';
 import { queryBuilderReducer } from './reducers/query-builder.reducer';
 import { PaginationService } from './services/pagination.service';
 import { INestState } from './interfaces/nest-state.interface';
 
+// @dynamic
 @NgModule({
   imports: [
     StoreModule.forRoot({nest: queryBuilderReducer})
