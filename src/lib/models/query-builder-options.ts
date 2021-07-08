@@ -13,7 +13,7 @@ export class QueryBuilderOptions {
         this.appends = options.appends || 'append';
         this.fields = options.fields || 'fields';
         this.filters = options.filters || 'filter';
-        this.includes = options.includes || 'includes';
+        this.includes = options.includes || 'include';
         this.limit = options.limit || 'limit';
         this.page = options.page || 'page';
         this.sort = options.sort || 'sort';

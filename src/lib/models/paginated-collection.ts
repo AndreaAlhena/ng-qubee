@@ -1,4 +1,3 @@
-import { ParseError } from "@angular/compiler";
 import { KeyNotFoundError } from "../errors/key-not-found.error";
 
 export class PaginatedCollection<T> {
