@@ -102,7 +102,7 @@ describe('NgQubeeService', () => {
 
     service.generateUri().subscribe(uri => {
       expect(uri).toContain('fields[users]=email,name');
-      expect(uri).toContain('fields[users]=email,name');
+      expect(uri).toContain('fields[settings]=field1,field2');
       done();
     });
   });
