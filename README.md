@@ -1,5 +1,5 @@
 # NgQubee 🐝
-## Your next Angular Query 
+## Your next Angular Query Builder
 
 NgQubee is an NGRX (store based) Query Builder for Angular. Easily compose your API requests without the hassle of writing the wheel again :)
 
