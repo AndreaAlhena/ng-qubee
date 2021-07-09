@@ -20,7 +20,7 @@ import { INestState } from './interfaces/nest-state.interface';
 export class NgQubeeModule {
   private static _config: IConfig = {};
 
-  private static _getModuleWithProviders(config: IConfig) {
+  public static forRoot(config: IConfig): ModuleWithProviders<NgQubeeModule> {
     return {
       ngModule: NgQubeeModule,
       providers: [{
@@ -34,14 +34,5 @@ export class NgQubeeModule {
           new PaginationService(Object.assign({}, this._config.response, config.response))
       }]
     };
-  };
-
-  public static forChild(config: IConfig): ModuleWithProviders<NgQubeeModule> {
-    return this._getModuleWithProviders(config);
-  }
-
-  public static forRoot(config: IConfig): ModuleWithProviders<NgQubeeModule> {
-    this._config = config;
-    return this._getModuleWithProviders(config);
   }
 }
