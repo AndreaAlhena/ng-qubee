@@ -184,7 +184,7 @@ export class NgQubeeService {
    * @param {string[]} value The needle(s)
    * @returns {this}
    */
-  public addFilter(field: string, ...values: string[]): this {
+  public addFilter(field: string, ...values: string[] | number[]): this {
     this._store.dispatch(addFilters({
       filters: {
         [field]: values.join(',')
