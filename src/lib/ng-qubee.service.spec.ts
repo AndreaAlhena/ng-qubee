@@ -107,6 +107,18 @@ describe('NgQubeeService', () => {
     });
   });
 
+  it('should generate a URI with filter (multiple values)', (done: DoneFn) => {
+    service.addFilter('id', 1, 2, 3);
+    service.addFilter('name', 'doe');
+    service.setModel('users');
+
+    service.generateUri().subscribe(uri => {
+      expect(uri).toContain('filter[id]=1,2,3');
+      expect(uri).toContain('filter[name]=doe');
+      done();
+    });
+  });
+
   it('should generate a URI with sorted field ASC', (done: DoneFn) => {
     service.addSort('f', SortEnum.ASC);
     service.setModel('users');
