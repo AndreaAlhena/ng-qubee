@@ -1,24 +1,128 @@
-# AngularQueryBuilder
+# NgQubee 🐝
+## Your next Angular Query 
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.9.
+NgQubee is an NGRX (store based) Query Builder for Angular. Easily compose your API requests without the hassle of writing the wheel again :)
 
-## Code scaffolding
+- Retrieve URIs easily with a Service
+- Pagination ready
+- Reactive, as the results are emitted with a RxJS Observable
+- Developed with a test-driven approach
 
-Run `ng generate component component-name --project angular-query-builder` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project angular-query-builder`.
-> Note: Don't forget to add `--project angular-query-builder` or else it will be added to the default project in your `angular.json` file. 
+## We love it, we use it ❤️
 
-## Build
+NgQubee uses a number of open source projects to work properly:
 
-Run `ng build angular-query-builder` to build the project. The build artifacts will be stored in the `dist/` directory.
+- [ngrx] - Store based with NGRX
+- [rxjs] - URIs returned via Observables
+- [qs] - A querystring parsing and stringifying library with some added security.
 
-## Publishing
+And of course NgQubee itself is open source with a [public repository][ng-qubee] on GitHub.
 
-After building your library with `ng build angular-query-builder`, go to the dist folder `cd dist/angular-query-builder` and run `npm publish`.
+## Installation
 
-## Running unit tests
+Install NgQubee via NPM
 
-Run `ng test angular-query-builder` to execute the unit tests via [Karma](https://karma-runner.github.io).
+```sh
+npm i ng-qubee
+```
+## Usage
+Import the module in your Angular app:
+```typescript
+@NgModule({
+    imports: [
+        NgQubeeModule.forRoot({})
+    ]
+})
+export class AppModule {}
+```
 
-## Further help
+The object given to the _forRoot_ method allows to customize the query param keys. Following, the default behaviour:
+  - **Filters** are composed as filter[fieldName]=value / customizable with {filter: 'yourFilterKey'}
+  - **Fields** are composed as fields[model]=id,email,username / customizable with {fields: 'yourFieldsKey'}
+  - **Includes** are composed as include=modelA, modelB / customizable with {includes: 'yourIncludeKey'}
+  - **Limit** is composed as limit=15 / customizable with {limit: 'yourLimitKey'}
+  - **Page** is composed as page=1 / customizable with {page: 'yourPageKey'}
+  - **Sort** is composed as sort=fieldName / customizable with {sort: 'yourSortKey'}
+  
+For composing queries, the first step is to inject the proper NgQubeeService:
+```typescript
+@Injectable
+export class YourService {
+    constructor(private _ngQubeeService: NgQubeeService) {}
+}
+```
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+Set the **model** to run the query against:
+```typescript
+    this._ngQubeeService.setModel('users');
+```
+
+This is necessary to build the left part of the URI (/users)
+
+### Fields
+Fields can be selected as following:
+
+```typescript
+this._ngQubeeService.addFields('users', ['id', 'email']);
+```
+Will output _/users?fields[users]=id,email_
+
+### Filters
+Filters are applied as following:
+
+```typescript
+this._ngQubeeService.addFilter('id', 5);
+```
+Will output _/users?filter[id]=5_
+
+Multiple values are allowed too:
+```typescript
+this._ngQubeeService.addFilter('id', 5, 7, 10);
+```
+
+Will output _/users?filter[id]=5,7,10_
+
+### Includes
+Ask to include related models with:
+
+```typescript
+this._ngQubeeService.addIncludes('profile', 'settings');
+```
+
+Will output _/users?include=profile,settings_
+
+### Sort
+Sort elements as following:
+
+```typescript
+this._ngQubeeService.addSort('fieldName', SortEnum.ASC);
+```
+
+Will output _/users?sort=fieldName_ (or _/users?sort=-fieldName_ if DESC)
+
+### Page and Limit
+NgQubee supports paginated queries:
+
+```typescript
+this._ngQubeeService.setLimit(25);
+this._ngQubeeService.setPage(2);
+```
+
+Will output _/users?limit=25&page=2
+
+Default values are automatically added to the query:
+  - **Limit**: 15
+  - **Page**: 1
+
+Always expect your query to include _limit=15&page=1_
+
+### Retrieving data
+URI is generated invoking the _generateUri_ method of the NgQubeeService. An observable is returned and the URI will be emitted:
+
+```typescript
+this._ngQubeeService.generateUri().subscribe(uri => console.log(uri));
+```
+   [ng-qubee]: <https://github.com/AndrewReborn/ng-qubee>
+   [ngrx]: <https://ngrx.io>
+   [rxjs]: <https://reactivex.io>
+   [qs]: <https://github.com/ljharb/qs>
