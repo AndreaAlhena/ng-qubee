@@ -122,6 +122,13 @@ URI is generated invoking the _generateUri_ method of the NgQubeeService. An obs
 ```typescript
 this._ngQubeeService.generateUri().subscribe(uri => console.log(uri));
 ```
+
+### Reset state
+Query Builder state can be cleaned with the reset method. This will clean up everything set up previously, including the current model, filters, includes and so on...
+
+```typescript
+this._ngQubeeService.reset();
+```
    [ng-qubee]: <https://github.com/AndrewReborn/ng-qubee>
    [ngrx]: <https://ngrx.io>
    [rxjs]: <https://reactivex.io>
