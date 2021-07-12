@@ -150,6 +150,19 @@ describe('NgQubeeService', () => {
     });
   });
 
+  it('should reset the internal state', (done: DoneFn) => {
+    service.setModel('users');
+    service.addFields('settings', ['a']);
+    service.reset();
+    service.setModel('settings');
+
+    service.generateUri().subscribe(uri => {
+      expect(uri).toBe('/settings?limit=15&page=1');
+      done();
+    });
+    
+  });
+
   // it('should generate a URL if a base url is given', (done: DoneFn) => {
   //   service.setModel('users');
   //   service.setBaseUrl('https://domain.com');

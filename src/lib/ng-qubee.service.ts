@@ -147,19 +147,6 @@ export class NgQubeeService {
   }
 
   /**
-   * Generate an URI accordingly to the given data
-   *
-   * @returns {Observable<string>} An observable that emits the generated uri
-   */
-  public generateUri(): Observable<string> {
-    // Cleanup the previously generated URI
-    this._uri = '';
-    this._store.pipe(select(selectNest), take(1)).subscribe(s => this._parse(s));
-
-    return this.uri$;
-  }
-
-  /**
    * Add fields to the select statement for the given model
    * 
    * @param model Model that holds the fields
@@ -270,6 +257,24 @@ export class NgQubeeService {
     return this;
   }
 
+  /**
+   * Generate an URI accordingly to the given data
+   *
+   * @returns {Observable<string>} An observable that emits the generated uri
+   */
+   public generateUri(): Observable<string> {
+    // Cleanup the previously generated URI
+    this._uri = '';
+    this._store.pipe(select(selectNest), take(1)).subscribe(s => this._parse(s));
+
+    return this.uri$;
+  }
+
+  /**
+   * Clear the current state and reset the Query Builder to a fresh, clean condition
+   * 
+   * @returns {this}
+   */
   public reset(): this {
     this._store.dispatch(reset());
     return this;
@@ -300,12 +305,21 @@ export class NgQubeeService {
   /**
    * Set the model to use for running the query against
    *   - I.e. the model "users" will return /users
+   * 
+   * @param {string} model Model name
+   * @returns {this}
    */
   public setModel(model: string): this {
     this._store.dispatch(setModel({model}));
     return this;
   }
 
+  /**
+   * Set the page that the backend will use to paginate the result set
+   * 
+   * @param page Page param
+   * @returns {this}
+   */
   public setPage(page: number): this {
     this._store.dispatch(setPage({page}));
     return this;
