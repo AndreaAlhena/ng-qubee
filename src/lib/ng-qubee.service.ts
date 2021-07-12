@@ -83,6 +83,7 @@ export class NgQubeeService {
       return this._uri;
     }
 
+    console.log(s.includes);
     const param = `${this._prepend(s.model)}${this._options.includes}=${s.includes}`;
     this._uri += param;
 
@@ -134,7 +135,6 @@ export class NgQubeeService {
     this._parseIncludes(s);
     this._parseFields(s);
     this._parseFilters(s);
-    this._parseIncludes(s);
     this._parseLimit(s);
     this._parsePage(s);
     this._parseSort(s);

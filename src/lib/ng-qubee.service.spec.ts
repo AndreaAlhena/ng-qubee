@@ -86,10 +86,11 @@ describe('NgQubeeService', () => {
 
   it('should generate a URI with included models', (done: DoneFn) => {
     service.addIncludes('model1', 'model2');
+    service.addIncludes('model3');
     service.setModel('users');
 
     service.generateUri().subscribe(uri => {
-      expect(uri).toContain('include=model1,model2');
+      expect(uri).toBe('/users?include=model1,model2,model3&limit=15&page=1');
       done();
     });
   });
