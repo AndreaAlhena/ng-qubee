@@ -67,11 +67,17 @@ export class NgQubeeService {
   }
 
   private _parseFilters(s: IQueryBuilderState): string {
-    if (!Object.keys(s.filters).length) {
+    const keys = Object.keys(s.filters);
+
+    if (!keys.length) {
       return this._uri;
     }
 
-    const f = { [this._options.filters]: s.filters };
+    const f = { 
+        [this._options.filters]: keys.reduce((acc, key) => {
+          return Object.assign(acc, {[key]: s.filters[key].join(',')});
+        }, {})
+      };
     const param = `${this._prepend(s.model)}${qs.stringify(f, {encode: false})}`;
     this._uri += param;
 
@@ -171,10 +177,10 @@ export class NgQubeeService {
    * @param {string[]} value The needle(s)
    * @returns {this}
    */
-  public addFilter(field: string, ...values: string[] | number[]): this {
+  public addFilter(field: string, ...values: (string | number | boolean)[]): this {
     this._store.dispatch(addFilters({
       filters: {
-        [field]: values.join(',')
+        [field]: values
       }
     }));
 

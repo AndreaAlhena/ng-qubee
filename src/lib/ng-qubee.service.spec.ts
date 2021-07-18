@@ -120,6 +120,26 @@ describe('NgQubeeService', () => {
     });
   });
 
+  it('should generate a URI with filter (mixed values)', (done: DoneFn) => {
+    service.addFilter('field', 1, '2', 3);
+    service.setModel('users');
+
+    service.generateUri().subscribe(uri => {
+      expect(uri).toContain('filter[field]=1,2,3');
+      done();
+    });
+  });
+
+  it('should generate a URI with filter (boolean value)', (done: DoneFn) => {
+    service.addFilter('isActive', true);
+    service.setModel('users');
+
+    service.generateUri().subscribe(uri => {
+      expect(uri).toContain('filter[isActive]=true');
+      done();
+    });
+  });
+
   it('should generate a URI with sorted field ASC', (done: DoneFn) => {
     service.addSort('f', SortEnum.ASC);
     service.setModel('users');
