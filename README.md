@@ -12,7 +12,7 @@ NgQubee is an NGRX (store based) Query Builder for Angular. Easily compose your 
 
 NgQubee uses a number of open source projects to work properly:
 
-- [ngrx] - Store based with NGRX
+- [redux] - Store based with Redux
 - [rxjs] - URIs returned via Observables
 - [qs] - A querystring parsing and stringifying library with some added security.
 
@@ -30,20 +30,31 @@ Import the module in your Angular app:
 ```typescript
 @NgModule({
     imports: [
-        NgQubeeModule.forRoot({})
+        NgQubeeModule.forRoot({}) // You can omit the empty object as it is an optional argument
     ]
 })
 export class AppModule {}
 ```
 
 The object given to the _forRoot_ method allows to customize the query param keys. Following, the default behaviour:
-  - **Filters** are composed as filter[fieldName]=value / customizable with {filter: 'yourFilterKey'}
-  - **Fields** are composed as fields[model]=id,email,username / customizable with {fields: 'yourFieldsKey'}
-  - **Includes** are composed as include=modelA, modelB / customizable with {includes: 'yourIncludeKey'}
-  - **Limit** is composed as limit=15 / customizable with {limit: 'yourLimitKey'}
-  - **Page** is composed as page=1 / customizable with {page: 'yourPageKey'}
-  - **Sort** is composed as sort=fieldName / customizable with {sort: 'yourSortKey'}
+  - **Filters** are composed as filter[fieldName]=value / customizable with {request: {filters: 'yourFilterKey'}}
+  - **Fields** are composed as fields[model]=id,email,username / customizable with {request: {fields: 'yourFieldsKey'}}
+  - **Includes** are composed as include=modelA, modelB / customizable with {request: {includes: 'yourIncludeKey'}}
+  - **Limit** is composed as limit=15 / customizable with {request: {limit: 'yourLimitKey'}}
+  - **Page** is composed as page=1 / customizable with {request: {page: 'yourPageKey'}}
+  - **Sort** is composed as sort=fieldName / customizable with {request: {sort: 'yourSortKey'}}
   
+As you can easily imagine, everything that regards the URI composition is placed into the "request" key.
+```
+NgQubeeModule.forRoot({
+    request: {
+        filters: 'custom-filter-key',
+        fields: 'custom-fields-key',
+        /* and so on... */
+    }
+})
+```
+
 For composing queries, the first step is to inject the proper NgQubeeService:
 ```typescript
 @Injectable
@@ -129,7 +140,48 @@ Query Builder state can be cleaned with the reset method. This will clean up eve
 ```typescript
 this._ngQubeeService.reset();
 ```
+
+## Pagination
+If you are working with an API that supports pagination, we have got you covered 😉 NgQubee provides:
+  - A PaginatedCollection class that holds paginated data
+  - A PaginationService that help to transform the response in a PaginatedCollection
+
+As a service, you have to inject the PaginationService first:
+```
+constructor(private _pg: PaginationService) {}
+```
+
+In the following example, the PaginationService is used to transform the response with the paginate method.   
+```
+this._pg.paginate<Model>({ ...response, data: response.data.map(e => new Model(e.id)) })
+```
+The "paginate" method returns a PaginatedCollection that helps handling paginated data. Additionally, if you are dealing with a state library in your application, you can use the "normalize" method of the collection to normalize the data.
+
+As you can see from the example, the paginate method requires a generic type: put there your model and you'll be provided with a PaginatedCollection<Model>. By default, the paginated collection will check for the following keys in the response:
+  - data - the key that holds the response data
+  - currentPage - requested page for the pagination
+  - from - Showing items from n (where n is a number)
+  - to - Showing items from n (where n is a number)
+  - total - Count of the items available in thw whole pagination
+  - perPage - Items per page
+  - prevPageUrl - Url to the previous page
+  - nextPageUrl - Url to the next page
+  - lastPage - Last page number
+  - firstPageUrl - Url to the first page
+  - lastPageUrl - Url to the last page
+  
+Just like the query builder, the pagination service supports customizable keys. While invoking the forRoot method of the module, use the response key to look for different keys in the API response. Let's assume that the "currentPage" key is named "pg" in your API responseL your forRoot configuration will look as following:
+```
+NgQubeeModule.forRoot({
+    response: {
+        currentPage: 'pg'
+    }
+})
+```
+
+Feel free to customize your PaginationService as you need, using the keys shown in the upper list.
+
    [ng-qubee]: <https://github.com/AndrewReborn/ng-qubee>
-   [ngrx]: <https://ngrx.io>
+   [redux]: <https://redux.js.org/>
    [rxjs]: <https://reactivex.io>
    [qs]: <https://github.com/ljharb/qs>
