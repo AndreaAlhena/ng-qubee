@@ -1,22 +1,18 @@
 import { TestBed } from '@angular/core/testing';
-import { StoreModule, Store } from '@ngrx/store';
 import { SortEnum } from './enums/sort.enum';
-import { INestState } from './interfaces/nest-state.interface';
 import { NgQubeeService } from './ng-qubee.service';
-import { queryBuilderReducer } from './reducers/query-builder.reducer';
+import { StoreService } from './services/store.service';
 
 describe('NgQubeeService', () => {
   let service: NgQubeeService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        StoreModule.forRoot({nest: queryBuilderReducer})
-      ],
+      imports: [],
       providers: [{
-        deps: [Store],
+        deps: [StoreService],
         provide: NgQubeeService,
-        useFactory: (store: Store<INestState>) =>
+        useFactory: (store: StoreService) =>
           new NgQubeeService(store)
       }]
     });

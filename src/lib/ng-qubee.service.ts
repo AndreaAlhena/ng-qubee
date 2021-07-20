@@ -4,13 +4,11 @@ import * as qs from 'qs';
 import { QueryBuilderOptions } from './models/query-builder-options';
 import { UnselectableModelError } from './errors/unselectable-model.error';
 import { SortEnum } from './enums/sort.enum';
-import { select, Store } from '@ngrx/store';
-import { addFields, addFilters, addIncludes, addSorts, deleteFields, deleteFilters, deleteIncludes, deleteSorts, reset, setBaseUrl, setLimit, setModel, setPage, updateUri } from './actions/query-builder.actions';
+import * as qbActions from './actions/query-builder.actions';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 import { IQueryBuilderState } from './interfaces/query-builder-state.interface';
-import { INestState } from './interfaces/nest-state.interface';
-import { selectNest, selectUri } from './selectors/query-builder.selector';
+import { StoreService } from './services/store.service';
 
 @Injectable()
 export class NgQubeeService {
@@ -28,9 +26,11 @@ export class NgQubeeService {
     filter(uri => !!uri)
   );
 
-  constructor(private _store: Store<INestState>, @Inject('QUERY_PARAMS_CONFIG') @Optional() options: IQueryBuilderConfig = {}) {
+  constructor(private _store: StoreService, @Inject('QUERY_PARAMS_CONFIG') @Optional() options: IQueryBuilderConfig = {}) {
     this._options = new QueryBuilderOptions(options);
-    this._store.select(selectUri).subscribe(uri => this._uri$.next(uri));
+    this._store.subscribe(() => {
+      this._uri$.next(this._store.state.nest.uri);
+    })
   }
 
   private _parseFields(s: IQueryBuilderState): string {
@@ -145,7 +145,7 @@ export class NgQubeeService {
     this._parsePage(s);
     this._parseSort(s);
 
-    this._store.dispatch(updateUri({uri: this._uri}));
+    this._store.dispatch(qbActions.updateUri({uri: this._uri}));
   }
 
   private _prepend(model: string): string {
@@ -160,7 +160,7 @@ export class NgQubeeService {
    * @returns {this}
    */
   public addFields(model: string, fields: string[]): this {
-    this._store.dispatch(addFields({
+    this._store.dispatch(qbActions.addFields({
       fields: {
         [model]: fields
       }
@@ -178,7 +178,7 @@ export class NgQubeeService {
    * @returns {this}
    */
   public addFilter(field: string, ...values: (string | number | boolean)[]): this {
-    this._store.dispatch(addFilters({
+    this._store.dispatch(qbActions.addFilters({
       filters: {
         [field]: values
       }
@@ -194,7 +194,7 @@ export class NgQubeeService {
    * @returns 
    */
   public addIncludes(...models: string[]): this {
-    this._store.dispatch(addIncludes({
+    this._store.dispatch(qbActions.addIncludes({
       includes: models
     }));
 
@@ -209,7 +209,7 @@ export class NgQubeeService {
    * @returns {this}
    */
   public addSort(field: string, value: SortEnum): this {
-    this._store.dispatch(addSorts({
+    this._store.dispatch(qbActions.addSorts({
       sorts: {
         [field]: value
       }
@@ -226,7 +226,7 @@ export class NgQubeeService {
    * @returns {this}
    */
    public deleteFields(model: string, ...fields: string[]): this {
-    this._store.dispatch(deleteFields({fields}));
+    this._store.dispatch(qbActions.deleteFields({fields}));
     return this;
   }
 
@@ -237,7 +237,7 @@ export class NgQubeeService {
    * @returns {this}
    */
   public deleteFilters(...filters: string[]): this {
-    this._store.dispatch(deleteFilters({filters}));
+    this._store.dispatch(qbActions.deleteFilters({filters}));
     return this;
   }
 
@@ -248,7 +248,7 @@ export class NgQubeeService {
    * @returns 
    */
   public deleteIncludes(...includes: string[]): this {
-    this._store.dispatch(deleteIncludes({includes}));
+    this._store.dispatch(qbActions.deleteIncludes({includes}));
     return this;
   }
 
@@ -259,7 +259,7 @@ export class NgQubeeService {
    * @returns {this}
    */
   public deleteSorts(...sorts: string[]): this {
-    this._store.dispatch(deleteSorts({sorts}));
+    this._store.dispatch(qbActions.deleteSorts({sorts}));
     return this;
   }
 
@@ -271,7 +271,7 @@ export class NgQubeeService {
    public generateUri(): Observable<string> {
     // Cleanup the previously generated URI
     this._uri = '';
-    this._store.pipe(select(selectNest), take(1)).subscribe(s => this._parse(s));
+    this._parse(this._store.state.nest);
 
     return this.uri$;
   }
@@ -282,7 +282,7 @@ export class NgQubeeService {
    * @returns {this}
    */
   public reset(): this {
-    this._store.dispatch(reset());
+    this._store.dispatch(qbActions.reset());
     return this;
   }
 
@@ -293,7 +293,7 @@ export class NgQubeeService {
    * @returns {this}
    */
   public setBaseUrl(baseUrl: string): this {
-    this._store.dispatch(setBaseUrl({baseUrl}));
+    this._store.dispatch(qbActions.setBaseUrl({baseUrl}));
     return this;
   }
 
@@ -304,7 +304,7 @@ export class NgQubeeService {
    * @returns {this}
    */
   public setLimit(limit: number): this {
-    this._store.dispatch(setLimit({limit}));
+    this._store.dispatch(qbActions.setLimit({limit}));
     return this;
   }
 
@@ -316,7 +316,7 @@ export class NgQubeeService {
    * @returns {this}
    */
   public setModel(model: string): this {
-    this._store.dispatch(setModel({model}));
+    this._store.dispatch(qbActions.setModel({model}));
     return this;
   }
 
@@ -327,7 +327,7 @@ export class NgQubeeService {
    * @returns {this}
    */
   public setPage(page: number): this {
-    this._store.dispatch(setPage({page}));
+    this._store.dispatch(qbActions.setPage({page}));
     return this;
   }
 }

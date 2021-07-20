@@ -1,73 +1,34 @@
-import { createAction, props } from "@ngrx/store";
 
 // Interfaces
+import { createAction } from "@reduxjs/toolkit";
 import { IFields } from "../interfaces/fields.interface";
 import { IFilters } from "../interfaces/filters.interface";
 import { ISort } from "../interfaces/sort.interface";
 
-export const addFields = createAction(
-    '[Query Buillder] Add Fields',
-    props<{fields: IFields}>()
-);
+export const addFields = createAction<{fields: IFields}>('[Query Buillder] Add Fields');
 
-export const addFilters = createAction(
-    '[Query Buillder] Add Filters',
-    props<{filters: IFilters}>()
-);
+export const addFilters = createAction<{filters: IFilters}>('[Query Buillder] Add Filters');
 
-export const addIncludes = createAction(
-    '[Query Buillder] Add Includes',
-    props<{includes: string[]}>()
-);
+export const addIncludes = createAction<{includes: string[]}>('[Query Buillder] Add Includes');
 
-export const addSorts = createAction(
-    '[Query Buillder] Add Sorts',
-    props<{sorts: ISort}>()
-);
+export const addSorts = createAction<{sorts: ISort}>('[Query Buillder] Add Sorts');
 
-export const deleteFields = createAction(
-    '[Query Buillder] Delete Fields',
-    props<{fields: string[]}>()
-);
+export const deleteFields = createAction<{fields: string[]}>('[Query Buillder] Delete Fields');
 
-export const deleteFilters = createAction(
-    '[Query Buillder] Delete Filters',
-    props<{filters: string[]}>()
-);
+export const deleteFilters = createAction<{filters: string[]}>('[Query Buillder] Delete Filters');
 
-export const deleteIncludes = createAction(
-    '[Query Buillder] Delete Includes',
-    props<{includes: string[]}>()
-);
+export const deleteIncludes = createAction<{includes: string[]}>('[Query Buillder] Delete Includes');
 
-export const deleteSorts = createAction(
-    '[Query Buillder] Delete Sorts',
-    props<{sorts: string[]}>()
-);
+export const deleteSorts = createAction<{sorts: string[]}>('[Query Buillder] Delete Sorts');
 
 export const reset = createAction('[Query Builder] Reset');
 
-export const setBaseUrl = createAction(
-    '[Query Buillder] Set Base URL',
-    props<{baseUrl: string}>()
-);
+export const setBaseUrl = createAction<{baseUrl: string}>('[Query Buillder] Set Base URL');
 
-export const setLimit = createAction(
-    '[Query Buillder] Set Limit',
-    props<{limit: number}>()
-);
+export const setLimit = createAction<{limit: number}>('[Query Buillder] Set Limit');
 
-export const setModel = createAction(
-    '[Query Builder] Set Model',
-    props<{model: string}>()
-);
+export const setModel = createAction<{model: string}>('[Query Builder] Set Model');
 
-export const setPage = createAction(
-    '[Query Builder] Set Page',
-    props<{page: number}>()
-);
+export const setPage = createAction<{page: number}>('[Query Builder] Set Page');
 
-export const updateUri = createAction(
-    '[Query Builder] Update URI',
-    props<{uri: string}>()
-);
+export const updateUri = createAction<{uri: string}>('[Query Builder] Update URI');

@@ -5,7 +5,8 @@
     "entryFile": "src/public-api.ts"
   },
   "allowedNonPeerDependencies": [
-    "@ngrx/store",
-    "qs"
+    "@reduxjs/toolkit",
+    "qs",
+    "redux"
   ]
 }

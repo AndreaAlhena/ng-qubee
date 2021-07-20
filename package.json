@@ -5,7 +5,7 @@
     "email": "info@andreatantimonaco.me",
     "url": "https://andreatantimonaco.me"
   },
-  "version": "1.0.6",
+  "version": "1.0.7",
   "license": "MIT",
   "peerDependencies": {
     "@angular/common": "^11.0.9",
@@ -13,8 +13,9 @@
     "rxjs": "~6.6.0"
   },
   "dependencies": {
-    "@ngrx/store": "^12.2.0",
+    "@reduxjs/toolkit": "^1.6.1",
     "qs": "^6.9.6",
+    "redux": "^4.1.0",
     "tslib": "^2.0.0"
   },
   "devDependencies": {

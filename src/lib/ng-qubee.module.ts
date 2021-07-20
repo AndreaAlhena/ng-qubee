@@ -1,20 +1,15 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
-import { Store, StoreModule } from '@ngrx/store';
 import { NgQubeeService } from './ng-qubee.service';
 import { IConfig } from './interfaces/config.interface';
-import { queryBuilderReducer } from './reducers/query-builder.reducer';
 import { PaginationService } from './services/pagination.service';
-import { INestState } from './interfaces/nest-state.interface';
+import { StoreService } from './services/store.service';
 
 // @dynamic
 @NgModule({
-  imports: [
-    StoreModule.forRoot({nest: queryBuilderReducer})
-  ],
   providers: [{
-    deps: [Store],
+    deps: [StoreService],
     provide: NgQubeeService,
-    useFactory: (store: Store<INestState>) => new NgQubeeService(store, {})
+    useFactory: (store: StoreService) => new NgQubeeService(store, {})
   }]
 })
 export class NgQubeeModule {
@@ -26,7 +21,7 @@ export class NgQubeeModule {
       providers: [{
         deps: [Store],
         provide: NgQubeeService,
-        useFactory: (store: Store<INestState>) =>
+        useFactory: (store: StoreService) =>
           new NgQubeeService(store, Object.assign({}, this._config.request, config.request))
       }, {
         provide: PaginationService,
