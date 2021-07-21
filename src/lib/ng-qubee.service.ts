@@ -159,6 +159,10 @@ export class NgQubeeService {
    * @returns {this}
    */
   public addFields(model: string, fields: string[]): this {
+    if (!fields.length) {
+      return this;
+    }
+
     this._store.dispatch(qbActions.addFields({
       fields: {
         [model]: fields
@@ -177,6 +181,10 @@ export class NgQubeeService {
    * @returns {this}
    */
   public addFilter(field: string, ...values: (string | number | boolean)[]): this {
+    if (!values.length) {
+      return this;
+    }
+
     this._store.dispatch(qbActions.addFilters({
       filters: {
         [field]: values
@@ -193,6 +201,10 @@ export class NgQubeeService {
    * @returns 
    */
   public addIncludes(...models: string[]): this {
+    if (!models) {
+      return this;
+    }
+
     this._store.dispatch(qbActions.addIncludes({
       includes: models
     }));
@@ -225,6 +237,10 @@ export class NgQubeeService {
    * @returns {this}
    */
    public deleteFields(model: string, ...fields: string[]): this {
+    if (!fields.length) {
+      return this;
+    }
+
     this._store.dispatch(qbActions.deleteFields({fields}));
     return this;
   }
@@ -236,6 +252,10 @@ export class NgQubeeService {
    * @returns {this}
    */
   public deleteFilters(...filters: string[]): this {
+    if (!filters.length) {
+      return this;
+    }
+
     this._store.dispatch(qbActions.deleteFilters({filters}));
     return this;
   }
@@ -247,6 +267,10 @@ export class NgQubeeService {
    * @returns 
    */
   public deleteIncludes(...includes: string[]): this {
+    if (!includes.length) {
+      return this;
+    }
+
     this._store.dispatch(qbActions.deleteIncludes({includes}));
     return this;
   }

@@ -80,6 +80,16 @@ describe('NgQubeeService', () => {
     });
   });
 
+  it('should ignore empty fields (single model)', (done: DoneFn) => {
+    service.addFields('users', []);
+    service.setModel('users');
+
+    service.generateUri().subscribe(uri => {
+      expect(uri).not.toContain('fields[users]=');
+      done();
+    });
+  });
+
   it('should generate a URI with included models', (done: DoneFn) => {
     service.addIncludes('model1', 'model2');
     service.addIncludes('model3');
@@ -122,6 +132,16 @@ describe('NgQubeeService', () => {
 
     service.generateUri().subscribe(uri => {
       expect(uri).toContain('filter[field]=1,2,3');
+      done();
+    });
+  });
+
+  it('should ignore empty filters', (done: DoneFn) => {
+    service.addFilter('field');
+    service.setModel('users');
+
+    service.generateUri().subscribe(uri => {
+      expect(uri).not.toContain('filter[field]=');
       done();
     });
   });
