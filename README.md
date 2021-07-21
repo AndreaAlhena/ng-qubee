@@ -147,12 +147,12 @@ If you are working with an API that supports pagination, we have got you covered
   - A PaginationService that help to transform the response in a PaginatedCollection
 
 As a service, you have to inject the PaginationService first:
-```
+```typescript
 constructor(private _pg: PaginationService) {}
 ```
 
 In the following example, the PaginationService is used to transform the response with the paginate method.   
-```
+```typescript
 this._pg.paginate<Model>({ ...response, data: response.data.map(e => new Model(e.id)) })
 ```
 The "paginate" method returns a PaginatedCollection that helps handling paginated data. Additionally, if you are dealing with a state library in your application, you can use the "normalize" method of the collection to normalize the data.
@@ -171,7 +171,7 @@ As you can see from the example, the paginate method requires a generic type: pu
   - lastPageUrl - Url to the last page
   
 Just like the query builder, the pagination service supports customizable keys. While invoking the forRoot method of the module, use the response key to look for different keys in the API response. Let's assume that the "currentPage" key is named "pg" in your API responseL your forRoot configuration will look as following:
-```
+```typescript
 NgQubeeModule.forRoot({
     response: {
         currentPage: 'pg'
