@@ -1,7 +1,6 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { NgQubeeService } from './ng-qubee.service';
 import { IConfig } from './interfaces/config.interface';
-import { IPaginationConfig } from './interfaces/pagination-config.interface';
 import { PaginationService } from './services/pagination.service';
 import { StoreService } from './services/store.service';
 
