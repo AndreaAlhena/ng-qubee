@@ -8,18 +8,18 @@
   "version": "1.0.11",
   "license": "MIT",
   "peerDependencies": {
-    "@angular/common": "^11.0.9",
-    "@angular/core": "^11.0.9",
-    "rxjs": "~6.6.0"
+    "@angular/common": "^17.0.0",
+    "@angular/core": "^17.0.0",
+    "rxjs": "^7.0.0"
   },
   "dependencies": {
-    "@reduxjs/toolkit": "^1.6.1",
-    "qs": "^6.9.6",
-    "redux": "^4.1.0",
-    "tslib": "^2.0.0"
+    "@reduxjs/toolkit": "^2.1.0",
+    "qs": "^6.11.2",
+    "redux": "^5.0.0",
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "@types/qs": "^6.9.5",
+    "@types/qs": "^6.9.11",
     "karma-firefox-launcher": "^2.1.1"
   }
 }
