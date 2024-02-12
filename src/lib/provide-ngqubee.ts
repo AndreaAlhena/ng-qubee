@@ -12,25 +12,25 @@ import { PaginationService } from "./services/pagination.service";
  * Basic example of how you can add NgQubee to your application:
  * ```
  * const config = {};
+ * 
  * bootstrapApplication(AppComponent, {
  *   providers: [provideNgQubee(config)]
  * });
  * ```
  *
  * @publicApi
- * @param routes A set of `Route`s to use for the application routing table.
- * @param features Optional features to configure additional router behaviors.
- * @returns A set of providers to setup a Router.
+ * @param config Configuration object compliant to the IConfig interface
+ * @returns A set of providers to setup NgQubee
  */
 export function provideNgQubee(config: IConfig = {}): EnvironmentProviders {
     return makeEnvironmentProviders([{
         deps: [StoreService],
         provide: NgQubeeService,
         useFactory: (store: StoreService) =>
-          new NgQubeeService(store, Object.assign({}, this._config.request, config.request))
+          new NgQubeeService(store, Object.assign({}, config.request))
       }, {
         provide: PaginationService,
         useFactory: () =>
-          new PaginationService(Object.assign({}, this._config.response, config.response))
+          new PaginationService(Object.assign({}, config.response))
       }]);
   }
