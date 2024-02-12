@@ -6,7 +6,7 @@ import { UnselectableModelError } from './errors/unselectable-model.error';
 import { SortEnum } from './enums/sort.enum';
 import * as qbActions from './actions/query-builder.actions';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { filter, take } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 import { IQueryBuilderState } from './interfaces/query-builder-state.interface';
 import { StoreService } from './services/store.service';
 
