@@ -1,17 +1,18 @@
 import { Injectable } from '@angular/core';
-import { Action, combineReducers, createStore, Store } from 'redux';
+import { Action, combineReducers, Store } from 'redux';
 import { INestState } from '../interfaces/nest-state.interface';
 import { queryBuilderReducer } from '../reducers/query-builder.reducer';
+import { configureStore } from '@reduxjs/toolkit';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class StoreService {
 
   private _store: Store<INestState>;
 
   constructor() {
-    this._store = createStore(combineReducers({nest: queryBuilderReducer}));
+    this._store = configureStore({
+      reducer: combineReducers({nest: queryBuilderReducer})
+    });
   }
 
   get state(): INestState {
