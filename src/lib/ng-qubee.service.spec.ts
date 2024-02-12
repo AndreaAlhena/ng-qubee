@@ -2,21 +2,26 @@ import { TestBed } from '@angular/core/testing';
 import { SortEnum } from './enums/sort.enum';
 import { NgQubeeService } from './ng-qubee.service';
 import { StoreService } from './services/store.service';
+import { BrowserTestingModule } from '@angular/platform-browser/testing';
 
 describe('NgQubeeService', () => {
   let service: NgQubeeService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [],
-      providers: [{
-        deps: [StoreService],
-        provide: NgQubeeService,
-        useFactory: (store: StoreService) =>
-          new NgQubeeService(store)
-      }]
+      imports: [BrowserTestingModule],
+      providers: [
+        {
+          deps: [StoreService],
+          provide: NgQubeeService,
+          useFactory: (store: StoreService) =>
+            new NgQubeeService(store)
+        }, StoreService
+      ]
     });
+
     service = TestBed.inject(NgQubeeService);
+
   });
 
   it('should be created', () => {
@@ -197,7 +202,6 @@ describe('NgQubeeService', () => {
       expect(uri).toBe('/settings?limit=15&page=1');
       done();
     });
-    
   });
 
   // it('should generate a URL if a base url is given', (done: DoneFn) => {
