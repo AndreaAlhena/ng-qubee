@@ -16,16 +16,19 @@ export class NgQubeeModule {
   public static forRoot(config: IConfig = {}): ModuleWithProviders<NgQubeeModule> {
     return {
       ngModule: NgQubeeModule,
-      providers: [{
-        deps: [StoreService],
-        provide: NgQubeeService,
-        useFactory: (store: StoreService) =>
-          new NgQubeeService(store, Object.assign({}, config.request))
-      }, {
-        provide: PaginationService,
-        useFactory: () =>
-          new PaginationService(Object.assign({}, config.response))
-      }]
+      providers: [
+        {
+          deps: [StoreService],
+          provide: NgQubeeService,
+          useFactory: (store: StoreService) =>
+            new NgQubeeService(store, Object.assign({}, config.request))
+        }, {
+          provide: PaginationService,
+          useFactory: () =>
+            new PaginationService(Object.assign({}, config.response))
+        },
+        StoreService
+      ]
     };
   }
 }
