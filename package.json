@@ -7,6 +7,11 @@
   },
   "version": "1.1.11",
   "license": "MIT",
+  "allowedNonPeerDependencies": [
+    "@reduxjs/toolkit",
+    "qs",
+    "redux"
+  ],
   "dependencies": {
     "@reduxjs/toolkit": "^2.1.0",
     "qs": "^6.11.2",
