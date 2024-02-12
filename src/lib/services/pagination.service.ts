@@ -2,6 +2,7 @@ import { Inject, Injectable, Optional } from "@angular/core";
 import { IPaginationConfig } from "../interfaces/pagination-config.interface";
 import { PaginatedCollection } from "../models/paginated-collection";
 import { ResponseOptions } from "../models/response-options";
+import { IPaginatedObject } from "../interfaces/paginated-object.interface";
 
 @Injectable()
 export class PaginationService {
@@ -11,7 +12,7 @@ export class PaginationService {
     this._options = new ResponseOptions(options);
   }
 
-  public paginate<T>(response: {[key: string]: any}): PaginatedCollection<T> {
+  public paginate<T extends IPaginatedObject>(response: {[key: string]: any}): PaginatedCollection<T> {
     return new PaginatedCollection(
       response[this._options.data],
       response[this._options.currentPage],
