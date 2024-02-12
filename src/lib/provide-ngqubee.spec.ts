@@ -12,13 +12,20 @@ describe('provideNgQubee', () => {
   });
 
   it('Providers should have NgQubeeService', () => {
-    const providers = (provideNgQubee() as IEnvironmentProviders).ɵproviders.flatMap(obj => obj.provide.name);
+    const providers = (provideNgQubee() as IEnvironmentProviders).ɵproviders.flatMap(obj => obj?.provide?.name);
     expect(providers).toContain('NgQubeeService');
   });
 
   it('Providers should have PaginationService', () => {
-    const providers = (provideNgQubee() as IEnvironmentProviders).ɵproviders.flatMap(obj => obj.provide.name);
+    const providers = (provideNgQubee() as IEnvironmentProviders).ɵproviders.flatMap(obj => obj?.provide?.name);
     expect(providers).toContain('PaginationService');
+  });
+
+  it('Providers should have StoreService', () => {
+    const providers = (provideNgQubee() as IEnvironmentProviders).ɵproviders.flatMap(obj => obj?.provide?.name);
+    const p = provideNgQubee() as IEnvironmentProviders
+
+    expect(providers).toContain('StoreService');
   });
   // it('should generate a URI', (done: DoneFn) => {
   //   service.setModel('users');
