@@ -23,14 +23,20 @@ import { PaginationService } from "./services/pagination.service";
  * @returns A set of providers to setup NgQubee
  */
 export function provideNgQubee(config: IConfig = {}): EnvironmentProviders {
-    return makeEnvironmentProviders([{
-        deps: [StoreService],
-        provide: NgQubeeService,
-        useFactory: (store: StoreService) =>
-          new NgQubeeService(store, Object.assign({}, config.request))
-      }, {
-        provide: PaginationService,
-        useFactory: () =>
-          new PaginationService(Object.assign({}, config.response))
-      }]);
-  }
+  return makeEnvironmentProviders([
+    {
+      provide: StoreService,
+      useClass: StoreService
+    },
+    {
+      deps: [StoreService],
+      provide: NgQubeeService,
+      useFactory: (store: StoreService) =>
+        new NgQubeeService(store, Object.assign({}, config.request))
+    }, {
+      provide: PaginationService,
+      useFactory: () =>
+        new PaginationService(Object.assign({}, config.response))
+    }
+  ]);
+}
