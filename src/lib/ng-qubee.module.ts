@@ -13,8 +13,6 @@ import { StoreService } from './services/store.service';
   }]
 })
 export class NgQubeeModule {
-  private static _config: IConfig = {};
-
   public static forRoot(config: IConfig = {}): ModuleWithProviders<NgQubeeModule> {
     return {
       ngModule: NgQubeeModule,
@@ -22,11 +20,11 @@ export class NgQubeeModule {
         deps: [StoreService],
         provide: NgQubeeService,
         useFactory: (store: StoreService) =>
-          new NgQubeeService(store, Object.assign({}, this._config.request, config.request))
+          new NgQubeeService(store, Object.assign({}, config.request))
       }, {
         provide: PaginationService,
         useFactory: () =>
-          new PaginationService(Object.assign({}, this._config.response, config.response))
+          new PaginationService(Object.assign({}, config.response))
       }]
     };
   }
