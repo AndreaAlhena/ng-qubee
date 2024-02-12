@@ -30,7 +30,7 @@ export const queryBuilderReducer = createReducer(
                     return;
                 }
     
-                f[k] = state.fields[k].filter(v => !fields[k].includes(v));
+                f[k] = state.fields[k].filter(v => !fields[+k].includes(v));
             });
                 
             return {
