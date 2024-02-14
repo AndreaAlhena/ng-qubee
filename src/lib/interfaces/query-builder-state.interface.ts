@@ -11,5 +11,4 @@ export interface IQueryBuilderState {
     model: string;
     page: number,
     sort: ISort;
-    uri: string;
 }
