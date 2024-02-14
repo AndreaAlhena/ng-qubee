@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { SortEnum } from './enums/sort.enum';
 import { NgQubeeService } from './ng-qubee.service';
-import { StoreService } from './services/store.service';
 import { BrowserTestingModule } from '@angular/platform-browser/testing';
+import { NestService } from './services/nest.service';
 
 describe('NgQubeeService', () => {
   let service: NgQubeeService;
@@ -12,16 +12,15 @@ describe('NgQubeeService', () => {
       imports: [BrowserTestingModule],
       providers: [
         {
-          deps: [StoreService],
+          deps: [NestService],
           provide: NgQubeeService,
-          useFactory: (store: StoreService) =>
-            new NgQubeeService(store)
-        }, StoreService
+          useFactory: (nestService: NestService) =>
+            new NgQubeeService(nestService)
+        }, NestService
       ]
     });
 
     service = TestBed.inject(NgQubeeService);
-
   });
 
   it('should be created', () => {
