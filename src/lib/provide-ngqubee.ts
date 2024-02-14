@@ -1,8 +1,8 @@
 import { EnvironmentProviders, makeEnvironmentProviders } from "@angular/core";
 import { IConfig } from "./interfaces/config.interface";
-import { StoreService } from "./services/store.service";
 import { NgQubeeService } from "./ng-qubee.service";
 import { PaginationService } from "./services/pagination.service";
+import { NestService } from "./services/nest.service";
 
 /**
  * Sets up providers necessary to enable `NgQubee` functionality for the application.
@@ -25,18 +25,16 @@ import { PaginationService } from "./services/pagination.service";
 export function provideNgQubee(config: IConfig = {}): EnvironmentProviders {
   return makeEnvironmentProviders([
     {
-      provide: StoreService,
-      useClass: StoreService
+      provide: NestService,
+      useClass: NestService
     },
     {
-      deps: [StoreService],
+      deps: [NestService],
       provide: NgQubeeService,
-      useFactory: (store: StoreService) =>
-        new NgQubeeService(store, Object.assign({}, config.request))
+      useFactory: (nestService: NestService) => new NgQubeeService(nestService, Object.assign({}, config.request))
     }, {
       provide: PaginationService,
-      useFactory: () =>
-        new PaginationService(Object.assign({}, config.response))
+      useFactory: () => new PaginationService(Object.assign({}, config.response))
     }
   ]);
 }

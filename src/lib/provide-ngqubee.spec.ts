@@ -21,11 +21,11 @@ describe('provideNgQubee', () => {
     expect(providers).toContain('PaginationService');
   });
 
-  it('Providers should have StoreService', () => {
+  it('Providers should have NestService', () => {
     const providers = (provideNgQubee() as IEnvironmentProviders).ɵproviders.flatMap(obj => obj?.provide?.name);
     const p = provideNgQubee() as IEnvironmentProviders
 
-    expect(providers).toContain('StoreService');
+    expect(providers).toContain('NestService');
   });
   // it('should generate a URI', (done: DoneFn) => {
   //   service.setModel('users');
