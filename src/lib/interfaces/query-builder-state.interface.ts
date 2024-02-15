@@ -10,5 +10,5 @@ export interface IQueryBuilderState {
     limit: number;
     model: string;
     page: number,
-    sort: ISort;
+    sorts: ISort[];
 }
