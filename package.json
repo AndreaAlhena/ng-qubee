@@ -5,12 +5,10 @@
     "email": "info@andreatantimonaco.me",
     "url": "https://andreatantimonaco.me"
   },
-  "version": "1.1.11",
+  "version": "2.0.0",
   "license": "MIT",
   "allowedNonPeerDependencies": [
-    "@reduxjs/toolkit",
-    "qs",
-    "redux"
+    "qs"
   ],
   "dependencies": {
     "qs": "^6.11.2",
