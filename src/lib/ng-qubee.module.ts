@@ -1,5 +1,5 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
-import { NgQubeeService } from './ng-qubee.service';
+import { NgQubeeService } from './services/ng-qubee.service';
 import { IConfig } from './interfaces/config.interface';
 import { PaginationService } from './services/pagination.service';
 import { NestService } from './services/nest.service';
