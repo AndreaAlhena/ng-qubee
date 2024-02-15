@@ -3,7 +3,7 @@
 </p>
 
 # Your next Angular Query Builder 🐝
-NgQubee is an Redux (store based) Query Builder for Angular. Easily compose your API requests without the hassle of writing the wheel again :)
+NgQubee is a Query Builder for Angular. Easily compose your API requests without the hassle of writing the wheel again :)
 
 - Easily retrieve URIs with a Service
 - Pagination ready
@@ -33,7 +33,7 @@ Import the module in your Angular app:
     NgQubeeModule.forRoot({}) // You can omit the empty object as it is an optional argument
   ]
 })
-export  class  AppModule  {}
+export class AppModule  {}
 ```
 
 Or if you are working with Angular 15 or greater, use the provide function:
