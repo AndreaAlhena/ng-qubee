@@ -48,7 +48,6 @@ export class NgQubeeService {
 
     for (const k in s.fields) {
       if (s.fields.hasOwnProperty(k)) {
-        console.log(s.includes.includes(k));
         // Check if the key is the model or is declared in "includes".
         // If not, it means that has not been selected anywhere and that will cause an error on the API
         if (k !== s.model && !s.includes.includes(k)) {
@@ -111,18 +110,18 @@ export class NgQubeeService {
 
   private _parseSort(s: IQueryBuilderState): string {
     let param: string = '';
-    const fields = Object.keys(s.sort);
 
-    if (!fields.length) {
+    if (!s.sorts.length) {
       return param;
     }
 
     param = `${this._prepend(s.model)}${this._options.sort}=`;
 
-    fields.forEach((field, idx) => {
-      param += `${s.sort[field] === SortEnum.DESC ? '-' : ''}${field}`;
+    console.log(s.sorts);
+    s.sorts.forEach((sort, idx) => {
+      param += `${sort.order === SortEnum.DESC ? '-' : ''}${sort.field}`;
 
-      if (idx < fields.length - 1) {
+      if (idx < s.sorts.length - 1) {
         param += ','
       }
     });
@@ -221,12 +220,13 @@ export class NgQubeeService {
    * Add a field with a sort criteria
    * 
    * @param field Field to use for sorting
-   * @param {SortEnum} value A value from the SortEnum enumeration
+   * @param {SortEnum} order A value from the SortEnum enumeration
    * @returns {this}
    */
-  public addSort(field: string, value: SortEnum): this {
+  public addSort(field: string, order: SortEnum): this {
     this._nestService.addSort({
-      [field]: value
+      field,
+      order
     });
 
     return this;

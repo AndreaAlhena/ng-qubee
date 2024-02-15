@@ -75,12 +75,14 @@ describe('NestService', () => {
 
   it('should add sort', () => {
     service.addSort({
-      id: SortEnum.DESC
+      field: 'id',
+      order: SortEnum.DESC
     });
 
-    expect(service.nest().sort).toEqual({
-      id: SortEnum.DESC
-    });
+    expect(service.nest().sorts).toEqual([{
+      field: 'id',
+      order: SortEnum.DESC
+    }]);
   });
 
   it('should delete fields', () => {
@@ -119,15 +121,21 @@ describe('NestService', () => {
 
   it('should delete sort', () => {
     service.addSort({
-      id: SortEnum.DESC,
-      username: SortEnum.ASC
+      field: 'id',
+      order: SortEnum.DESC
+    });
+
+    service.addSort({
+      field: 'username',
+      order: SortEnum.ASC
     });
 
     service.deleteSorts('id');
 
-    expect(service.nest().sort).toEqual({
-      username: SortEnum.ASC
-    });
+    expect(service.nest().sorts).toEqual([{
+      field: 'username',
+      order: SortEnum.ASC
+    }]);
   });
 
   it('should reset', () => {

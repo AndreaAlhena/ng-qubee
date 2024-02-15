@@ -12,7 +12,7 @@ const INITIAL_STATE: IQueryBuilderState = {
   limit: 15,
   model: '',
   page: 1,
-  sort: {}
+  sorts: []
 };
 
 @Injectable()
@@ -21,7 +21,7 @@ export class NestService {
   /**
    * Private writable signal that holds the Query Builder state
    * 
-   * @type {IQueryBuilderState>}
+   * @type {IQueryBuilderState}
    */
   private _nest: WritableSignal<IQueryBuilderState> = signal(this._clone(INITIAL_STATE));
 
@@ -118,7 +118,7 @@ export class NestService {
   public addSort(sort: ISort): void {
     this._nest.update(nest => ({
       ...nest,
-      sort
+      sorts: [...nest.sorts, sort]
     }));
   }
 
@@ -176,13 +176,19 @@ export class NestService {
    * @param sorts 
    */
   public deleteSorts(...sorts: string[]): void {
-    const s = Object.assign({}, this._nest().sort);
+    const s = [...this._nest().sorts];
     
-    sorts.forEach(v => delete s[v]);
+    sorts.forEach(field => {
+      const p = this.nest().sorts.findIndex(sort => sort.field === field);
+
+      if (p > -1) {
+        s.splice(p, 1);
+      }
+    });
     
     this._nest.update(nest => ({
       ...nest,
-      sort: s
+      sorts: s
     }));
   }
 
