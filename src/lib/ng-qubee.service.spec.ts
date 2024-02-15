@@ -4,7 +4,7 @@ import { NgQubeeService } from './ng-qubee.service';
 import { BrowserTestingModule } from '@angular/platform-browser/testing';
 import { NestService } from './services/nest.service';
 
-describe('NgQubeeService', () => {
+describe('NgQubeeService standard config', () => {
   let service: NgQubeeService;
 
   beforeEach(() => {
@@ -222,4 +222,92 @@ describe('NgQubeeService', () => {
   //     expect(err.message).toEqual(new UnselectableModelError('settings').message);
   //   }
   // });
+});
+
+describe('NgQubeeService custom config', () => {
+  let service: NgQubeeService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [BrowserTestingModule],
+      providers: [
+        {
+          deps: [NestService],
+          provide: NgQubeeService,
+          useFactory: (nestService: NestService) =>
+            new NgQubeeService(nestService, {
+              appends: 'app',
+              fields: 'fld',
+              filters: 'flt',
+              includes: 'inc',
+              limit: 'lmt',
+              page: 'p',
+              sort: 'srt'
+            })
+        }, NestService
+      ]
+    });
+
+    service = TestBed.inject(NgQubeeService);
+  });
+
+  it('should generate a URI with fields (single model)', (done: DoneFn) => {
+    service.addFields('users', ['email', 'name']);
+    service.setModel('users');
+
+    service.generateUri().subscribe(uri => {
+      expect(uri).toContain('fld[users]=email,name');
+      done();
+    });
+  });
+
+  it('should generate a URI with filter', (done: DoneFn) => {
+    service.addFilter('id', 1, 2, 3);
+    service.setModel('users');
+
+    service.generateUri().subscribe(uri => {
+      expect(uri).toContain('flt[id]=1,2,3');
+      done();
+    });
+  });
+
+  it('should generate a URI with included models', (done: DoneFn) => {
+    service.addIncludes('model1', 'model2');
+    service.setModel('users');
+
+    service.generateUri().subscribe(uri => {
+      expect(uri).toContain('inc=model1,model2');
+      done();
+    });
+  });
+
+  it('should generate a URI with a custom limit', (done: DoneFn) => {
+    service.setModel('users');
+    service.setLimit(25);
+
+    service.generateUri().subscribe(uri => {
+      expect(uri).toContain('lmt=25');
+      done();
+    });
+  });
+
+  it('should generate a URI with a custom page', (done: DoneFn) => {
+    service.setModel('users');
+    service.setPage(5);
+
+    service.generateUri().subscribe(uri => {
+      expect(uri).toContain('p=5');
+      done();
+    });
+  });
+
+  it('should generate a URI with sorted field ASC', (done: DoneFn) => {
+    service.addSort('f', SortEnum.ASC);
+    service.setModel('users');
+
+    service.generateUri().subscribe(uri => {
+      expect(uri).toContain('srt=f');
+      done();
+    });
+  });
 });
