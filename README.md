@@ -1,7 +1,8 @@
+<p align="center">
+  <img width="500" height="500" src="https://i.ibb.co/LdXRKyG/logo.png">
+</p>
 
-# NgQubee 🐝
-
-## Your next Angular Query Builder
+# Your next Angular Query Builder 🐝
 NgQubee is an Redux (store based) Query Builder for Angular. Easily compose your API requests without the hassle of writing the wheel again :)
 
 - Easily retrieve URIs with a Service
@@ -10,8 +11,7 @@ NgQubee is an Redux (store based) Query Builder for Angular. Easily compose your
 - Developed with a test-driven approach
 
 ## We love it, we use it ❤️
-NgQubee uses a number of open source projects to work properly:
--  [redux] - Store based with Redux
+NgQubee uses some open source projects to work properly:
 -  [rxjs] - URIs returned via Observables
 -  [qs] - A querystring parsing and stringifying library with some added security.
 
@@ -205,7 +205,6 @@ NgQubeeModule.forRoot({
 
 Feel free to customize your PaginationService as you need, using the keys shown in the upper list.
 
-[ng-qubee]:  <https://github.com/AndrewReborn/ng-qubee>
-[redux]:  <https://redux.js.org/>
+[ng-qubee]:  <https://github.com/AndreaAlhena/ng-qubee>
 [rxjs]:  <https://reactivex.io>
 [qs]:  <https://github.com/ljharb/qs>
