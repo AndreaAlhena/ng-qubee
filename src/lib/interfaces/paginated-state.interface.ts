@@ -1,3 +1,3 @@
-export interface IPaginatedState<T> {
-    pages: 
-}
+// export interface IPaginatedState<T> {
+//     pages: 
+// }
