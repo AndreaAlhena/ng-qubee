@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, Optional } from '@angular/core';
 import * as qs from 'qs';
 import { BehaviorSubject, Observable, filter } from 'rxjs';
 
