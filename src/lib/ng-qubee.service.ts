@@ -1,15 +1,23 @@
-import { Inject, Injectable, Optional, Signal, WritableSignal, computed, signal } from '@angular/core';
-import { IQueryBuilderConfig } from './interfaces/query-builder-config.interface';
+import { Injectable } from '@angular/core';
 import * as qs from 'qs';
-import { QueryBuilderOptions } from './models/query-builder-options';
-import { UnselectableModelError } from './errors/unselectable-model.error';
+import { BehaviorSubject, Observable, filter } from 'rxjs';
+
+// Enums
 import { SortEnum } from './enums/sort.enum';
-import * as qbActions from './actions/query-builder.actions';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
-import { IQueryBuilderState } from './interfaces/query-builder-state.interface';
-import { NestService } from './services/nest.service';
+
+// Errors
+import { UnselectableModelError } from './errors/unselectable-model.error';
+
+// Interfaces
 import { IFields } from './interfaces/fields.interface';
+import { IQueryBuilderConfig } from './interfaces/query-builder-config.interface';
+import { IQueryBuilderState } from './interfaces/query-builder-state.interface';
+
+// Models
+import { QueryBuilderOptions } from './models/query-builder-options';
+
+// Services
+import { NestService } from './services/nest.service';
 
 @Injectable()
 export class NgQubeeService {
