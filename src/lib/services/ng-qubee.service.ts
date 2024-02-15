@@ -3,21 +3,21 @@ import * as qs from 'qs';
 import { BehaviorSubject, Observable, filter } from 'rxjs';
 
 // Enums
-import { SortEnum } from './enums/sort.enum';
+import { SortEnum } from '../enums/sort.enum';
 
 // Errors
-import { UnselectableModelError } from './errors/unselectable-model.error';
+import { UnselectableModelError } from '../errors/unselectable-model.error';
 
 // Interfaces
-import { IFields } from './interfaces/fields.interface';
-import { IQueryBuilderConfig } from './interfaces/query-builder-config.interface';
-import { IQueryBuilderState } from './interfaces/query-builder-state.interface';
+import { IFields } from '../interfaces/fields.interface';
+import { IQueryBuilderConfig } from '../interfaces/query-builder-config.interface';
+import { IQueryBuilderState } from '../interfaces/query-builder-state.interface';
 
 // Models
-import { QueryBuilderOptions } from './models/query-builder-options';
+import { QueryBuilderOptions } from '../models/query-builder-options';
 
 // Services
-import { NestService } from './services/nest.service';
+import { NestService } from './nest.service';
 
 @Injectable()
 export class NgQubeeService {

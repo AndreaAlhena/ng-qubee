@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { SortEnum } from './enums/sort.enum';
+import { SortEnum } from '../enums/sort.enum';
 import { NgQubeeService } from './ng-qubee.service';
 import { BrowserTestingModule } from '@angular/platform-browser/testing';
-import { NestService } from './services/nest.service';
+import { NestService } from './nest.service';
 
 describe('NgQubeeService standard config', () => {
   let service: NgQubeeService;

@@ -1,6 +1,6 @@
 import { EnvironmentProviders, makeEnvironmentProviders } from "@angular/core";
 import { IConfig } from "./interfaces/config.interface";
-import { NgQubeeService } from "./ng-qubee.service";
+import { NgQubeeService } from "./services/ng-qubee.service";
 import { PaginationService } from "./services/pagination.service";
 import { NestService } from "./services/nest.service";
 
