@@ -117,7 +117,6 @@ export class NgQubeeService {
 
     param = `${this._prepend(s.model)}${this._options.sort}=`;
 
-    console.log(s.sorts);
     s.sorts.forEach((sort, idx) => {
       param += `${sort.order === SortEnum.DESC ? '-' : ''}${sort.field}`;
 
