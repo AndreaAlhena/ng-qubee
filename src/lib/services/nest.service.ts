@@ -70,43 +70,75 @@ export class NestService {
 
   /**
    * Add selectable fields for the given model to the request
-   * 
-   * @param {IFields} fields 
+   * Automatically prevents duplicate fields for each model
+   *
+   * @param {IFields} fields
    * @return {void}
-   * @todo Avoid duplicated fields
    */
   public addFields(fields: IFields): void {
-    this._nest.update(nest => ({
-      ...nest,
-      fields: { ...nest.fields, ...fields }
-    }));
+    this._nest.update(nest => {
+      const mergedFields = { ...nest.fields };
+
+      Object.keys(fields).forEach(model => {
+        const existingFields = mergedFields[model] || [];
+        const newFields = fields[model];
+
+        // Use Set to prevent duplicates
+        const uniqueFields = Array.from(new Set([...existingFields, ...newFields]));
+        mergedFields[model] = uniqueFields;
+      });
+
+      return {
+        ...nest,
+        fields: mergedFields
+      };
+    });
   }
 
   /**
    * Add filters to the request
-   * 
+   * Automatically prevents duplicate filter values for each filter key
+   *
    * @param {IFilters} filters
-   * @todo Avoid duplicated filters
+   * @return {void}
    */
   public addFilters(filters: IFilters): void {
-    this._nest.update(nest => ({
-      ...nest,
-      filters: { ...nest.filters, ...filters }
-    }));
+    this._nest.update(nest => {
+      const mergedFilters = { ...nest.filters };
+
+      Object.keys(filters).forEach(key => {
+        const existingValues = mergedFilters[key] || [];
+        const newValues = filters[key];
+
+        // Use Set to prevent duplicates
+        const uniqueValues = Array.from(new Set([...existingValues, ...newValues]));
+        mergedFilters[key] = uniqueValues;
+      });
+
+      return {
+        ...nest,
+        filters: mergedFilters
+      };
+    });
   }
 
   /**
    * Add resources to include with the request
-   * 
+   * Automatically prevents duplicate includes
+   *
    * @param {string[]} includes  models to include to the request
    * @return {void}
-   * @todo Avoid duplicated includes
    */
   public addIncludes(includes: string[]): void {
-    this._nest.update(nest => ({
-      ...nest,
-      includes: [...nest.includes, ...includes]
-    }))
+    this._nest.update(nest => {
+      // Use Set to prevent duplicates
+      const uniqueIncludes = Array.from(new Set([...nest.includes, ...includes]));
+
+      return {
+        ...nest,
+        includes: uniqueIncludes
+      };
+    });
   }
 
   /**
