@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TSLint configuration (tslint.json) - replaced with ESLint
 - Unused import `IQueryBuilderConfig` in response-options.ts
 - Unused import `EnvironmentProviders` in provide-ngqubee.spec.ts
+- Deprecated `enableIvy: false` from tsconfig.lib.json (Ivy is now the default and only option)
+- Deprecated `skipTemplateCodegen` option from Angular compiler options
+- Deprecated `fullTemplateTypeCheck` option from Angular compiler options
 
 ### Fixed
 - ESLint warnings for intentional use of `any` type in flexible API interfaces
