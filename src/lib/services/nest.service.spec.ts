@@ -143,4 +143,115 @@ describe('NestService', () => {
     service.reset();
     expect(service.nest().model).toEqual('');
   });
+
+  // Duplicate Prevention Tests
+  describe('Duplicate Prevention', () => {
+    describe('addFields', () => {
+      it('should prevent duplicate fields for the same model', () => {
+        service.addFields({
+          users: ['id', 'username']
+        });
+
+        service.addFields({
+          users: ['username', 'email']
+        });
+
+        expect(service.nest().fields).toEqual({
+          users: ['id', 'username', 'email']
+        });
+      });
+
+      it('should handle multiple models without duplicates', () => {
+        service.addFields({
+          users: ['id', 'username'],
+          posts: ['title']
+        });
+
+        service.addFields({
+          users: ['username', 'email'],
+          posts: ['title', 'content']
+        });
+
+        expect(service.nest().fields).toEqual({
+          users: ['id', 'username', 'email'],
+          posts: ['title', 'content']
+        });
+      });
+
+      it('should not create duplicates when adding the same field multiple times', () => {
+        service.addFields({
+          users: ['id', 'id', 'id']
+        });
+
+        expect(service.nest().fields).toEqual({
+          users: ['id']
+        });
+      });
+    });
+
+    describe('addFilters', () => {
+      it('should prevent duplicate filter values for the same key', () => {
+        service.addFilters({
+          id: [1, 2, 3]
+        });
+
+        service.addFilters({
+          id: [2, 3, 4]
+        });
+
+        expect(service.nest().filters).toEqual({
+          id: [1, 2, 3, 4]
+        });
+      });
+
+      it('should handle multiple filter keys without duplicates', () => {
+        service.addFilters({
+          id: [1, 2],
+          status: ['active']
+        });
+
+        service.addFilters({
+          id: [2, 3],
+          status: ['active', 'pending']
+        });
+
+        expect(service.nest().filters).toEqual({
+          id: [1, 2, 3],
+          status: ['active', 'pending']
+        });
+      });
+
+      it('should not create duplicates when adding the same filter value multiple times', () => {
+        service.addFilters({
+          id: [1, 1, 1]
+        });
+
+        expect(service.nest().filters).toEqual({
+          id: [1]
+        });
+      });
+    });
+
+    describe('addIncludes', () => {
+      it('should prevent duplicate includes', () => {
+        service.addIncludes(['profiles', 'settings']);
+        service.addIncludes(['settings', 'posts']);
+
+        expect(service.nest().includes).toEqual(['profiles', 'settings', 'posts']);
+      });
+
+      it('should not create duplicates when adding the same include multiple times', () => {
+        service.addIncludes(['profiles', 'profiles', 'profiles']);
+
+        expect(service.nest().includes).toEqual(['profiles']);
+      });
+
+      it('should handle empty arrays', () => {
+        service.addIncludes(['profiles']);
+        service.addIncludes([]);
+
+        expect(service.nest().includes).toEqual(['profiles']);
+      });
+    });
+  });
 });
