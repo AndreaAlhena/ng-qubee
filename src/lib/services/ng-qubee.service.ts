@@ -160,19 +160,9 @@ export class NgQubeeService {
     return this._uri ? '&' : `/${model}?`;
   }
 
-  // private _removeArgIfEmpty(arg: string): string {
-  //   const params = new URL(this._uri).searchParams;
-    
-  //   if (!params.get(arg)) {
-  //     params.delete(arg);
-  //   }
-    
-
-  // }
-
   /**
    * Add fields to the select statement for the given model
-   * 
+   *
    * @param model Model that holds the fields
    * @param fields Fields to select
    * @returns {this}

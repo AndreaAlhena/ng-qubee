@@ -39,6 +39,13 @@ export class NestService {
     // Nothing to see here 👮🏻‍♀️
   }
 
+  /**
+   * Set the base URL for the API
+   *
+   * @param {string} baseUrl - The base URL to prepend to generated URIs
+   * @example
+   * service.baseUrl = 'https://api.example.com';
+   */
   set baseUrl(baseUrl: string) {
     this._nest.update(nest => ({
       ...nest,
@@ -46,6 +53,15 @@ export class NestService {
     }));
   }
 
+  /**
+   * Set the limit for paginated results
+   * Must be a positive integer greater than 0
+   *
+   * @param {number} limit - The number of items per page
+   * @throws {InvalidLimitError} If limit is not a positive integer
+   * @example
+   * service.limit = 25;
+   */
   set limit(limit: number) {
     this._validateLimit(limit);
     this._nest.update(nest => ({
@@ -54,6 +70,15 @@ export class NestService {
     }));
   }
 
+  /**
+   * Set the model name for the query
+   * Must be a non-empty string
+   *
+   * @param {string} model - The model/resource name (e.g., 'users', 'posts')
+   * @throws {InvalidModelNameError} If model is not a non-empty string
+   * @example
+   * service.model = 'users';
+   */
   set model(model: string) {
     this._validateModelName(model);
     this._nest.update(nest => ({
@@ -62,6 +87,15 @@ export class NestService {
     }));
   }
 
+  /**
+   * Set the page number for pagination
+   * Must be a positive integer greater than 0
+   *
+   * @param {number} page - The page number to fetch
+   * @throws {InvalidPageNumberError} If page is not a positive integer
+   * @example
+   * service.page = 2;
+   */
   set page(page: number) {
     this._validatePageNumber(page);
     this._nest.update(nest => ({
@@ -117,8 +151,11 @@ export class NestService {
    * Add selectable fields for the given model to the request
    * Automatically prevents duplicate fields for each model
    *
-   * @param {IFields} fields
+   * @param {IFields} fields - Object mapping model names to arrays of field names
    * @return {void}
+   * @example
+   * service.addFields({ users: ['id', 'email', 'username'] });
+   * service.addFields({ posts: ['title', 'content'] });
    */
   public addFields(fields: IFields): void {
     this._nest.update(nest => {
@@ -144,8 +181,11 @@ export class NestService {
    * Add filters to the request
    * Automatically prevents duplicate filter values for each filter key
    *
-   * @param {IFilters} filters
+   * @param {IFilters} filters - Object mapping filter keys to arrays of values
    * @return {void}
+   * @example
+   * service.addFilters({ id: [1, 2, 3] });
+   * service.addFilters({ status: ['active', 'pending'] });
    */
   public addFilters(filters: IFilters): void {
     this._nest.update(nest => {
@@ -171,8 +211,11 @@ export class NestService {
    * Add resources to include with the request
    * Automatically prevents duplicate includes
    *
-   * @param {string[]} includes  models to include to the request
+   * @param {string[]} includes - Array of model names to include in the response
    * @return {void}
+   * @example
+   * service.addIncludes(['profile', 'posts']);
+   * service.addIncludes(['comments']);
    */
   public addIncludes(includes: string[]): void {
     this._nest.update(nest => {
@@ -188,9 +231,13 @@ export class NestService {
 
   /**
    * Add a field that should be used for sorting data
-   * 
-   * @param {ISort} sort
+   *
+   * @param {ISort} sort - Sort configuration with field name and order (ASC/DESC)
    * @return {void}
+   * @example
+   * import { SortEnum } from 'ng-qubee';
+   * service.addSort({ field: 'created_at', order: SortEnum.DESC });
+   * service.addSort({ field: 'name', order: SortEnum.ASC });
    */
   public addSort(sort: ISort): void {
     this._nest.update(nest => ({
@@ -203,8 +250,11 @@ export class NestService {
    * Remove fields for the given model
    * Uses deep cloning to prevent mutations to the original state
    *
-   * @param {IFields} fields
+   * @param {IFields} fields - Object mapping model names to arrays of field names to remove
    * @return {void}
+   * @example
+   * service.deleteFields({ users: ['email'] });
+   * service.deleteFields({ posts: ['content', 'body'] });
    */
   public deleteFields(fields: IFields): void {
     // Deep clone the fields object to prevent mutations
@@ -228,8 +278,11 @@ export class NestService {
    * Remove filters from the request
    * Uses deep cloning to prevent mutations to the original state
    *
-   * @param {string[]} filters - Filter keys to remove
+   * @param {...string[]} filters - Filter keys to remove
    * @return {void}
+   * @example
+   * service.deleteFilters('id');
+   * service.deleteFilters('status', 'type');
    */
   public deleteFilters(...filters: string[]): void {
     // Deep clone the filters object to prevent mutations
@@ -244,8 +297,13 @@ export class NestService {
   }
 
   /**
-   * 
-   * @param includes 
+   * Remove includes from the request
+   *
+   * @param {...string[]} includes - Include names to remove
+   * @return {void}
+   * @example
+   * service.deleteIncludes('profile');
+   * service.deleteIncludes('posts', 'comments');
    */
   public deleteIncludes(...includes: string[]): void {
     this._nest.update(nest => ({
@@ -255,8 +313,13 @@ export class NestService {
   }
 
   /**
-   * 
-   * @param sorts 
+   * Remove sorts from the request by field name
+   *
+   * @param {...string[]} sorts - Field names of sorts to remove
+   * @return {void}
+   * @example
+   * service.deleteSorts('created_at');
+   * service.deleteSorts('name', 'created_at');
    */
   public deleteSorts(...sorts: string[]): void {
     const s = [...this._nest().sorts];
@@ -275,6 +338,15 @@ export class NestService {
     }));
   }
 
+  /**
+   * Reset the query builder state to initial values
+   * Clears all fields, filters, includes, sorts, and resets pagination
+   *
+   * @return {void}
+   * @example
+   * service.reset();
+   * // State is now: { baseUrl: '', fields: {}, filters: {}, includes: [], limit: 15, model: '', page: 1, sorts: [] }
+   */
   public reset(): void {
     this._nest.update(_ => this._clone(INITIAL_STATE));
   }
