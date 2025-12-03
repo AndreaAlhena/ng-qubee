@@ -1,4 +1,3 @@
-import { EnvironmentProviders } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideNgQubee } from './provide-ngqubee';
 import { BrowserTestingModule } from '@angular/platform-browser/testing';
@@ -23,7 +22,6 @@ describe('provideNgQubee', () => {
 
   it('Providers should have NestService', () => {
     const providers = (provideNgQubee() as IEnvironmentProviders).ɵproviders.flatMap(obj => obj?.provide?.name);
-    const p = provideNgQubee() as IEnvironmentProviders
 
     expect(providers).toContain('NestService');
   });

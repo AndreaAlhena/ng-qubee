@@ -22,6 +22,7 @@ describe('PaginationService', () => {
   it('should paginate with minimum required data (data and current_page fields)', () => {
     const collection = service.paginate({
       data: [],
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       current_page: 1
     });
 
@@ -30,6 +31,7 @@ describe('PaginationService', () => {
   });
 
   it('should paginate', () => {
+    /* eslint-disable @typescript-eslint/naming-convention */
     const collection = service.paginate({
       data: [{}],
       current_page: 1,
@@ -44,6 +46,7 @@ describe('PaginationService', () => {
       to: 15,
       total: 30
     });
+    /* eslint-enable @typescript-eslint/naming-convention */
 
     expect(collection.data).toHaveSize(1);
     expect(collection.page).toBe(1);

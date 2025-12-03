@@ -1,5 +1,4 @@
 import { IPaginationConfig } from '../interfaces/pagination-config.interface';
-import { IQueryBuilderConfig } from '../interfaces/query-builder-config.interface';
 
 export class ResponseOptions {
     public readonly currentPage: string;

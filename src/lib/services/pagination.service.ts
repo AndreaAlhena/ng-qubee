@@ -12,6 +12,7 @@ export class PaginationService {
     this._options = new ResponseOptions(options);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public paginate<T extends IPaginatedObject>(response: {[key: string]: any}): PaginatedCollection<T> {
     return new PaginatedCollection(
       response[this._options.data],
