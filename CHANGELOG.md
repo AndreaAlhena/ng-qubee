@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Input Validation**: Added robust input validation with custom error classes
+  - `InvalidModelNameError` - Thrown when model name is empty, null, undefined, or whitespace-only
+  - `InvalidPageNumberError` - Thrown when page is not a positive integer (must be >= 1)
+  - `InvalidLimitError` - Thrown when limit is not a positive integer (must be >= 1)
+  - Validation occurs in setters for `model`, `page`, and `limit` properties
+- Comprehensive test suite for duplicate prevention with 9 new test cases covering edge cases
+- Deep cloning tests with 5 new test cases to verify immutability of state operations
+- Input validation tests with 18 new test cases covering all validation scenarios
+
 ### Fixed
 - **Duplicate Prevention**: `addFields()`, `addFilters()`, and `addIncludes()` now automatically prevent duplicate values
   - `addFields()` prevents duplicate field names for each model
@@ -17,10 +27,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `deleteFields()` now uses deep cloning via `_clone()` method to prevent state mutations
   - `deleteFilters()` now uses deep cloning via `_clone()` method to prevent state mutations
   - Prevents accidental mutations to the original state when deleting items
-
-### Added
-- Comprehensive test suite for duplicate prevention with 9 new test cases covering edge cases
-- Deep cloning tests with 5 new test cases to verify immutability of state operations
 
 ## [2.0.4] - 2025-12-03
 
