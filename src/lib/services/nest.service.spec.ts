@@ -268,7 +268,7 @@ describe('NestService', () => {
 
         // Get a reference to the original state
         const originalFields = service.nest().fields;
-        const originalUsersFields = [...originalFields.users];
+        const originalUsersFields = [...originalFields['users']];
 
         // Delete a field
         service.deleteFields({
@@ -297,8 +297,8 @@ describe('NestService', () => {
         });
 
         // Original posts should remain unchanged
-        expect(service.nest().fields.posts).toEqual(['title', 'content']);
-        expect(service.nest().fields.users).toEqual(['id']);
+        expect(service.nest().fields['posts']).toEqual(['title', 'content']);
+        expect(service.nest().fields['users']).toEqual(['id']);
       });
     });
 
@@ -311,8 +311,8 @@ describe('NestService', () => {
 
         // Get a reference to the original state
         const originalFilters = service.nest().filters;
-        const originalIdFilter = [...originalFilters.id];
-        const originalStatusFilter = [...originalFilters.status];
+        const originalIdFilter = [...originalFilters['id']];
+        const originalStatusFilter = [...originalFilters['status']];
 
         // Delete a filter
         service.deleteFilters('id');
@@ -348,13 +348,13 @@ describe('NestService', () => {
           type: ['user', 'admin']
         });
 
-        const originalStatusValues = service.nest().filters.status;
+        const originalStatusValues = service.nest().filters['status'];
 
         service.deleteFilters('id');
 
         // Status filter should remain completely unchanged
-        expect(service.nest().filters.status).toEqual(['active', 'pending']);
-        expect(service.nest().filters.type).toEqual(['user', 'admin']);
+        expect(service.nest().filters['status']).toEqual(['active', 'pending']);
+        expect(service.nest().filters['type']).toEqual(['user', 'admin']);
       });
     });
   });
@@ -365,25 +365,25 @@ describe('NestService', () => {
       it('should throw InvalidModelNameError for empty string', () => {
         expect(() => {
           service.model = '';
-        }).toThrow(InvalidModelNameError);
+        }).toThrowError(InvalidModelNameError);
       });
 
       it('should throw InvalidModelNameError for whitespace-only string', () => {
         expect(() => {
           service.model = '   ';
-        }).toThrow(InvalidModelNameError);
+        }).toThrowError(InvalidModelNameError);
       });
 
       it('should throw InvalidModelNameError for null', () => {
         expect(() => {
           service.model = null as any;
-        }).toThrow(InvalidModelNameError);
+        }).toThrowError(InvalidModelNameError);
       });
 
       it('should throw InvalidModelNameError for undefined', () => {
         expect(() => {
           service.model = undefined as any;
-        }).toThrow(InvalidModelNameError);
+        }).toThrowError(InvalidModelNameError);
       });
 
       it('should accept valid model name', () => {
@@ -398,25 +398,25 @@ describe('NestService', () => {
       it('should throw InvalidPageNumberError for zero', () => {
         expect(() => {
           service.page = 0;
-        }).toThrow(InvalidPageNumberError);
+        }).toThrowError(InvalidPageNumberError);
       });
 
       it('should throw InvalidPageNumberError for negative numbers', () => {
         expect(() => {
           service.page = -1;
-        }).toThrow(InvalidPageNumberError);
+        }).toThrowError(InvalidPageNumberError);
       });
 
       it('should throw InvalidPageNumberError for decimal numbers', () => {
         expect(() => {
           service.page = 1.5;
-        }).toThrow(InvalidPageNumberError);
+        }).toThrowError(InvalidPageNumberError);
       });
 
       it('should throw InvalidPageNumberError for NaN', () => {
         expect(() => {
           service.page = NaN;
-        }).toThrow(InvalidPageNumberError);
+        }).toThrowError(InvalidPageNumberError);
       });
 
       it('should accept valid page number (1)', () => {
@@ -438,25 +438,25 @@ describe('NestService', () => {
       it('should throw InvalidLimitError for zero', () => {
         expect(() => {
           service.limit = 0;
-        }).toThrow(InvalidLimitError);
+        }).toThrowError(InvalidLimitError);
       });
 
       it('should throw InvalidLimitError for negative numbers', () => {
         expect(() => {
           service.limit = -10;
-        }).toThrow(InvalidLimitError);
+        }).toThrowError(InvalidLimitError);
       });
 
       it('should throw InvalidLimitError for decimal numbers', () => {
         expect(() => {
           service.limit = 15.5;
-        }).toThrow(InvalidLimitError);
+        }).toThrowError(InvalidLimitError);
       });
 
       it('should throw InvalidLimitError for NaN', () => {
         expect(() => {
           service.limit = NaN;
-        }).toThrow(InvalidLimitError);
+        }).toThrowError(InvalidLimitError);
       });
 
       it('should accept valid limit (1)', () => {
