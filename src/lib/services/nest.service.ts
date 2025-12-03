@@ -3,6 +3,9 @@ import { IQueryBuilderState } from '../interfaces/query-builder-state.interface'
 import { IFields } from '../interfaces/fields.interface';
 import { IFilters } from '../interfaces/filters.interface';
 import { ISort } from '../interfaces/sort.interface';
+import { InvalidModelNameError } from '../errors/invalid-model-name.error';
+import { InvalidPageNumberError } from '../errors/invalid-page-number.error';
+import { InvalidLimitError } from '../errors/invalid-limit.error';
 
 const INITIAL_STATE: IQueryBuilderState = {
   baseUrl: '',
@@ -44,6 +47,7 @@ export class NestService {
   }
 
   set limit(limit: number) {
+    this._validateLimit(limit);
     this._nest.update(nest => ({
       ...nest,
       limit
@@ -51,6 +55,7 @@ export class NestService {
   }
 
   set model(model: string) {
+    this._validateModelName(model);
     this._nest.update(nest => ({
       ...nest,
       model
@@ -58,6 +63,7 @@ export class NestService {
   }
 
   set page(page: number) {
+    this._validatePageNumber(page);
     this._nest.update(nest => ({
       ...nest,
       page
@@ -66,6 +72,45 @@ export class NestService {
 
   private _clone<T>(obj: T): T {
     return JSON.parse( JSON.stringify(obj) );
+  }
+
+  /**
+   * Validates that the model name is a non-empty string
+   *
+   * @param {string} model - The model name to validate
+   * @throws {InvalidModelNameError} If model is not a non-empty string
+   * @private
+   */
+  private _validateModelName(model: string): void {
+    if (!model || typeof model !== 'string' || model.trim().length === 0) {
+      throw new InvalidModelNameError(model);
+    }
+  }
+
+  /**
+   * Validates that the page number is a positive integer
+   *
+   * @param {number} page - The page number to validate
+   * @throws {InvalidPageNumberError} If page is not a positive integer
+   * @private
+   */
+  private _validatePageNumber(page: number): void {
+    if (!Number.isInteger(page) || page < 1) {
+      throw new InvalidPageNumberError(page);
+    }
+  }
+
+  /**
+   * Validates that the limit is a positive integer
+   *
+   * @param {number} limit - The limit value to validate
+   * @throws {InvalidLimitError} If limit is not a positive integer
+   * @private
+   */
+  private _validateLimit(limit: number): void {
+    if (!Number.isInteger(limit) || limit < 1) {
+      throw new InvalidLimitError(limit);
+    }
   }
 
   /**
