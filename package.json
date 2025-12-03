@@ -7,12 +7,36 @@
   },
   "version": "2.0.4",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AndreaAlhena/ng-qubee.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AndreaAlhena/ng-qubee/issues"
+  },
+  "homepage": "https://github.com/AndreaAlhena/ng-qubee#readme",
+  "keywords": [
+    "angular",
+    "query-builder",
+    "api",
+    "pagination",
+    "rxjs",
+    "filter",
+    "query",
+    "builder",
+    "typescript",
+    "signals"
+  ],
   "allowedNonPeerDependencies": [
     "qs"
   ],
   "dependencies": {
     "qs": "^6.14.0",
     "tslib": "^2.8.1"
+  },
+  "peerDependencies": {
+    "@angular/core": ">=16.0.0 <22.0.0",
+    "rxjs": "^6.5.0 || ^7.0.0"
   },
   "scripts": {
     "lint": "eslint \"src/**/*.ts\"",
