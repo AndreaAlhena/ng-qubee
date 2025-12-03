@@ -13,9 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `addFilters()` prevents duplicate filter values for each filter key
   - `addIncludes()` prevents duplicate include values
   - All methods now use Set-based deduplication for efficient duplicate removal
+- **Deep Cloning**: Fixed shallow clone issues in `deleteFields()` and `deleteFilters()` methods
+  - `deleteFields()` now uses deep cloning via `_clone()` method to prevent state mutations
+  - `deleteFilters()` now uses deep cloning via `_clone()` method to prevent state mutations
+  - Prevents accidental mutations to the original state when deleting items
 
 ### Added
 - Comprehensive test suite for duplicate prevention with 9 new test cases covering edge cases
+- Deep cloning tests with 5 new test cases to verify immutability of state operations
 
 ## [2.0.4] - 2025-12-03
 
