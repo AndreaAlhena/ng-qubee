@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated `@types/qs` from 6.9.11 to 6.14.0
 - Updated `tslib` from 2.3.0 to 2.8.1
 - Updated `karma-firefox-launcher` from 2.1.1 to 2.1.3
+- Updated TypeScript compilation target from ES2015 to ES2020 for better modern JavaScript support
+- Updated TypeScript lib from ES2018 to ES2020
 
 ### Removed
 - TSLint configuration (tslint.json) - replaced with ESLint
