@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- **Duplicate Prevention**: `addFields()`, `addFilters()`, and `addIncludes()` now automatically prevent duplicate values
+  - `addFields()` prevents duplicate field names for each model
+  - `addFilters()` prevents duplicate filter values for each filter key
+  - `addIncludes()` prevents duplicate include values
+  - All methods now use Set-based deduplication for efficient duplicate removal
+
+### Added
+- Comprehensive test suite for duplicate prevention with 9 new test cases covering edge cases
+
 ## [2.0.4] - 2025-12-03
 
 ### Added
