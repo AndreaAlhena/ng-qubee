@@ -2,6 +2,9 @@ import { TestBed } from '@angular/core/testing';
 
 import { NestService } from './nest.service';
 import { SortEnum } from '../enums/sort.enum';
+import { InvalidModelNameError } from '../errors/invalid-model-name.error';
+import { InvalidPageNumberError } from '../errors/invalid-page-number.error';
+import { InvalidLimitError } from '../errors/invalid-limit.error';
 
 describe('NestService', () => {
   let service: NestService;
@@ -352,6 +355,122 @@ describe('NestService', () => {
         // Status filter should remain completely unchanged
         expect(service.nest().filters.status).toEqual(['active', 'pending']);
         expect(service.nest().filters.type).toEqual(['user', 'admin']);
+      });
+    });
+  });
+
+  // Input Validation Tests
+  describe('Input Validation', () => {
+    describe('model validation', () => {
+      it('should throw InvalidModelNameError for empty string', () => {
+        expect(() => {
+          service.model = '';
+        }).toThrow(InvalidModelNameError);
+      });
+
+      it('should throw InvalidModelNameError for whitespace-only string', () => {
+        expect(() => {
+          service.model = '   ';
+        }).toThrow(InvalidModelNameError);
+      });
+
+      it('should throw InvalidModelNameError for null', () => {
+        expect(() => {
+          service.model = null as any;
+        }).toThrow(InvalidModelNameError);
+      });
+
+      it('should throw InvalidModelNameError for undefined', () => {
+        expect(() => {
+          service.model = undefined as any;
+        }).toThrow(InvalidModelNameError);
+      });
+
+      it('should accept valid model name', () => {
+        expect(() => {
+          service.model = 'users';
+        }).not.toThrow();
+        expect(service.nest().model).toBe('users');
+      });
+    });
+
+    describe('page validation', () => {
+      it('should throw InvalidPageNumberError for zero', () => {
+        expect(() => {
+          service.page = 0;
+        }).toThrow(InvalidPageNumberError);
+      });
+
+      it('should throw InvalidPageNumberError for negative numbers', () => {
+        expect(() => {
+          service.page = -1;
+        }).toThrow(InvalidPageNumberError);
+      });
+
+      it('should throw InvalidPageNumberError for decimal numbers', () => {
+        expect(() => {
+          service.page = 1.5;
+        }).toThrow(InvalidPageNumberError);
+      });
+
+      it('should throw InvalidPageNumberError for NaN', () => {
+        expect(() => {
+          service.page = NaN;
+        }).toThrow(InvalidPageNumberError);
+      });
+
+      it('should accept valid page number (1)', () => {
+        expect(() => {
+          service.page = 1;
+        }).not.toThrow();
+        expect(service.nest().page).toBe(1);
+      });
+
+      it('should accept valid page number (100)', () => {
+        expect(() => {
+          service.page = 100;
+        }).not.toThrow();
+        expect(service.nest().page).toBe(100);
+      });
+    });
+
+    describe('limit validation', () => {
+      it('should throw InvalidLimitError for zero', () => {
+        expect(() => {
+          service.limit = 0;
+        }).toThrow(InvalidLimitError);
+      });
+
+      it('should throw InvalidLimitError for negative numbers', () => {
+        expect(() => {
+          service.limit = -10;
+        }).toThrow(InvalidLimitError);
+      });
+
+      it('should throw InvalidLimitError for decimal numbers', () => {
+        expect(() => {
+          service.limit = 15.5;
+        }).toThrow(InvalidLimitError);
+      });
+
+      it('should throw InvalidLimitError for NaN', () => {
+        expect(() => {
+          service.limit = NaN;
+        }).toThrow(InvalidLimitError);
+      });
+
+      it('should accept valid limit (1)', () => {
+        expect(() => {
+          service.limit = 1;
+        }).not.toThrow();
+        expect(service.nest().limit).toBe(1);
+      });
+
+      it('should accept valid limit (50)', () => {
+        expect(() => {
+          service.limit = 50;
+        }).not.toThrow();
+        expect(service.nest().limit).toBe(50);
       });
     });
   });
