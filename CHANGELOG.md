@@ -13,9 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - npm scripts for linting: `npm run lint` and `npm run lint:fix`
 - Comprehensive ESLint rules for TypeScript and Angular best practices
 - Template accessibility linting rules
+- **peerDependencies** for `@angular/core` (>=16.0.0 <22.0.0) and `rxjs` (^6.5.0 || ^7.0.0)
+- Repository metadata in package.json (repository, bugs, homepage)
+- Keywords for better npm discoverability (angular, query-builder, api, pagination, rxjs, filter, typescript, signals)
 
 ### Changed
 - **[Breaking]** Migrated from deprecated TSLint to ESLint
+- **[Breaking]** Minimum Angular version is now 16.0.0 (due to Signals API usage)
 - Updated `qs` from 6.11.2 to 6.14.0
 - Updated `@types/qs` from 6.9.11 to 6.14.0
 - Updated `tslib` from 2.3.0 to 2.8.1

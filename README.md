@@ -17,6 +17,14 @@ NgQubee uses some open source projects to work properly:
 
 And of course NgQubee itself is open source with a [public repository][ng-qubee] on GitHub.
 
+## Requirements
+
+NgQubee requires:
+- **Angular**: >=16.0.0 <22.0.0 (supports Angular 16 through 21)
+- **RxJS**: ^6.5.0 || ^7.0.0
+
+> **Note**: Angular 16+ is required because NgQubee uses Angular Signals for state management.
+
 ## Installation
 Install NgQubee via NPM
 
