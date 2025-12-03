@@ -14,8 +14,19 @@
     "qs": "^6.11.2",
     "tslib": "^2.3.0"
   },
+  "scripts": {
+    "lint": "eslint \"src/**/*.ts\"",
+    "lint:fix": "eslint \"src/**/*.ts\" --fix"
+  },
   "devDependencies": {
+    "@angular-eslint/builder": "^21.0.1",
+    "@angular-eslint/eslint-plugin": "^21.0.1",
+    "@angular-eslint/eslint-plugin-template": "^21.0.1",
+    "@angular-eslint/template-parser": "^21.0.1",
     "@types/qs": "^6.9.11",
+    "@typescript-eslint/eslint-plugin": "^8.48.1",
+    "@typescript-eslint/parser": "^8.48.1",
+    "eslint": "^9.39.1",
     "karma-firefox-launcher": "^2.1.1"
   },
   "sideEffects": false
