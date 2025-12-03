@@ -156,18 +156,21 @@ export class NestService {
 
   /**
    * Remove fields for the given model
-   * 
-   * @param {IFields} fields 
+   * Uses deep cloning to prevent mutations to the original state
+   *
+   * @param {IFields} fields
+   * @return {void}
    */
   public deleteFields(fields: IFields): void {
-    const f = Object.assign({}, this.nest().fields);
+    // Deep clone the fields object to prevent mutations
+    const f = this._clone(this._nest().fields);
 
     Object.keys(fields).forEach(k => {
       if (!(k in f)) {
         return;
       }
 
-      f[k] = this._nest().fields[k].filter(v => !fields[k].includes(v));
+      f[k] = f[k].filter(v => !fields[k].includes(v));
     });
 
     this._nest.update(nest => ({
@@ -177,13 +180,16 @@ export class NestService {
   }
 
   /**
-   * 
-   * @param filters 
-   * @todo Create a clone of the filter obj before assigning to f
+   * Remove filters from the request
+   * Uses deep cloning to prevent mutations to the original state
+   *
+   * @param {string[]} filters - Filter keys to remove
+   * @return {void}
    */
   public deleteFilters(...filters: string[]): void {
-    const f = Object.assign({}, this._nest().filters);
-    
+    // Deep clone the filters object to prevent mutations
+    const f = this._clone(this._nest().filters);
+
     filters.forEach(k => delete f[k]);
 
     this._nest.update(nest => ({
