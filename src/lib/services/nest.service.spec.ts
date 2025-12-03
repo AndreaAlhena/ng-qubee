@@ -254,4 +254,105 @@ describe('NestService', () => {
       });
     });
   });
+
+  // Deep Cloning Tests
+  describe('Deep Cloning', () => {
+    describe('deleteFields', () => {
+      it('should not mutate the original state when deleting fields', () => {
+        service.addFields({
+          users: ['id', 'username', 'email']
+        });
+
+        // Get a reference to the original state
+        const originalFields = service.nest().fields;
+        const originalUsersFields = [...originalFields.users];
+
+        // Delete a field
+        service.deleteFields({
+          users: ['username']
+        });
+
+        // Verify the original reference hasn't changed
+        expect(originalUsersFields).toEqual(['id', 'username', 'email']);
+
+        // Verify the new state is correct
+        expect(service.nest().fields).toEqual({
+          users: ['id', 'email']
+        });
+      });
+
+      it('should handle deep cloning with multiple models', () => {
+        service.addFields({
+          users: ['id', 'username'],
+          posts: ['title', 'content']
+        });
+
+        const originalState = service.nest().fields;
+
+        service.deleteFields({
+          users: ['username']
+        });
+
+        // Original posts should remain unchanged
+        expect(service.nest().fields.posts).toEqual(['title', 'content']);
+        expect(service.nest().fields.users).toEqual(['id']);
+      });
+    });
+
+    describe('deleteFilters', () => {
+      it('should not mutate the original state when deleting filters', () => {
+        service.addFilters({
+          id: [1, 2, 3],
+          status: ['active', 'pending']
+        });
+
+        // Get a reference to the original state
+        const originalFilters = service.nest().filters;
+        const originalIdFilter = [...originalFilters.id];
+        const originalStatusFilter = [...originalFilters.status];
+
+        // Delete a filter
+        service.deleteFilters('id');
+
+        // Verify the original references haven't changed
+        expect(originalIdFilter).toEqual([1, 2, 3]);
+        expect(originalStatusFilter).toEqual(['active', 'pending']);
+
+        // Verify the new state is correct
+        expect(service.nest().filters).toEqual({
+          status: ['active', 'pending']
+        });
+      });
+
+      it('should handle deep cloning when deleting multiple filters', () => {
+        service.addFilters({
+          id: [1, 2, 3],
+          status: ['active'],
+          type: ['user']
+        });
+
+        service.deleteFilters('id', 'type');
+
+        expect(service.nest().filters).toEqual({
+          status: ['active']
+        });
+      });
+
+      it('should not affect other filters when deleting one', () => {
+        service.addFilters({
+          id: [1, 2, 3],
+          status: ['active', 'pending'],
+          type: ['user', 'admin']
+        });
+
+        const originalStatusValues = service.nest().filters.status;
+
+        service.deleteFilters('id');
+
+        // Status filter should remain completely unchanged
+        expect(service.nest().filters.status).toEqual(['active', 'pending']);
+        expect(service.nest().filters.type).toEqual(['user', 'admin']);
+      });
+    });
+  });
 });
