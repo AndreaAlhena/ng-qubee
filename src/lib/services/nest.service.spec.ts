@@ -290,7 +290,7 @@ describe('NestService', () => {
           posts: ['title', 'content']
         });
 
-        const originalState = service.nest().fields;
+        const _originalState = service.nest().fields;
 
         service.deleteFields({
           users: ['username']
@@ -348,7 +348,7 @@ describe('NestService', () => {
           type: ['user', 'admin']
         });
 
-        const originalStatusValues = service.nest().filters['status'];
+        const _originalStatusValues = service.nest().filters['status'];
 
         service.deleteFilters('id');
 
