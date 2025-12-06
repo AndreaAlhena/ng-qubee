@@ -1,6 +1,6 @@
 import { Inject, Injectable, Optional } from '@angular/core';
 import * as qs from 'qs';
-import { BehaviorSubject, Observable, filter } from 'rxjs';
+import { BehaviorSubject, Observable, filter, throwError } from 'rxjs';
 
 // Enums
 import { SortEnum } from '../enums/sort.enum';
