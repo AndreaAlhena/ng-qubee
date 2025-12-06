@@ -12,6 +12,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 37 new edge case tests covering empty arrays/objects, boundary values, string edge cases, multiple operations, and deletion edge cases
   - 10 new integration tests covering complete workflows, modification/deletion sequences, and signal reactivity
   - Tests for complex multi-model scenarios and state immutability verification
+- **Previously Commented Tests**: Implemented and enabled previously commented tests
+  - Added baseUrl functionality test to verify URL generation with base URL prepending
+  - Added UnselectableModelError test to verify proper error handling for invalid field selections
+
+### Fixed
+- **BaseUrl Support**: Fixed `_prepend()` method in NgQubeeService to properly prepend baseUrl when generating URIs
+  - URIs now correctly include the base URL when set via `setBaseUrl()`
+  - Example: `setBaseUrl('https://api.example.com')` now produces `https://api.example.com/users?...`
+- **DeleteSorts Bug**: Fixed `deleteSorts()` method in NestService to correctly remove all specified sorts
+  - Method now searches for sort indices in the working array instead of the computed signal
+  - Fixes issue where deleting multiple sorts would fail to remove all items
+- **Error Handling in generateUri()**: Fixed `generateUri()` method to properly handle synchronous errors as Observable errors
+  - Wrapped `_parse()` call in try-catch to convert thrown errors into Observable errors
+  - Errors like `UnselectableModelError` are now properly caught by Observable error handlers
 
 ## [2.0.5] - 2025-12-04
 
