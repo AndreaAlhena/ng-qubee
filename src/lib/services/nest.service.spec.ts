@@ -474,4 +474,363 @@ describe('NestService', () => {
       });
     });
   });
+
+  // Edge Case Tests
+  describe('Edge Cases', () => {
+    describe('empty arrays and objects', () => {
+      it('should handle empty fields object', () => {
+        service.addFields({});
+        expect(service.nest().fields).toEqual({});
+      });
+
+      it('should handle empty filters object', () => {
+        service.addFilters({});
+        expect(service.nest().filters).toEqual({});
+      });
+
+      it('should handle empty includes array', () => {
+        service.addIncludes([]);
+        expect(service.nest().includes).toEqual([]);
+      });
+
+      it('should handle adding fields with empty array values', () => {
+        service.addFields({ users: [] });
+        expect(service.nest().fields).toEqual({ users: [] });
+      });
+
+      it('should handle adding filters with empty array values', () => {
+        service.addFilters({ id: [] });
+        expect(service.nest().filters).toEqual({ id: [] });
+      });
+    });
+
+    describe('boundary values', () => {
+      it('should accept limit value of 1', () => {
+        service.limit = 1;
+        expect(service.nest().limit).toBe(1);
+      });
+
+      it('should accept page value of 1', () => {
+        service.page = 1;
+        expect(service.nest().page).toBe(1);
+      });
+
+      it('should accept very large limit value', () => {
+        service.limit = 1000000;
+        expect(service.nest().limit).toBe(1000000);
+      });
+
+      it('should accept very large page value', () => {
+        service.page = 1000000;
+        expect(service.nest().page).toBe(1000000);
+      });
+    });
+
+    describe('string edge cases', () => {
+      it('should handle model names with special characters', () => {
+        service.model = 'user-profiles';
+        expect(service.nest().model).toBe('user-profiles');
+      });
+
+      it('should handle model names with numbers', () => {
+        service.model = 'users123';
+        expect(service.nest().model).toBe('users123');
+      });
+
+      it('should handle model names with underscores', () => {
+        service.model = 'user_profiles';
+        expect(service.nest().model).toBe('user_profiles');
+      });
+
+      it('should handle baseUrl with trailing slash', () => {
+        service.baseUrl = 'https://api.example.com/';
+        expect(service.nest().baseUrl).toBe('https://api.example.com/');
+      });
+
+      it('should handle baseUrl without trailing slash', () => {
+        service.baseUrl = 'https://api.example.com';
+        expect(service.nest().baseUrl).toBe('https://api.example.com');
+      });
+    });
+
+    describe('multiple operations', () => {
+      it('should handle adding fields multiple times for same model', () => {
+        service.addFields({ users: ['id', 'name'] });
+        service.addFields({ users: ['email'] });
+        service.addFields({ users: ['age'] });
+
+        expect(service.nest().fields['users']).toEqual(['id', 'name', 'email', 'age']);
+      });
+
+      it('should handle adding filters multiple times for same key', () => {
+        service.addFilters({ status: ['active'] });
+        service.addFilters({ status: ['pending'] });
+        service.addFilters({ status: ['completed'] });
+
+        expect(service.nest().filters['status']).toEqual(['active', 'pending', 'completed']);
+      });
+
+      it('should handle adding includes multiple times', () => {
+        service.addIncludes(['profile']);
+        service.addIncludes(['posts']);
+        service.addIncludes(['comments']);
+
+        expect(service.nest().includes).toEqual(['profile', 'posts', 'comments']);
+      });
+
+      it('should handle adding multiple sorts', () => {
+        service.addSort({ field: 'name', order: SortEnum.ASC });
+        service.addSort({ field: 'created_at', order: SortEnum.DESC });
+        service.addSort({ field: 'id', order: SortEnum.ASC });
+
+        expect(service.nest().sorts).toEqual([
+          { field: 'name', order: SortEnum.ASC },
+          { field: 'created_at', order: SortEnum.DESC },
+          { field: 'id', order: SortEnum.ASC }
+        ]);
+      });
+    });
+
+    describe('delete operations edge cases', () => {
+      it('should handle deleting non-existent field', () => {
+        service.addFields({ users: ['id', 'name'] });
+        service.deleteFields({ posts: ['title'] });
+
+        expect(service.nest().fields).toEqual({ users: ['id', 'name'] });
+      });
+
+      it('should handle deleting non-existent filter', () => {
+        service.addFilters({ id: [1, 2, 3] });
+        service.deleteFilters('status');
+
+        expect(service.nest().filters).toEqual({ id: [1, 2, 3] });
+      });
+
+      it('should handle deleting non-existent include', () => {
+        service.addIncludes(['profile']);
+        service.deleteIncludes('posts');
+
+        expect(service.nest().includes).toEqual(['profile']);
+      });
+
+      it('should handle deleting non-existent sort', () => {
+        service.addSort({ field: 'name', order: SortEnum.ASC });
+        service.deleteSorts('created_at');
+
+        expect(service.nest().sorts).toEqual([{ field: 'name', order: SortEnum.ASC }]);
+      });
+
+      it('should handle deleting all fields from a model', () => {
+        service.addFields({ users: ['id', 'name', 'email'] });
+        service.deleteFields({ users: ['id', 'name', 'email'] });
+
+        expect(service.nest().fields['users']).toEqual([]);
+      });
+
+      it('should handle deleting all includes', () => {
+        service.addIncludes(['profile', 'posts', 'comments']);
+        service.deleteIncludes('profile', 'posts', 'comments');
+
+        expect(service.nest().includes).toEqual([]);
+      });
+
+      it('should handle deleting all sorts', () => {
+        service.addSort({ field: 'name', order: SortEnum.ASC });
+        service.addSort({ field: 'created_at', order: SortEnum.DESC });
+        service.deleteSorts('name', 'created_at');
+
+        expect(service.nest().sorts).toEqual([]);
+      });
+    });
+  });
+
+  // Integration Tests
+  describe('Integration Tests', () => {
+    describe('complete query building workflow', () => {
+      it('should build a complete query with all parameters', () => {
+        service.baseUrl = 'https://api.example.com';
+        service.model = 'users';
+        service.page = 2;
+        service.limit = 25;
+
+        service.addFields({ users: ['id', 'email', 'username'] });
+        service.addFilters({ status: ['active'], role: ['admin'] });
+        service.addIncludes(['profile', 'posts']);
+        service.addSort({ field: 'created_at', order: SortEnum.DESC });
+
+        const state = service.nest();
+
+        expect(state.baseUrl).toBe('https://api.example.com');
+        expect(state.model).toBe('users');
+        expect(state.page).toBe(2);
+        expect(state.limit).toBe(25);
+        expect(state.fields).toEqual({ users: ['id', 'email', 'username'] });
+        expect(state.filters).toEqual({ status: ['active'], role: ['admin'] });
+        expect(state.includes).toEqual(['profile', 'posts']);
+        expect(state.sorts).toEqual([{ field: 'created_at', order: SortEnum.DESC }]);
+      });
+
+      it('should reset and rebuild query', () => {
+        // Build initial query
+        service.model = 'users';
+        service.addFields({ users: ['id'] });
+        service.addFilters({ status: ['active'] });
+
+        expect(service.nest().model).toBe('users');
+
+        // Reset
+        service.reset();
+
+        expect(service.nest()).toEqual({
+          baseUrl: '',
+          fields: {},
+          filters: {},
+          includes: [],
+          limit: 15,
+          model: '',
+          page: 1,
+          sorts: []
+        });
+
+        // Rebuild
+        service.model = 'posts';
+        service.addFields({ posts: ['title'] });
+
+        expect(service.nest().model).toBe('posts');
+        expect(service.nest().fields).toEqual({ posts: ['title'] });
+      });
+
+      it('should handle complex multi-model field selection', () => {
+        service.addFields({ users: ['id', 'email'] });
+        service.addFields({ posts: ['title', 'content'] });
+        service.addFields({ comments: ['text', 'author_id'] });
+
+        expect(service.nest().fields).toEqual({
+          users: ['id', 'email'],
+          posts: ['title', 'content'],
+          comments: ['text', 'author_id']
+        });
+      });
+
+      it('should handle complex multi-key filtering', () => {
+        service.addFilters({ id: [1, 2, 3] });
+        service.addFilters({ status: ['active', 'pending'] });
+        service.addFilters({ role: ['admin', 'moderator', 'user'] });
+
+        expect(service.nest().filters).toEqual({
+          id: [1, 2, 3],
+          status: ['active', 'pending'],
+          role: ['admin', 'moderator', 'user']
+        });
+      });
+
+      it('should maintain state immutability across multiple reads', () => {
+        service.model = 'users';
+        service.addFields({ users: ['id'] });
+
+        const state1 = service.nest();
+        const state2 = service.nest();
+
+        // States should be equal but not the same reference
+        expect(state1).toEqual(state2);
+        expect(state1).not.toBe(state2);
+      });
+    });
+
+    describe('modification and deletion workflow', () => {
+      it('should add, modify, and delete fields correctly', () => {
+        // Add initial fields
+        service.addFields({ users: ['id', 'name', 'email'] });
+        expect(service.nest().fields['users']).toEqual(['id', 'name', 'email']);
+
+        // Add more fields
+        service.addFields({ users: ['age', 'country'] });
+        expect(service.nest().fields['users']).toEqual(['id', 'name', 'email', 'age', 'country']);
+
+        // Delete some fields
+        service.deleteFields({ users: ['email', 'country'] });
+        expect(service.nest().fields['users']).toEqual(['id', 'name', 'age']);
+      });
+
+      it('should add, modify, and delete filters correctly', () => {
+        // Add initial filters
+        service.addFilters({ status: ['active'] });
+        expect(service.nest().filters['status']).toEqual(['active']);
+
+        // Add more filters
+        service.addFilters({ status: ['pending', 'completed'] });
+        expect(service.nest().filters['status']).toEqual(['active', 'pending', 'completed']);
+
+        // Delete filter completely
+        service.deleteFilters('status');
+        expect(service.nest().filters).toEqual({});
+      });
+
+      it('should handle mixed operations in sequence', () => {
+        // Setup
+        service.model = 'users';
+        service.page = 1;
+        service.limit = 20;
+
+        // Add data
+        service.addFields({ users: ['id', 'name'] });
+        service.addFilters({ status: ['active'] });
+        service.addIncludes(['profile']);
+        service.addSort({ field: 'created_at', order: SortEnum.DESC });
+
+        // Verify state
+        expect(service.nest().fields['users']).toEqual(['id', 'name']);
+
+        // Modify
+        service.addFields({ users: ['email'] });
+        service.page = 2;
+
+        // Verify modifications
+        expect(service.nest().fields['users']).toEqual(['id', 'name', 'email']);
+        expect(service.nest().page).toBe(2);
+
+        // Delete some data
+        service.deleteFields({ users: ['name'] });
+        service.deleteIncludes('profile');
+
+        // Verify deletions
+        expect(service.nest().fields['users']).toEqual(['id', 'email']);
+        expect(service.nest().includes).toEqual([]);
+
+        // Reset and verify clean state
+        service.reset();
+        expect(service.nest().model).toBe('');
+        expect(service.nest().fields).toEqual({});
+      });
+    });
+
+    describe('signal reactivity', () => {
+      it('should emit new values when state changes', () => {
+        const initialState = service.nest();
+        expect(initialState.model).toBe('');
+
+        service.model = 'users';
+        const updatedState = service.nest();
+
+        expect(updatedState.model).toBe('users');
+        expect(updatedState).not.toBe(initialState);
+      });
+
+      it('should provide isolated state snapshots', () => {
+        service.addFields({ users: ['id'] });
+
+        const snapshot1 = service.nest();
+        const fields1 = snapshot1.fields;
+
+        service.addFields({ users: ['name'] });
+
+        const snapshot2 = service.nest();
+        const fields2 = snapshot2.fields;
+
+        // Original snapshot should remain unchanged
+        expect(fields1['users']).toEqual(['id']);
+        expect(fields2['users']).toEqual(['id', 'name']);
+      });
+    });
+  });
 });
