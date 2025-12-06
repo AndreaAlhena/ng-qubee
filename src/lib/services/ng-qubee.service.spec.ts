@@ -3,6 +3,7 @@ import { SortEnum } from '../enums/sort.enum';
 import { NgQubeeService } from './ng-qubee.service';
 import { BrowserTestingModule } from '@angular/platform-browser/testing';
 import { NestService } from './nest.service';
+import { UnselectableModelError } from '../errors/unselectable-model.error';
 
 describe('NgQubeeService standard config', () => {
   let service: NgQubeeService;
@@ -203,25 +204,32 @@ describe('NgQubeeService standard config', () => {
     });
   });
 
-  // it('should generate a URL if a base url is given', (done: DoneFn) => {
-  //   service.setModel('users');
-  //   service.setBaseUrl('https://domain.com');
+  it('should generate a URL if a base url is given', (done: DoneFn) => {
+    service.setModel('users');
+    service.setBaseUrl('https://domain.com');
 
-  //   service.generateUri().subscribe(uri => {
-  //     expect(uri).toContain('https://domain.com/users');
-  //     done();
-  //   });
-  // });
+    service.generateUri().subscribe(uri => {
+      expect(uri).toContain('https://domain.com/users');
+      done();
+    });
+  });
 
-  // it('should throw an error if the model requested as field is not the model property / included in the includes object', () => {
-  //   service.fields = {users: ['email', 'name'], settings: ['field1', 'field2']};
+  it('should throw an error if the model requested as field is not the model property / included in the includes object', (done: DoneFn) => {
+    service.addFields('users', ['email', 'name']);
+    service.addFields('settings', ['field1', 'field2']);
+    service.setModel('users');
 
-  //   try {
-  //     service.generateUri('users');
-  //   } catch (err) {
-  //     expect(err.message).toEqual(new UnselectableModelError('settings').message);
-  //   }
-  // });
+    service.generateUri().subscribe({
+      next: () => {
+        fail('Expected an error to be thrown');
+        done();
+      },
+      error: (err) => {
+        expect(err.message).toEqual(new UnselectableModelError('settings').message);
+        done();
+      }
+    });
+  });
 });
 
 describe('NgQubeeService custom config', () => {
