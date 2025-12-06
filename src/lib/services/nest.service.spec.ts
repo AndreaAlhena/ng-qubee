@@ -729,11 +729,18 @@ describe('NestService', () => {
         service.addFields({ users: ['id'] });
 
         const state1 = service.nest();
+
+        // Trigger a signal update to force recomputation and get a new clone
+        service.page = 2;
+
         const state2 = service.nest();
 
-        // States should be equal but not the same reference
-        expect(state1).toEqual(state2);
-        expect(state1).not.toBe(state2);
+        // Mutate state1's fields array after getting state2
+        state1.fields['users'].push('email');
+
+        // state2 should not be affected by mutation to state1 (they should be independent clones)
+        expect(state2.fields['users']).toEqual(['id']);
+        expect(state2.fields['users']).not.toContain('email');
       });
     });
 

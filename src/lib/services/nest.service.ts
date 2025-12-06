@@ -323,15 +323,15 @@ export class NestService {
    */
   public deleteSorts(...sorts: string[]): void {
     const s = [...this._nest().sorts];
-    
+
     sorts.forEach(field => {
-      const p = this.nest().sorts.findIndex(sort => sort.field === field);
+      const p = s.findIndex(sort => sort.field === field);
 
       if (p > -1) {
         s.splice(p, 1);
       }
     });
-    
+
     this._nest.update(nest => ({
       ...nest,
       sorts: s
