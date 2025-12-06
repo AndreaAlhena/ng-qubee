@@ -133,10 +133,16 @@ Will output _/users?include=profile,settings_
 Sort elements as following:
 
 ```typescript
+import { SortEnum } from 'ng-qubee';
+
 this._ngQubeeService.addSort('fieldName', SortEnum.ASC);
 ```
 
 Will output _/users?sort=fieldName_ (or _/users?sort=-fieldName_ if DESC)
+
+The `SortEnum` provides two ordering options:
+- `SortEnum.ASC` - Ascending order
+- `SortEnum.DESC` - Descending order
 
 ### Page and Limit
 NgQubee supports paginated queries:
@@ -212,6 +218,149 @@ NgQubeeModule.forRoot({
 ```
 
 Feel free to customize your PaginationService as you need, using the keys shown in the upper list.
+
+## TypeScript Support
+
+NgQubee is fully typed and exports all public interfaces, enums, and types for TypeScript users.
+
+### Available Enums
+
+```typescript
+import { SortEnum } from 'ng-qubee';
+
+// Sorting options
+SortEnum.ASC  // 'asc'
+SortEnum.DESC // 'desc'
+```
+
+### Available Interfaces
+
+NgQubee exports the following interfaces for type-safe development:
+
+#### Configuration Interfaces
+
+```typescript
+import {
+  IConfig,
+  IQueryBuilderConfig,
+  IPaginationConfig
+} from 'ng-qubee';
+
+// Main configuration interface
+const config: IConfig = {
+  request: {
+    filters: 'custom-filter-key',
+    fields: 'custom-fields-key',
+    includes: 'custom-include-key',
+    limit: 'custom-limit-key',
+    page: 'custom-page-key',
+    sort: 'custom-sort-key'
+  },
+  response: {
+    currentPage: 'pg',
+    data: 'items',
+    total: 'count',
+    perPage: 'itemsPerPage'
+  }
+};
+```
+
+#### Query Building Interfaces
+
+```typescript
+import {
+  IFilters,
+  IFields,
+  ISort
+} from 'ng-qubee';
+
+// Filters interface - key-value pairs with array values
+const filters: IFilters = {
+  id: [1, 2, 3],
+  status: ['active', 'pending']
+};
+
+// Fields interface - model name with array of field names
+const fields: IFields = {
+  users: ['id', 'email', 'username'],
+  profile: ['avatar', 'bio']
+};
+
+// Sort interface - field and order
+const sort: ISort = {
+  field: 'created_at',
+  order: SortEnum.DESC
+};
+```
+
+#### Pagination Interfaces
+
+```typescript
+import { IPaginatedObject } from 'ng-qubee';
+
+// Use with your model type
+interface User {
+  id: number;
+  email: string;
+  username: string;
+}
+
+// The paginated object can contain any additional keys
+const paginatedData: IPaginatedObject = {
+  data: [/* users */],
+  currentPage: 1,
+  total: 100,
+  perPage: 15
+};
+```
+
+### Usage Example with Full Types
+
+```typescript
+import { Component, OnInit } from '@angular/core';
+import {
+  NgQubeeService,
+  SortEnum,
+  IFilters,
+  IFields
+} from 'ng-qubee';
+
+@Component({
+  selector: 'app-users',
+  template: '...'
+})
+export class UsersComponent implements OnInit {
+  constructor(private ngQubee: NgQubeeService) {}
+
+  ngOnInit(): void {
+    // Set up the query with type safety
+    this.ngQubee.setModel('users');
+
+    // Define fields with type checking
+    const userFields: IFields = {
+      users: ['id', 'email', 'username']
+    };
+    this.ngQubee.addFields('users', userFields.users);
+
+    // Define filters with type checking
+    const filters: IFilters = {
+      status: ['active'],
+      role: ['admin', 'moderator']
+    };
+    this.ngQubee.addFilter('status', ...filters.status);
+    this.ngQubee.addFilter('role', ...filters.role);
+
+    // Add sorting with enum
+    this.ngQubee.addSort('created_at', SortEnum.DESC);
+
+    // Generate URI
+    this.ngQubee.generateUri().subscribe(uri => {
+      console.log(uri);
+      // Output: /users?fields[users]=id,email,username&filter[status]=active&filter[role]=admin,moderator&sort=-created_at&limit=15&page=1
+    });
+  }
+}
+```
 
 [ng-qubee]:  <https://github.com/AndreaAlhena/ng-qubee>
 [rxjs]:  <https://reactivex.io>
