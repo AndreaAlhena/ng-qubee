@@ -25,7 +25,7 @@ jobs:
         run: npm ci
 
       - name: Run ESLint
-        run: cd projects/ng-qubee && npm run lint
+        run: npm run lint
 
   test:
     name: Test
