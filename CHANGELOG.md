@@ -15,6 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Previously Commented Tests**: Implemented and enabled previously commented tests
   - Added baseUrl functionality test to verify URL generation with base URL prepending
   - Added UnselectableModelError test to verify proper error handling for invalid field selections
+- **CI/CD Pipeline**: GitHub Actions workflow for automated testing and quality checks
+  - Automated linting with ESLint on every PR and push
+  - Automated test execution with code coverage reporting
+  - Automated build verification to ensure package builds successfully
+  - Coverage reports integration with Codecov
+  - Parallel job execution for faster CI feedback
+  - Build artifact upload for verification
 
 ### Fixed
 - **BaseUrl Support**: Fixed `_prepend()` method in NgQubeeService to properly prepend baseUrl when generating URIs
