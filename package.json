@@ -57,7 +57,7 @@
     "@angular-eslint/eslint-plugin": "^21.0.1",
     "@angular-eslint/eslint-plugin-template": "^21.0.1",
     "@angular-eslint/template-parser": "^21.0.1",
-    "@angular/cli": "^19.0.0",
+    "@angular/cli": "^21.0.2",
     "@angular/common": "^19.0.0",
     "@angular/compiler": "^19.0.0",
     "@angular/compiler-cli": "^19.0.0",
