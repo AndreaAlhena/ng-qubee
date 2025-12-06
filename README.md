@@ -3,6 +3,12 @@
 </p>
 
 # Your next Angular Query Builder 🐝
+
+[![CI](https://github.com/AndreaAlhena/ng-qubee/workflows/CI/badge.svg)](https://github.com/AndreaAlhena/ng-qubee/actions)
+[![codecov](https://codecov.io/gh/AndreaAlhena/ng-qubee/branch/master/graph/badge.svg)](https://codecov.io/gh/AndreaAlhena/ng-qubee)
+[![npm version](https://badge.fury.io/js/ng-qubee.svg)](https://www.npmjs.com/package/ng-qubee)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 NgQubee is a Query Builder for Angular. Easily compose your API requests without the hassle of writing the wheel again :)
 
 - Easily retrieve URIs with a Service

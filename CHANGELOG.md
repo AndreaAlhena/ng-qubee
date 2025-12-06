@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Coverage reports integration with Codecov
   - Parallel job execution for faster CI feedback
   - Build artifact upload for verification
+  - Added status badges to README (CI, Codecov, npm version, License)
 
 ### Fixed
 - **BaseUrl Support**: Fixed `_prepend()` method in NgQubeeService to properly prepend baseUrl when generating URIs
