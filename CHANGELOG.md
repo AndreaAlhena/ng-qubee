@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2025-12-06
+
 ### Added
 - **Test Coverage**: Comprehensive test suite expansion to >90% coverage
   - 37 new edge case tests covering empty arrays/objects, boundary values, string edge cases, multiple operations, and deletion edge cases
@@ -23,6 +25,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Parallel job execution for faster CI feedback
   - Build artifact upload for verification
   - Added status badges to README (CI, Codecov, npm version, License)
+- **Standalone CI Support**: Project can now run tests and builds independently
+  - Added `angular.json` for standalone Angular CLI configuration
+  - Added base `tsconfig.json` for independent TypeScript compilation
+  - Added all necessary devDependencies for standalone development
+- **Developer Experience**:
+  - Pre-commit hook with Husky and lint-staged for automatic linting
+  - Dependabot configuration for automated dependency updates
+  - Auto-merge workflow for minor/patch dependency updates
+- **Documentation**:
+  - Added CONTRIBUTING.md with development setup and PR guidelines
+  - Added SECURITY.md with vulnerability reporting process
 
 ### Fixed
 - **BaseUrl Support**: Fixed `_prepend()` method in NgQubeeService to properly prepend baseUrl when generating URIs
@@ -34,6 +47,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Error Handling in generateUri()**: Fixed `generateUri()` method to properly handle synchronous errors as Observable errors
   - Wrapped `_parse()` call in try-catch to convert thrown errors into Observable errors
   - Errors like `UnselectableModelError` are now properly caught by Observable error handlers
+- **CI Fixes**: Multiple fixes for standalone CI execution
+  - Fixed lint job directory path
+  - Fixed tsconfig paths for standalone builds
+  - Fixed karma coverage output path
+  - Restored missing `throwError` import
 
 ## [2.0.5] - 2025-12-04
 
@@ -119,5 +137,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.2] - Previous Release
 
+[2.1.0]: https://github.com/AndreaAlhena/ng-qubee/compare/v2.0.5...v2.1.0
+[2.0.5]: https://github.com/AndreaAlhena/ng-qubee/compare/v2.0.4...v2.0.5
 [2.0.4]: https://github.com/AndreaAlhena/ng-qubee/compare/v2.0.3...v2.0.4
 [2.0.3]: https://github.com/AndreaAlhena/ng-qubee/releases/tag/v2.0.3
