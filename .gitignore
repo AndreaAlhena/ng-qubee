@@ -1,3 +1,5 @@
 node_modules
 out-tsc
 dist
+coverage
+.angular
