@@ -1,6 +1,6 @@
 import { Inject, Injectable, Optional } from '@angular/core';
 import * as qs from 'qs';
-import { BehaviorSubject, Observable, filter } from 'rxjs';
+import { BehaviorSubject, Observable, filter, catchError, throwError, of } from 'rxjs';
 
 // Enums
 import { SortEnum } from '../enums/sort.enum';
@@ -157,7 +157,14 @@ export class NgQubeeService {
   }
 
   private _prepend(model: string): string {
-    return this._uri ? '&' : `/${model}?`;
+    const state = this._nestService.nest();
+    const baseUrl = state.baseUrl;
+
+    if (this._uri) {
+      return '&';
+    }
+
+    return baseUrl ? `${baseUrl}/${model}?` : `/${model}?`;
   }
 
   /**
@@ -319,8 +326,12 @@ export class NgQubeeService {
    * @returns {Observable<string>} An observable that emits the generated uri
    */
   public generateUri(): Observable<string> {
-    this._uri$.next(this._parse(this._nestService.nest()));
-    return this.uri$;
+    try {
+      this._uri$.next(this._parse(this._nestService.nest()));
+      return this.uri$;
+    } catch (error) {
+      return throwError(() => error);
+    }
   }
 
   /**
