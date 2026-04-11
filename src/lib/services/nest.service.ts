@@ -1,11 +1,13 @@
 import { Injectable, Signal, WritableSignal, computed, signal } from '@angular/core';
-import { IQueryBuilderState } from '../interfaces/query-builder-state.interface';
-import { IFields } from '../interfaces/fields.interface';
-import { IFilters } from '../interfaces/filters.interface';
-import { ISort } from '../interfaces/sort.interface';
+
+import { InvalidLimitError } from '../errors/invalid-limit.error';
 import { InvalidModelNameError } from '../errors/invalid-model-name.error';
 import { InvalidPageNumberError } from '../errors/invalid-page-number.error';
-import { InvalidLimitError } from '../errors/invalid-limit.error';
+import { IFields } from '../interfaces/fields.interface';
+import { IFilters } from '../interfaces/filters.interface';
+import { IOperatorFilter } from '../interfaces/operator-filter.interface';
+import { IQueryBuilderState } from '../interfaces/query-builder-state.interface';
+import { ISort } from '../interfaces/sort.interface';
 
 const INITIAL_STATE: IQueryBuilderState = {
   baseUrl: '',
@@ -14,7 +16,10 @@ const INITIAL_STATE: IQueryBuilderState = {
   includes: [],
   limit: 15,
   model: '',
+  operatorFilters: [],
   page: 1,
+  search: '',
+  select: [],
   sorts: []
 };
 
@@ -230,6 +235,63 @@ export class NestService {
   }
 
   /**
+   * Add filters with explicit operators (NestJS only)
+   * Automatically prevents duplicate operator filters for the same field + operator combination
+   *
+   * @param {IOperatorFilter[]} filters - Array of operator filter configurations
+   * @return {void}
+   * @example
+   * import { FilterOperatorEnum } from 'ng-qubee';
+   * service.addOperatorFilters([{ field: 'age', operator: FilterOperatorEnum.GTE, values: [18] }]);
+   */
+  public addOperatorFilters(filters: IOperatorFilter[]): void {
+    this._nest.update(nest => {
+      const merged = [...nest.operatorFilters];
+
+      filters.forEach(newFilter => {
+        const existingIdx = merged.findIndex(
+          f => f.field === newFilter.field && f.operator === newFilter.operator
+        );
+
+        if (existingIdx > -1) {
+          const existingValues = merged[existingIdx].values;
+          merged[existingIdx] = {
+            ...merged[existingIdx],
+            values: Array.from(new Set([...existingValues, ...newFilter.values]))
+          };
+        } else {
+          merged.push({ ...newFilter });
+        }
+      });
+
+      return {
+        ...nest,
+        operatorFilters: merged
+      };
+    });
+  }
+
+  /**
+   * Add flat field selection columns (NestJS only)
+   * Automatically prevents duplicate select fields
+   *
+   * @param {string[]} fields - Array of column names to select
+   * @return {void}
+   * @example
+   * service.addSelect(['id', 'name', 'email']);
+   */
+  public addSelect(fields: string[]): void {
+    this._nest.update(nest => {
+      const uniqueSelect = Array.from(new Set([...nest.select, ...fields]));
+
+      return {
+        ...nest,
+        select: uniqueSelect
+      };
+    });
+  }
+
+  /**
    * Add a field that should be used for sorting data
    *
    * @param {ISort} sort - Sort configuration with field name and order (ASC/DESC)
@@ -313,6 +375,52 @@ export class NestService {
   }
 
   /**
+   * Remove operator filters by field name (NestJS only)
+   *
+   * @param {...string[]} fields - Field names of operator filters to remove
+   * @return {void}
+   * @example
+   * service.deleteOperatorFilters('age');
+   * service.deleteOperatorFilters('price', 'quantity');
+   */
+  public deleteOperatorFilters(...fields: string[]): void {
+    this._nest.update(nest => ({
+      ...nest,
+      operatorFilters: nest.operatorFilters.filter(f => !fields.includes(f.field))
+    }));
+  }
+
+  /**
+   * Remove the search term from the state (NestJS only)
+   *
+   * @return {void}
+   * @example
+   * service.deleteSearch();
+   */
+  public deleteSearch(): void {
+    this._nest.update(nest => ({
+      ...nest,
+      search: ''
+    }));
+  }
+
+  /**
+   * Remove flat field selections from the state (NestJS only)
+   *
+   * @param {...string[]} fields - Field names to remove from selection
+   * @return {void}
+   * @example
+   * service.deleteSelect('email');
+   * service.deleteSelect('name', 'email');
+   */
+  public deleteSelect(...fields: string[]): void {
+    this._nest.update(nest => ({
+      ...nest,
+      select: nest.select.filter(f => !fields.includes(f))
+    }));
+  }
+
+  /**
    * Remove sorts from the request by field name
    *
    * @param {...string[]} sorts - Field names of sorts to remove
@@ -335,6 +443,21 @@ export class NestService {
     this._nest.update(nest => ({
       ...nest,
       sorts: s
+    }));
+  }
+
+  /**
+   * Set the full-text search term (NestJS only)
+   *
+   * @param {string} search - The search term
+   * @return {void}
+   * @example
+   * service.setSearch('john doe');
+   */
+  public setSearch(search: string): void {
+    this._nest.update(nest => ({
+      ...nest,
+      search
     }));
   }
 

@@ -1,10 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 
-import { NestService } from './nest.service';
+import { FilterOperatorEnum } from '../enums/filter-operator.enum';
 import { SortEnum } from '../enums/sort.enum';
+import { InvalidLimitError } from '../errors/invalid-limit.error';
 import { InvalidModelNameError } from '../errors/invalid-model-name.error';
 import { InvalidPageNumberError } from '../errors/invalid-page-number.error';
-import { InvalidLimitError } from '../errors/invalid-limit.error';
+import { NestService } from './nest.service';
 
 describe('NestService', () => {
   let service: NestService;
@@ -688,7 +689,10 @@ describe('NestService', () => {
           includes: [],
           limit: 15,
           model: '',
+          operatorFilters: [],
           page: 1,
+          search: '',
+          select: [],
           sorts: []
         });
 
@@ -837,6 +841,174 @@ describe('NestService', () => {
         // Original snapshot should remain unchanged
         expect(fields1['users']).toEqual(['id']);
         expect(fields2['users']).toEqual(['id', 'name']);
+      });
+    });
+  });
+
+  // NestJS-specific State Management
+  describe('NestJS State Management', () => {
+    describe('addOperatorFilters', () => {
+      it('should add operator filters', () => {
+        service.addOperatorFilters([
+          { field: 'age', operator: FilterOperatorEnum.GTE, values: [18] }
+        ]);
+
+        expect(service.nest().operatorFilters).toEqual([
+          { field: 'age', operator: FilterOperatorEnum.GTE, values: [18] }
+        ]);
+      });
+
+      it('should merge operator filters with same field and operator', () => {
+        service.addOperatorFilters([
+          { field: 'id', operator: FilterOperatorEnum.IN, values: [1, 2] }
+        ]);
+
+        service.addOperatorFilters([
+          { field: 'id', operator: FilterOperatorEnum.IN, values: [2, 3] }
+        ]);
+
+        expect(service.nest().operatorFilters).toEqual([
+          { field: 'id', operator: FilterOperatorEnum.IN, values: [1, 2, 3] }
+        ]);
+      });
+
+      it('should keep separate operator filters for different operators on the same field', () => {
+        service.addOperatorFilters([
+          { field: 'age', operator: FilterOperatorEnum.GTE, values: [18] },
+          { field: 'age', operator: FilterOperatorEnum.LTE, values: [65] }
+        ]);
+
+        expect(service.nest().operatorFilters).toHaveSize(2);
+        expect(service.nest().operatorFilters[0].operator).toBe(FilterOperatorEnum.GTE);
+        expect(service.nest().operatorFilters[1].operator).toBe(FilterOperatorEnum.LTE);
+      });
+
+      it('should handle multiple operator filters on different fields', () => {
+        service.addOperatorFilters([
+          { field: 'age', operator: FilterOperatorEnum.GTE, values: [18] },
+          { field: 'status', operator: FilterOperatorEnum.EQ, values: ['active'] }
+        ]);
+
+        expect(service.nest().operatorFilters).toHaveSize(2);
+      });
+    });
+
+    describe('addSelect', () => {
+      it('should add select fields', () => {
+        service.addSelect(['id', 'name', 'email']);
+
+        expect(service.nest().select).toEqual(['id', 'name', 'email']);
+      });
+
+      it('should prevent duplicate select fields', () => {
+        service.addSelect(['id', 'name']);
+        service.addSelect(['name', 'email']);
+
+        expect(service.nest().select).toEqual(['id', 'name', 'email']);
+      });
+
+      it('should handle empty array', () => {
+        service.addSelect([]);
+
+        expect(service.nest().select).toEqual([]);
+      });
+    });
+
+    describe('setSearch', () => {
+      it('should set search term', () => {
+        service.setSearch('john doe');
+
+        expect(service.nest().search).toBe('john doe');
+      });
+
+      it('should overwrite previous search term', () => {
+        service.setSearch('john');
+        service.setSearch('jane');
+
+        expect(service.nest().search).toBe('jane');
+      });
+    });
+
+    describe('deleteOperatorFilters', () => {
+      it('should remove operator filters by field name', () => {
+        service.addOperatorFilters([
+          { field: 'age', operator: FilterOperatorEnum.GTE, values: [18] },
+          { field: 'status', operator: FilterOperatorEnum.EQ, values: ['active'] }
+        ]);
+
+        service.deleteOperatorFilters('age');
+
+        expect(service.nest().operatorFilters).toHaveSize(1);
+        expect(service.nest().operatorFilters[0].field).toBe('status');
+      });
+
+      it('should remove all operator filters for a field', () => {
+        service.addOperatorFilters([
+          { field: 'age', operator: FilterOperatorEnum.GTE, values: [18] },
+          { field: 'age', operator: FilterOperatorEnum.LTE, values: [65] }
+        ]);
+
+        service.deleteOperatorFilters('age');
+
+        expect(service.nest().operatorFilters).toHaveSize(0);
+      });
+
+      it('should handle deleting non-existent field', () => {
+        service.addOperatorFilters([
+          { field: 'age', operator: FilterOperatorEnum.GTE, values: [18] }
+        ]);
+
+        service.deleteOperatorFilters('status');
+
+        expect(service.nest().operatorFilters).toHaveSize(1);
+      });
+    });
+
+    describe('deleteSearch', () => {
+      it('should clear the search term', () => {
+        service.setSearch('john');
+        service.deleteSearch();
+
+        expect(service.nest().search).toBe('');
+      });
+    });
+
+    describe('deleteSelect', () => {
+      it('should remove select fields', () => {
+        service.addSelect(['id', 'name', 'email']);
+        service.deleteSelect('name');
+
+        expect(service.nest().select).toEqual(['id', 'email']);
+      });
+
+      it('should remove multiple select fields', () => {
+        service.addSelect(['id', 'name', 'email']);
+        service.deleteSelect('name', 'email');
+
+        expect(service.nest().select).toEqual(['id']);
+      });
+
+      it('should handle deleting non-existent field', () => {
+        service.addSelect(['id', 'name']);
+        service.deleteSelect('email');
+
+        expect(service.nest().select).toEqual(['id', 'name']);
+      });
+    });
+
+    describe('reset clears NestJS state', () => {
+      it('should reset operator filters, search, and select', () => {
+        service.addOperatorFilters([
+          { field: 'age', operator: FilterOperatorEnum.GTE, values: [18] }
+        ]);
+        service.addSelect(['id', 'name']);
+        service.setSearch('john');
+
+        service.reset();
+
+        expect(service.nest().operatorFilters).toEqual([]);
+        expect(service.nest().select).toEqual([]);
+        expect(service.nest().search).toBe('');
       });
     });
   });
