@@ -7,6 +7,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-04-12
+
+### Added
+- **Multi-Driver Support**: Introduced a driver-based strategy pattern supporting both Laravel (Spatie Query Builder) and NestJS (nestjs-paginate) backends
+  - `DriverEnum.LARAVEL` (default) - backward-compatible Laravel format
+  - `DriverEnum.NESTJS` - NestJS paginate format with operator filters, search, and flat select
+- **NestJS Request Strategy**: Full URI generation for nestjs-paginate format
+  - Dot-notation filters: `filter.field=value`
+  - Operator filters: `filter.field=$operator:value` with 12 operators (`$eq`, `$not`, `$null`, `$in`, `$gt`, `$gte`, `$lt`, `$lte`, `$btw`, `$ilike`, `$sw`, `$contains`)
+  - Sort format: `sortBy=field:ASC,field2:DESC`
+  - Flat field selection: `select=col1,col2`
+  - Full-text search: `search=term`
+- **NestJS Response Strategy**: Nested response parsing for nestjs-paginate format
+  - Parses `meta` (currentPage, totalItems, itemsPerPage, totalPages) and `links` (first, previous, next, last)
+  - Automatic `from`/`to` computation from pagination metadata
+  - Dot-notation path support for custom response key mapping
+- **FilterOperatorEnum**: Enum with all 12 nestjs-paginate filter operators
+- **IOperatorFilter Interface**: Typed operator filter configuration
+- **IRequestStrategy / IResponseStrategy**: Strategy interfaces for extensibility
+- **Driver Validation Errors**: Five specific error classes for driver-incompatible method calls
+  - `UnsupportedFieldSelectionError` - `addFields()`/`deleteFields()` with NestJS
+  - `UnsupportedIncludesError` - `addIncludes()`/`deleteIncludes()` with NestJS
+  - `UnsupportedFilterOperatorError` - `addFilterOperator()`/`deleteOperatorFilters()` with Laravel
+  - `UnsupportedSelectError` - `addSelect()`/`deleteSelect()` with Laravel
+  - `UnsupportedSearchError` - `setSearch()`/`deleteSearch()` with Laravel
+- **New Public API Methods**:
+  - `addFilterOperator(field, operator, ...values)` - Add operator filter (NestJS)
+  - `addSelect(...fields)` - Add flat field selection (NestJS)
+  - `setSearch(term)` - Set search term (NestJS)
+  - `deleteOperatorFilters(...fields)` - Remove operator filters (NestJS)
+  - `deleteSelect(...fields)` - Remove select fields (NestJS)
+  - `deleteSearch()` - Clear search term (NestJS)
+- **NestService State Extensions**: `operatorFilters`, `search`, `select` fields in query builder state
+- **Test Coverage**: 62 new tests (197 total) covering all NestJS features, driver validation, and strategy logic
+- **Documentation**: Updated README with NestJS driver section, filter operators, driver validation table
+
+### Changed
+- **[Breaking]** `NgQubeeService` constructor now requires `requestStrategy` and `driver` parameters (injected via DI)
+- **[Breaking]** `PaginationService` constructor now requires `responseStrategy` parameter (injected via DI)
+- **IQueryBuilderState** extended with `operatorFilters`, `search`, `select` fields
+- **IQueryBuilderConfig** extended with `search`, `select`, `sortBy` keys
+- **IConfig** extended with optional `driver` field
+- `QueryBuilderOptions` extended with `search`, `select`, `sortBy` properties
+- `provideNgQubee()` and `NgQubeeModule.forRoot()` now resolve strategies based on `config.driver`
+- URI generation and response parsing extracted into strategy classes
+
+### Internal
+- Refactored URI generation from `NgQubeeService` into `LaravelRequestStrategy`
+- Refactored response parsing from `PaginationService` into `LaravelResponseStrategy`
+- Added `NestjsResponseOptions` class for NestJS-specific response key defaults
+
 ## [2.1.0] - 2025-12-06
 
 ### Added
@@ -137,6 +188,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.2] - Previous Release
 
+[3.0.0]: https://github.com/AndreaAlhena/ng-qubee/compare/v2.1.0...v3.0.0
 [2.1.0]: https://github.com/AndreaAlhena/ng-qubee/compare/v2.0.5...v2.1.0
 [2.0.5]: https://github.com/AndreaAlhena/ng-qubee/compare/v2.0.4...v2.0.5
 [2.0.4]: https://github.com/AndreaAlhena/ng-qubee/compare/v2.0.3...v2.0.4
