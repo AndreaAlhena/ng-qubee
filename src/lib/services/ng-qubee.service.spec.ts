@@ -1,9 +1,19 @@
 import { TestBed } from '@angular/core/testing';
-import { SortEnum } from '../enums/sort.enum';
-import { NgQubeeService } from './ng-qubee.service';
 import { BrowserTestingModule } from '@angular/platform-browser/testing';
-import { NestService } from './nest.service';
+
+import { DriverEnum } from '../enums/driver.enum';
+import { FilterOperatorEnum } from '../enums/filter-operator.enum';
+import { SortEnum } from '../enums/sort.enum';
 import { UnselectableModelError } from '../errors/unselectable-model.error';
+import { UnsupportedFieldSelectionError } from '../errors/unsupported-field-selection.error';
+import { UnsupportedFilterOperatorError } from '../errors/unsupported-filter-operator.error';
+import { UnsupportedIncludesError } from '../errors/unsupported-includes.error';
+import { UnsupportedSearchError } from '../errors/unsupported-search.error';
+import { UnsupportedSelectError } from '../errors/unsupported-select.error';
+import { LaravelRequestStrategy } from '../strategies/laravel-request.strategy';
+import { NestjsRequestStrategy } from '../strategies/nestjs-request.strategy';
+import { NestService } from './nest.service';
+import { NgQubeeService } from './ng-qubee.service';
 
 describe('NgQubeeService standard config', () => {
   let service: NgQubeeService;
@@ -16,7 +26,7 @@ describe('NgQubeeService standard config', () => {
           deps: [NestService],
           provide: NgQubeeService,
           useFactory: (nestService: NestService) =>
-            new NgQubeeService(nestService)
+            new NgQubeeService(nestService, new LaravelRequestStrategy(), DriverEnum.LARAVEL)
         }, NestService
       ]
     });
@@ -243,7 +253,7 @@ describe('NgQubeeService custom config', () => {
           deps: [NestService],
           provide: NgQubeeService,
           useFactory: (nestService: NestService) =>
-            new NgQubeeService(nestService, {
+            new NgQubeeService(nestService, new LaravelRequestStrategy(), DriverEnum.LARAVEL, {
               appends: 'app',
               fields: 'fld',
               filters: 'flt',
@@ -315,6 +325,155 @@ describe('NgQubeeService custom config', () => {
 
     service.generateUri().subscribe(uri => {
       expect(uri).toContain('srt=f');
+      done();
+    });
+  });
+});
+
+describe('NgQubeeService driver validation (Laravel)', () => {
+  let service: NgQubeeService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [BrowserTestingModule],
+      providers: [
+        {
+          deps: [NestService],
+          provide: NgQubeeService,
+          useFactory: (nestService: NestService) =>
+            new NgQubeeService(nestService, new LaravelRequestStrategy(), DriverEnum.LARAVEL)
+        }, NestService
+      ]
+    });
+
+    service = TestBed.inject(NgQubeeService);
+  });
+
+  it('should throw UnsupportedFilterOperatorError when calling addFilterOperator', () => {
+    expect(() => service.addFilterOperator('field', FilterOperatorEnum.EQ, 'value'))
+      .toThrowError(UnsupportedFilterOperatorError);
+  });
+
+  it('should throw UnsupportedSelectError when calling addSelect', () => {
+    expect(() => service.addSelect('col1', 'col2'))
+      .toThrowError(UnsupportedSelectError);
+  });
+
+  it('should throw UnsupportedSearchError when calling setSearch', () => {
+    expect(() => service.setSearch('term'))
+      .toThrowError(UnsupportedSearchError);
+  });
+
+  it('should throw UnsupportedSearchError when calling deleteSearch', () => {
+    expect(() => service.deleteSearch())
+      .toThrowError(UnsupportedSearchError);
+  });
+
+  it('should throw UnsupportedSelectError when calling deleteSelect', () => {
+    expect(() => service.deleteSelect('col1'))
+      .toThrowError(UnsupportedSelectError);
+  });
+
+  it('should throw UnsupportedFilterOperatorError when calling deleteOperatorFilters', () => {
+    expect(() => service.deleteOperatorFilters('field'))
+      .toThrowError(UnsupportedFilterOperatorError);
+  });
+});
+
+describe('NgQubeeService driver validation (NestJS)', () => {
+  let service: NgQubeeService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [BrowserTestingModule],
+      providers: [
+        {
+          deps: [NestService],
+          provide: NgQubeeService,
+          useFactory: (nestService: NestService) =>
+            new NgQubeeService(nestService, new NestjsRequestStrategy(), DriverEnum.NESTJS)
+        }, NestService
+      ]
+    });
+
+    service = TestBed.inject(NgQubeeService);
+  });
+
+  it('should throw UnsupportedFieldSelectionError when calling addFields', () => {
+    expect(() => service.addFields('users', ['id']))
+      .toThrowError(UnsupportedFieldSelectionError);
+  });
+
+  it('should throw UnsupportedIncludesError when calling addIncludes', () => {
+    expect(() => service.addIncludes('model1'))
+      .toThrowError(UnsupportedIncludesError);
+  });
+
+  it('should throw UnsupportedFieldSelectionError when calling deleteFields', () => {
+    expect(() => service.deleteFields({ users: ['id'] }))
+      .toThrowError(UnsupportedFieldSelectionError);
+  });
+
+  it('should throw UnsupportedFieldSelectionError when calling deleteFieldsByModel', () => {
+    expect(() => service.deleteFieldsByModel('users', 'id'))
+      .toThrowError(UnsupportedFieldSelectionError);
+  });
+
+  it('should throw UnsupportedIncludesError when calling deleteIncludes', () => {
+    expect(() => service.deleteIncludes('model1'))
+      .toThrowError(UnsupportedIncludesError);
+  });
+
+  it('should allow NestJS-specific methods', () => {
+    expect(() => service.addFilterOperator('age', FilterOperatorEnum.GTE, 18)).not.toThrow();
+    expect(() => service.addSelect('col1', 'col2')).not.toThrow();
+    expect(() => service.setSearch('test')).not.toThrow();
+    expect(() => service.deleteSearch()).not.toThrow();
+    expect(() => service.deleteSelect('col1')).not.toThrow();
+    expect(() => service.deleteOperatorFilters('age')).not.toThrow();
+  });
+
+  it('should generate a URI with NestJS format', (done: DoneFn) => {
+    service.setModel('users');
+    service.addFilter('status', 'active');
+    service.addSort('name', SortEnum.ASC);
+
+    service.generateUri().subscribe(uri => {
+      expect(uri).toContain('/users?');
+      expect(uri).toContain('filter.status=active');
+      expect(uri).toContain('sortBy=name:ASC');
+      expect(uri).toContain('limit=15');
+      expect(uri).toContain('page=1');
+      done();
+    });
+  });
+
+  it('should generate a URI with operator filters', (done: DoneFn) => {
+    service.setModel('users');
+    service.addFilterOperator('age', FilterOperatorEnum.GTE, 18);
+
+    service.generateUri().subscribe(uri => {
+      expect(uri).toContain('filter.age=$gte:18');
+      done();
+    });
+  });
+
+  it('should generate a URI with select', (done: DoneFn) => {
+    service.setModel('users');
+    service.addSelect('id', 'name', 'email');
+
+    service.generateUri().subscribe(uri => {
+      expect(uri).toContain('select=id,name,email');
+      done();
+    });
+  });
+
+  it('should generate a URI with search', (done: DoneFn) => {
+    service.setModel('users');
+    service.setSearch('john');
+
+    service.generateUri().subscribe(uri => {
+      expect(uri).toContain('search=john');
       done();
     });
   });
