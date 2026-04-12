@@ -7,6 +7,90 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-04-12
+
+### Added
+- **Three-Driver Support**: Introduced a driver-based strategy pattern supporting Laravel, Spatie Query Builder, and NestJS backends
+  - `DriverEnum.LARAVEL` - Pagination-only driver (limit + page)
+  - `DriverEnum.SPATIE` - Spatie Query Builder format with filters, sorts, fields, and includes
+  - `DriverEnum.NESTJS` - NestJS paginate format with operator filters, search, and flat select
+- **Spatie Request/Response Strategy**: Full URI generation and response parsing for Spatie Query Builder format (previously named "Laravel")
+  - Bracket-notation filters: `filter[field]=value`
+  - Sort format: `sort=field` / `sort=-field`
+  - Per-model field selection: `fields[model]=col1,col2`
+  - Includes: `include=model1,model2`
+- **NestJS Request Strategy**: Full URI generation for nestjs-paginate format
+  - Dot-notation filters: `filter.field=value`
+  - Operator filters: `filter.field=$operator:value` with 12 operators (`$eq`, `$not`, `$null`, `$in`, `$gt`, `$gte`, `$lt`, `$lte`, `$btw`, `$ilike`, `$sw`, `$contains`)
+  - Sort format: `sortBy=field:ASC,field2:DESC`
+  - Flat field selection: `select=col1,col2`
+  - Full-text search: `search=term`
+- **NestJS Response Strategy**: Nested response parsing for nestjs-paginate format
+  - Parses `meta` (currentPage, totalItems, itemsPerPage, totalPages) and `links` (first, previous, next, last)
+  - Automatic `from`/`to` computation from pagination metadata
+  - Dot-notation path support for custom response key mapping
+- **FilterOperatorEnum**: Enum with all 12 nestjs-paginate filter operators
+- **IOperatorFilter Interface**: Typed operator filter configuration
+- **IRequestStrategy / IResponseStrategy**: Strategy interfaces for extensibility
+- **Driver Validation Errors**: Seven specific error classes for driver-incompatible method calls
+  - `UnsupportedFilterError` - `addFilter()`/`deleteFilters()` with Laravel
+  - `UnsupportedSortError` - `addSort()`/`deleteSorts()` with Laravel
+  - `UnsupportedFieldSelectionError` - `addFields()`/`deleteFields()` with NestJS/Laravel
+  - `UnsupportedIncludesError` - `addIncludes()`/`deleteIncludes()` with NestJS/Laravel
+  - `UnsupportedFilterOperatorError` - `addFilterOperator()`/`deleteOperatorFilters()` with Spatie/Laravel
+  - `UnsupportedSelectError` - `addSelect()`/`deleteSelect()` with Spatie/Laravel
+  - `UnsupportedSearchError` - `setSearch()`/`deleteSearch()` with Spatie/Laravel
+- **New Public API Methods**:
+  - `setResource(name)` - Set the API resource (replaces `setModel()`)
+  - `addFilterOperator(field, operator, ...values)` - Add operator filter (NestJS)
+  - `addSelect(...fields)` - Add flat field selection (NestJS)
+  - `setSearch(term)` - Set search term (NestJS)
+  - `deleteOperatorFilters(...fields)` - Remove operator filters (NestJS)
+  - `deleteSelect(...fields)` - Remove select fields (NestJS)
+  - `deleteSearch()` - Clear search term (NestJS)
+- **NestService State Extensions**: `operatorFilters`, `search`, `select` fields in query builder state
+- **Test Coverage**: Comprehensive tests (257 total) covering all drivers, driver validation, and strategy logic
+- **Documentation**: Updated README with three-driver table, migration guide, and per-driver examples
+
+### Changed
+- **[Breaking]** `setModel()` renamed to `setResource()` — "model" implied ORM semantics; "resource" better reflects the API path
+- **[Breaking]** `IQueryBuilderState.model` renamed to `IQueryBuilderState.resource`
+- **[Breaking]** `InvalidModelNameError` renamed to `InvalidResourceNameError`
+- **[Breaking]** `driver` is now **required** in `IConfig` — no default driver
+- **[Breaking]** `NgQubeeService` constructor now requires `requestStrategy` and `driver` parameters (injected via DI)
+- **[Breaking]** `PaginationService` constructor now requires `responseStrategy` parameter (injected via DI)
+- **[Breaking]** `addFilter()`, `deleteFilters()`, `addSort()`, `deleteSorts()` now throw `UnsupportedFilterError` / `UnsupportedSortError` when used with the Laravel driver
+- **IQueryBuilderState** extended with `operatorFilters`, `search`, `select` fields
+- **IQueryBuilderConfig** extended with `search`, `select`, `sortBy` keys
+- `QueryBuilderOptions` extended with `search`, `select`, `sortBy` properties
+- `provideNgQubee()` and `NgQubeeModule.forRoot()` now resolve strategies based on `config.driver`
+- URI generation and response parsing extracted into strategy classes
+
+### Internal
+- Refactored URI generation into `SpatieRequestStrategy`, `LaravelRequestStrategy`, and `NestjsRequestStrategy`
+- Refactored response parsing into `SpatieResponseStrategy`, `LaravelResponseStrategy`, and `NestjsResponseStrategy`
+- Added `NestjsResponseOptions` class for NestJS-specific response key defaults
+- `_assertDriver()` refactored to accept an array of allowed drivers
+
+### Migration Guide (2.x → 3.0)
+
+1. **Choose a driver** — `driver` is now required:
+   ```typescript
+   // Before (2.x)
+   provideNgQubee({})
+   // After (3.0) — use SPATIE for the same behavior as the old LARAVEL default
+   provideNgQubee({ driver: DriverEnum.SPATIE })
+   ```
+2. **Rename `setModel()` → `setResource()`**:
+   ```typescript
+   // Before
+   this.ngQubee.setModel('users');
+   // After
+   this.ngQubee.setResource('users');
+   ```
+3. **Error class rename**: `InvalidModelNameError` → `InvalidResourceNameError`
+4. **Laravel driver is now pagination-only** — if you were using filters, sorts, fields, or includes with the old `DriverEnum.LARAVEL`, switch to `DriverEnum.SPATIE`
+
 ## [2.1.0] - 2025-12-06
 
 ### Added
@@ -137,6 +221,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.2] - Previous Release
 
+[3.0.0]: https://github.com/AndreaAlhena/ng-qubee/compare/v2.1.0...v3.0.0
 [2.1.0]: https://github.com/AndreaAlhena/ng-qubee/compare/v2.0.5...v2.1.0
 [2.0.5]: https://github.com/AndreaAlhena/ng-qubee/compare/v2.0.4...v2.0.5
 [2.0.4]: https://github.com/AndreaAlhena/ng-qubee/compare/v2.0.3...v2.0.4

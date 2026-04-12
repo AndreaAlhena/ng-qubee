@@ -1,11 +1,13 @@
 import { Injectable, Signal, WritableSignal, computed, signal } from '@angular/core';
-import { IQueryBuilderState } from '../interfaces/query-builder-state.interface';
+
+import { InvalidLimitError } from '../errors/invalid-limit.error';
+import { InvalidResourceNameError } from '../errors/invalid-resource-name.error';
+import { InvalidPageNumberError } from '../errors/invalid-page-number.error';
 import { IFields } from '../interfaces/fields.interface';
 import { IFilters } from '../interfaces/filters.interface';
+import { IOperatorFilter } from '../interfaces/operator-filter.interface';
+import { IQueryBuilderState } from '../interfaces/query-builder-state.interface';
 import { ISort } from '../interfaces/sort.interface';
-import { InvalidModelNameError } from '../errors/invalid-model-name.error';
-import { InvalidPageNumberError } from '../errors/invalid-page-number.error';
-import { InvalidLimitError } from '../errors/invalid-limit.error';
 
 const INITIAL_STATE: IQueryBuilderState = {
   baseUrl: '',
@@ -13,8 +15,11 @@ const INITIAL_STATE: IQueryBuilderState = {
   filters: {},
   includes: [],
   limit: 15,
-  model: '',
+  operatorFilters: [],
   page: 1,
+  resource: '',
+  search: '',
+  select: [],
   sorts: []
 };
 
@@ -23,20 +28,20 @@ export class NestService {
 
   /**
    * Private writable signal that holds the Query Builder state
-   * 
+   *
    * @type {IQueryBuilderState}
    */
   private _nest: WritableSignal<IQueryBuilderState> = signal(this._clone(INITIAL_STATE));
 
   /**
    * A computed signal that makes readonly the writable signal _nest
-   * 
+   *
    * @type {Signal<IQueryBuilderState>}
    */
   public nest: Signal<IQueryBuilderState> = computed(() => this._clone(this._nest()));
 
   constructor() {
-    // Nothing to see here 👮🏻‍♀️
+    // Nothing to see here
   }
 
   /**
@@ -71,23 +76,6 @@ export class NestService {
   }
 
   /**
-   * Set the model name for the query
-   * Must be a non-empty string
-   *
-   * @param {string} model - The model/resource name (e.g., 'users', 'posts')
-   * @throws {InvalidModelNameError} If model is not a non-empty string
-   * @example
-   * service.model = 'users';
-   */
-  set model(model: string) {
-    this._validateModelName(model);
-    this._nest.update(nest => ({
-      ...nest,
-      model
-    }));
-  }
-
-  /**
    * Set the page number for pagination
    * Must be a positive integer greater than 0
    *
@@ -104,20 +92,37 @@ export class NestService {
     }));
   }
 
+  /**
+   * Set the resource name for the query
+   * Must be a non-empty string
+   *
+   * @param {string} resource - The API resource name (e.g., 'users', 'posts')
+   * @throws {InvalidResourceNameError} If resource is not a non-empty string
+   * @example
+   * service.resource = 'users';
+   */
+  set resource(resource: string) {
+    this._validateResourceName(resource);
+    this._nest.update(nest => ({
+      ...nest,
+      resource
+    }));
+  }
+
   private _clone<T>(obj: T): T {
     return JSON.parse( JSON.stringify(obj) );
   }
 
   /**
-   * Validates that the model name is a non-empty string
+   * Validates that the limit is a positive integer
    *
-   * @param {string} model - The model name to validate
-   * @throws {InvalidModelNameError} If model is not a non-empty string
+   * @param {number} limit - The limit value to validate
+   * @throws {InvalidLimitError} If limit is not a positive integer
    * @private
    */
-  private _validateModelName(model: string): void {
-    if (!model || typeof model !== 'string' || model.trim().length === 0) {
-      throw new InvalidModelNameError(model);
+  private _validateLimit(limit: number): void {
+    if (!Number.isInteger(limit) || limit < 1) {
+      throw new InvalidLimitError(limit);
     }
   }
 
@@ -135,15 +140,15 @@ export class NestService {
   }
 
   /**
-   * Validates that the limit is a positive integer
+   * Validates that the resource name is a non-empty string
    *
-   * @param {number} limit - The limit value to validate
-   * @throws {InvalidLimitError} If limit is not a positive integer
+   * @param {string} resource - The resource name to validate
+   * @throws {InvalidResourceNameError} If resource is not a non-empty string
    * @private
    */
-  private _validateLimit(limit: number): void {
-    if (!Number.isInteger(limit) || limit < 1) {
-      throw new InvalidLimitError(limit);
+  private _validateResourceName(resource: string): void {
+    if (!resource || typeof resource !== 'string' || resource.trim().length === 0) {
+      throw new InvalidResourceNameError(resource);
     }
   }
 
@@ -211,7 +216,7 @@ export class NestService {
    * Add resources to include with the request
    * Automatically prevents duplicate includes
    *
-   * @param {string[]} includes - Array of model names to include in the response
+   * @param {string[]} includes - Array of resource names to include in the response
    * @return {void}
    * @example
    * service.addIncludes(['profile', 'posts']);
@@ -225,6 +230,63 @@ export class NestService {
       return {
         ...nest,
         includes: uniqueIncludes
+      };
+    });
+  }
+
+  /**
+   * Add filters with explicit operators (NestJS only)
+   * Automatically prevents duplicate operator filters for the same field + operator combination
+   *
+   * @param {IOperatorFilter[]} filters - Array of operator filter configurations
+   * @return {void}
+   * @example
+   * import { FilterOperatorEnum } from 'ng-qubee';
+   * service.addOperatorFilters([{ field: 'age', operator: FilterOperatorEnum.GTE, values: [18] }]);
+   */
+  public addOperatorFilters(filters: IOperatorFilter[]): void {
+    this._nest.update(nest => {
+      const merged = [...nest.operatorFilters];
+
+      filters.forEach(newFilter => {
+        const existingIdx = merged.findIndex(
+          f => f.field === newFilter.field && f.operator === newFilter.operator
+        );
+
+        if (existingIdx > -1) {
+          const existingValues = merged[existingIdx].values;
+          merged[existingIdx] = {
+            ...merged[existingIdx],
+            values: Array.from(new Set([...existingValues, ...newFilter.values]))
+          };
+        } else {
+          merged.push({ ...newFilter });
+        }
+      });
+
+      return {
+        ...nest,
+        operatorFilters: merged
+      };
+    });
+  }
+
+  /**
+   * Add flat field selection columns (NestJS only)
+   * Automatically prevents duplicate select fields
+   *
+   * @param {string[]} fields - Array of column names to select
+   * @return {void}
+   * @example
+   * service.addSelect(['id', 'name', 'email']);
+   */
+  public addSelect(fields: string[]): void {
+    this._nest.update(nest => {
+      const uniqueSelect = Array.from(new Set([...nest.select, ...fields]));
+
+      return {
+        ...nest,
+        select: uniqueSelect
       };
     });
   }
@@ -313,6 +375,52 @@ export class NestService {
   }
 
   /**
+   * Remove operator filters by field name (NestJS only)
+   *
+   * @param {...string[]} fields - Field names of operator filters to remove
+   * @return {void}
+   * @example
+   * service.deleteOperatorFilters('age');
+   * service.deleteOperatorFilters('price', 'quantity');
+   */
+  public deleteOperatorFilters(...fields: string[]): void {
+    this._nest.update(nest => ({
+      ...nest,
+      operatorFilters: nest.operatorFilters.filter(f => !fields.includes(f.field))
+    }));
+  }
+
+  /**
+   * Remove the search term from the state (NestJS only)
+   *
+   * @return {void}
+   * @example
+   * service.deleteSearch();
+   */
+  public deleteSearch(): void {
+    this._nest.update(nest => ({
+      ...nest,
+      search: ''
+    }));
+  }
+
+  /**
+   * Remove flat field selections from the state (NestJS only)
+   *
+   * @param {...string[]} fields - Field names to remove from selection
+   * @return {void}
+   * @example
+   * service.deleteSelect('email');
+   * service.deleteSelect('name', 'email');
+   */
+  public deleteSelect(...fields: string[]): void {
+    this._nest.update(nest => ({
+      ...nest,
+      select: nest.select.filter(f => !fields.includes(f))
+    }));
+  }
+
+  /**
    * Remove sorts from the request by field name
    *
    * @param {...string[]} sorts - Field names of sorts to remove
@@ -339,13 +447,27 @@ export class NestService {
   }
 
   /**
+   * Set the full-text search term (NestJS only)
+   *
+   * @param {string} search - The search term
+   * @return {void}
+   * @example
+   * service.setSearch('john doe');
+   */
+  public setSearch(search: string): void {
+    this._nest.update(nest => ({
+      ...nest,
+      search
+    }));
+  }
+
+  /**
    * Reset the query builder state to initial values
    * Clears all fields, filters, includes, sorts, and resets pagination
    *
    * @return {void}
    * @example
    * service.reset();
-   * // State is now: { baseUrl: '', fields: {}, filters: {}, includes: [], limit: 15, model: '', page: 1, sorts: [] }
    */
   public reset(): void {
     this._nest.update(_ => this._clone(INITIAL_STATE));

@@ -15,6 +15,7 @@ NgQubee is a Query Builder for Angular. Easily compose your API requests without
 - Pagination ready
 - Reactive, as the results are emitted with a RxJS Observable
 - Developed with a test-driven approach
+- **Multi-driver support**: Laravel (pagination-only), Spatie Query Builder, and NestJS (nestjs-paginate)
 
 ## We love it, we use it ❤️
 NgQubee uses some open source projects to work properly:
@@ -38,25 +39,58 @@ Install NgQubee via NPM
 npm  i  ng-qubee
 ```
 
+## Drivers
+
+NgQubee supports three drivers out of the box. A driver **must** be specified in the configuration:
+
+| Driver | Backend | Request Format | Response Format |
+|---|---|---|---|
+| **Laravel** | Plain Laravel pagination | `limit=N&page=N` (pagination only) | Flat: `{ data, current_page, total, ... }` |
+| **Spatie** | Spatie Query Builder | `filter[field]=value`, `sort=-field` | Flat: `{ data, current_page, total, ... }` |
+| **NestJS** | nestjs-paginate | `filter.field=$operator:value`, `sortBy=field:DESC` | Nested: `{ data, meta: {...}, links: {...} }` |
+
 ## Usage
-Import the module in your Angular app:
+
+### Laravel Driver (pagination-only)
+
+The Laravel driver provides basic pagination — limit and page parameters only. No filters, sorts, fields, or includes are supported.
 
 ```typescript
+import { DriverEnum } from 'ng-qubee';
+
+// Standalone approach
+bootstrapApplication(AppComponent, {
+  providers: [provideNgQubee({ driver: DriverEnum.LARAVEL })]
+});
+
+// Module approach
 @NgModule({
   imports: [
-    NgQubeeModule.forRoot({}) // You can omit the empty object as it is an optional argument
+    NgQubeeModule.forRoot({ driver: DriverEnum.LARAVEL })
   ]
 })
-export class AppModule  {}
+export class AppModule {}
 ```
 
-Or if you are working with Angular 15 or greater, use the provide function:
-```typescript
-const config = {};
+### Spatie Driver
 
+The Spatie driver generates URIs compatible with [Spatie Laravel Query Builder](https://spatie.be/docs/laravel-query-builder):
+
+```typescript
+import { DriverEnum } from 'ng-qubee';
+
+// Standalone approach
 bootstrapApplication(AppComponent, {
-  providers: [provideNgQubee(config)]
+  providers: [provideNgQubee({ driver: DriverEnum.SPATIE })]
 });
+
+// Module approach
+@NgModule({
+  imports: [
+    NgQubeeModule.forRoot({ driver: DriverEnum.SPATIE })
+  ]
+})
+export class AppModule {}
 ```
 
 The object given to the _forRoot_ method allows to customize the query param keys. Following, the default behaviour:
@@ -72,6 +106,7 @@ As you can easily imagine, everything that regards the URI composition is placed
 
 ```typescript
 NgQubeeModule.forRoot({
+  driver: DriverEnum.SPATIE,
   request: {
     filters: 'custom-filter-key',
     fields: 'custom-fields-key',
@@ -79,6 +114,39 @@ NgQubeeModule.forRoot({
   }
 })
 ```
+
+### NestJS Driver
+
+To use the NestJS driver, specify the driver in your configuration:
+
+```typescript
+import { DriverEnum } from 'ng-qubee';
+
+// Standalone approach
+bootstrapApplication(AppComponent, {
+  providers: [provideNgQubee({ driver: DriverEnum.NESTJS })]
+});
+
+// Module approach
+@NgModule({
+  imports: [
+    NgQubeeModule.forRoot({ driver: DriverEnum.NESTJS })
+  ]
+})
+export class AppModule {}
+```
+
+The NestJS driver generates URIs compatible with [nestjs-paginate](https://github.com/ppetzold/nestjs-paginate):
+
+-  **Filters** are composed as `filter.field=value`
+-  **Filter operators** are composed as `filter.field=$operator:value`
+-  **Sorts** are composed as `sortBy=field:ASC,field2:DESC`
+-  **Select** is composed as `select=col1,col2`
+-  **Search** is composed as `search=term`
+-  **Limit** is composed as `limit=15`
+-  **Page** is composed as `page=1`
+
+## Query Builder API
 
 For composing queries, the first step is to inject the proper NgQubeeService:
 
@@ -89,16 +157,16 @@ export  class  YourService  {
 }
 ```
 
-Set the **model** to run the query against:
+Set the **resource** to run the query against:
 
 ```typescript
-this._ngQubeeService.setModel('users');
+this._ngQubeeService.setResource('users');
 ```
 
 This is necessary to build the prefix of the URI (/users)
 
 
-### Fields
+### Fields (Spatie only)
 Fields can be selected as following:
 
 ```typescript
@@ -107,14 +175,25 @@ this._ngQubeeService.addFields('users', ['id',  'email']);
 
 Will output _/users?fields[users]=id,email_
 
-### Filters
+### Select (NestJS only)
+Flat field selection for the NestJS driver:
+
+```typescript
+this._ngQubeeService.addSelect('id', 'name', 'email');
+```
+
+Will output _/users?select=id,name,email_
+
+### Filters (Spatie + NestJS)
 Filters are applied as following:
 
 ```typescript
 this._ngQubeeService.addFilter('id',  5);
 ```
 
-Will output _/users?filter[id]=5_
+Will output:
+- Spatie: _/users?filter[id]=5_
+- NestJS: _/users?filter.id=5_
 
 Multiple values are allowed too:
 
@@ -122,11 +201,40 @@ Multiple values are allowed too:
 this._ngQubeeService.addFilter('id',  5,  7,  10);
 ```
 
-Will output _/users?filter[id]=5,7,10_
+Will output:
+- Spatie: _/users?filter[id]=5,7,10_
+- NestJS: _/users?filter.id=5,7,10_
 
-  
+### Filter Operators (NestJS only)
+The NestJS driver supports explicit filter operators:
 
-### Includes
+```typescript
+import { FilterOperatorEnum } from 'ng-qubee';
+
+// Equality
+this._ngQubeeService.addFilterOperator('status', FilterOperatorEnum.EQ, 'active');
+// Output: filter.status=$eq:active
+
+// Greater than or equal
+this._ngQubeeService.addFilterOperator('age', FilterOperatorEnum.GTE, 18);
+// Output: filter.age=$gte:18
+
+// In (multiple values)
+this._ngQubeeService.addFilterOperator('id', FilterOperatorEnum.IN, 1, 2, 3);
+// Output: filter.id=$in:1,2,3
+
+// Between
+this._ngQubeeService.addFilterOperator('price', FilterOperatorEnum.BTW, 10, 100);
+// Output: filter.price=$btw:10,100
+
+// Case-insensitive like
+this._ngQubeeService.addFilterOperator('name', FilterOperatorEnum.ILIKE, 'john');
+// Output: filter.name=$ilike:john
+```
+
+**Available operators:** `$eq`, `$not`, `$null`, `$in`, `$gt`, `$gte`, `$lt`, `$lte`, `$btw`, `$ilike`, `$sw`, `$contains`
+
+### Includes (Spatie only)
 Ask to include related models with:
 
 ```typescript
@@ -135,7 +243,16 @@ this._ngQubeeService.addIncludes('profile',  'settings');
 
 Will output _/users?include=profile,settings_
 
-### Sort
+### Search (NestJS only)
+Full-text search for the NestJS driver:
+
+```typescript
+this._ngQubeeService.setSearch('john doe');
+```
+
+Will output _/users?search=john doe_
+
+### Sort (Spatie + NestJS)
 Sort elements as following:
 
 ```typescript
@@ -144,7 +261,9 @@ import { SortEnum } from 'ng-qubee';
 this._ngQubeeService.addSort('fieldName', SortEnum.ASC);
 ```
 
-Will output _/users?sort=fieldName_ (or _/users?sort=-fieldName_ if DESC)
+Will output:
+- Spatie: _/users?sort=fieldName_ (or _/users?sort=-fieldName_ if DESC)
+- NestJS: _/users?sortBy=fieldName:ASC_ (or _/users?sortBy=fieldName:DESC_ if DESC)
 
 The `SortEnum` provides two ordering options:
 - `SortEnum.ASC` - Ascending order
@@ -173,12 +292,46 @@ URI is generated invoking the _generateUri_ method of the NgQubeeService. An obs
 this._ngQubeeService.generateUri().subscribe(uri  => console.log(uri));
 ```
 
+### Deleting State
+
+All query features have corresponding delete methods:
+
+```typescript
+// Spatie + NestJS
+this._ngQubeeService.deleteFilters('status', 'role');
+this._ngQubeeService.deleteSorts('created_at');
+
+// Spatie only
+this._ngQubeeService.deleteFields({ users: ['email'] });
+this._ngQubeeService.deleteFieldsByModel('users', 'email');
+this._ngQubeeService.deleteIncludes('profile');
+
+// NestJS only
+this._ngQubeeService.deleteOperatorFilters('age');
+this._ngQubeeService.deleteSelect('email');
+this._ngQubeeService.deleteSearch();
+```
+
 ### Reset state
-Query Builder state can be cleaned with the reset method. This will clean up everything set up previously, including the current model, filters, includes and so on...
+Query Builder state can be cleaned with the reset method. This will clean up everything set up previously, including the current resource, filters, includes and so on...
 
 ```typescript
 this._ngQubeeService.reset();
 ```
+
+### Driver Validation
+
+Calling a method that is not supported by the active driver throws a descriptive error immediately:
+
+| Method | Laravel | Spatie | NestJS |
+|---|---|---|---|
+| `addFilter()` / `deleteFilters()` | throws `UnsupportedFilterError` | supported | supported |
+| `addSort()` / `deleteSorts()` | throws `UnsupportedSortError` | supported | supported |
+| `addFields()` / `deleteFields()` / `deleteFieldsByModel()` | throws `UnsupportedFieldSelectionError` | supported | throws `UnsupportedFieldSelectionError` |
+| `addIncludes()` / `deleteIncludes()` | throws `UnsupportedIncludesError` | supported | throws `UnsupportedIncludesError` |
+| `addFilterOperator()` / `deleteOperatorFilters()` | throws `UnsupportedFilterOperatorError` | throws `UnsupportedFilterOperatorError` | supported |
+| `addSelect()` / `deleteSelect()` | throws `UnsupportedSelectError` | throws `UnsupportedSelectError` | supported |
+| `setSearch()` / `deleteSearch()` | throws `UnsupportedSearchError` | throws `UnsupportedSearchError` | supported |
 
 ## Pagination
 If you are working with an API that supports pagination, we have got you covered 😉 NgQubee provides:
@@ -199,31 +352,69 @@ this._pg.paginate<Model>({  ...response,  data: response.data.map(e  =>  new  Mo
 
 The "paginate" method returns a PaginatedCollection that helps handling paginated data. Additionally, if you are dealing with a state library in your application, you can use the "normalize" method of the collection to normalize the data.
 
-As you can see from the example, the paginate method requires a generic type: put there your model and you'll be provided with a PaginatedCollection<Model>. By default, the paginated collection will check for the following keys in the response:
+### Laravel / Spatie Response Format
+
+When using the Laravel or Spatie driver, the paginated collection will check for the following keys in the response:
 
 - data - the key that holds the response data
-- currentPage - requested page for the pagination
-- from - Showing items from n (where n is a number)
-- to - Showing items from n (where n is a number)
-- total - Count of the items available in thw whole pagination
-- perPage - Items per page
-- prevPageUrl - Url to the previous page
-- nextPageUrl - Url to the next page
-- lastPage - Last page number
-- firstPageUrl - Url to the first page
-- lastPageUrl - Url to the last page
+- current_page - requested page for the pagination
+- from - Showing items from n
+- to - Showing items to n
+- total - Count of the items available in the whole pagination
+- per_page - Items per page
+- prev_page_url - URL to the previous page
+- next_page_url - URL to the next page
+- last_page - Last page number
+- first_page_url - URL to the first page
+- last_page_url - URL to the last page
 
-Just like the query builder, the pagination service supports customizable keys. While invoking the forRoot method of the module, use the response key to look for different keys in the API response. Let's assume that the "currentPage" key is named "pg" in your API responseL your forRoot configuration will look as following:
+### NestJS Response Format
+
+When using the NestJS driver, the PaginationService automatically parses nested responses:
+
+```json
+{
+  "data": [...],
+  "meta": {
+    "currentPage": 1,
+    "totalItems": 100,
+    "itemsPerPage": 10,
+    "totalPages": 10
+  },
+  "links": {
+    "first": "http://api.com/users?page=1",
+    "previous": null,
+    "next": "http://api.com/users?page=2",
+    "last": "http://api.com/users?page=10",
+    "current": "http://api.com/users?page=1"
+  }
+}
+```
+
+The `from` and `to` values are computed automatically from `currentPage` and `itemsPerPage` when not present in the response.
+
+### Customizing Response Keys
+
+Just like the query builder, the pagination service supports customizable keys. While invoking the forRoot method of the module, use the response key to look for different keys in the API response:
 
 ```typescript
+// Spatie
 NgQubeeModule.forRoot({
+  driver: DriverEnum.SPATIE,
   response:  {
     currentPage:  'pg'
   }
 })
-```
 
-Feel free to customize your PaginationService as you need, using the keys shown in the upper list.
+// NestJS (use dot-notation for nested paths)
+NgQubeeModule.forRoot({
+  driver: DriverEnum.NESTJS,
+  response:  {
+    currentPage:  'pagination.page',
+    total: 'pagination.total'
+  }
+})
+```
 
 ## TypeScript Support
 
@@ -232,11 +423,30 @@ NgQubee is fully typed and exports all public interfaces, enums, and types for T
 ### Available Enums
 
 ```typescript
-import { SortEnum } from 'ng-qubee';
+import { DriverEnum, FilterOperatorEnum, SortEnum } from 'ng-qubee';
+
+// Driver options
+DriverEnum.LARAVEL  // 'laravel' (pagination only)
+DriverEnum.SPATIE   // 'spatie'
+DriverEnum.NESTJS   // 'nestjs'
 
 // Sorting options
 SortEnum.ASC  // 'asc'
 SortEnum.DESC // 'desc'
+
+// Filter operators (NestJS only)
+FilterOperatorEnum.EQ       // '$eq'
+FilterOperatorEnum.NOT      // '$not'
+FilterOperatorEnum.NULL     // '$null'
+FilterOperatorEnum.IN       // '$in'
+FilterOperatorEnum.GT       // '$gt'
+FilterOperatorEnum.GTE      // '$gte'
+FilterOperatorEnum.LT       // '$lt'
+FilterOperatorEnum.LTE      // '$lte'
+FilterOperatorEnum.BTW      // '$btw'
+FilterOperatorEnum.ILIKE    // '$ilike'
+FilterOperatorEnum.SW       // '$sw'
+FilterOperatorEnum.CONTAINS // '$contains'
 ```
 
 ### Available Interfaces
@@ -252,8 +462,9 @@ import {
   IPaginationConfig
 } from 'ng-qubee';
 
-// Main configuration interface
+// Main configuration interface (driver is required)
 const config: IConfig = {
+  driver: DriverEnum.NESTJS,
   request: {
     filters: 'custom-filter-key',
     fields: 'custom-fields-key',
@@ -277,7 +488,8 @@ const config: IConfig = {
 import {
   IFilters,
   IFields,
-  ISort
+  ISort,
+  IOperatorFilter
 } from 'ng-qubee';
 
 // Filters interface - key-value pairs with array values
@@ -297,30 +509,25 @@ const sort: ISort = {
   field: 'created_at',
   order: SortEnum.DESC
 };
-```
 
-#### Pagination Interfaces
-
-```typescript
-import { IPaginatedObject } from 'ng-qubee';
-
-// Use with your model type
-interface User {
-  id: number;
-  email: string;
-  username: string;
-}
-
-// The paginated object can contain any additional keys
-const paginatedData: IPaginatedObject = {
-  data: [/* users */],
-  currentPage: 1,
-  total: 100,
-  perPage: 15
+// Operator filter interface (NestJS only)
+const operatorFilter: IOperatorFilter = {
+  field: 'age',
+  operator: FilterOperatorEnum.GTE,
+  values: [18]
 };
 ```
 
-### Usage Example with Full Types
+#### Strategy Interfaces
+
+```typescript
+import {
+  IRequestStrategy,
+  IResponseStrategy
+} from 'ng-qubee';
+```
+
+### Spatie Usage Example
 
 ```typescript
 import { Component, OnInit } from '@angular/core';
@@ -340,7 +547,7 @@ export class UsersComponent implements OnInit {
 
   ngOnInit(): void {
     // Set up the query with type safety
-    this.ngQubee.setModel('users');
+    this.ngQubee.setResource('users');
 
     // Define fields with type checking
     const userFields: IFields = {
@@ -363,6 +570,46 @@ export class UsersComponent implements OnInit {
     this.ngQubee.generateUri().subscribe(uri => {
       console.log(uri);
       // Output: /users?fields[users]=id,email,username&filter[status]=active&filter[role]=admin,moderator&sort=-created_at&limit=15&page=1
+    });
+  }
+}
+```
+
+### NestJS Usage Example
+
+```typescript
+import { Component, OnInit } from '@angular/core';
+import {
+  NgQubeeService,
+  PaginationService,
+  FilterOperatorEnum,
+  SortEnum
+} from 'ng-qubee';
+
+@Component({
+  selector: 'app-users',
+  template: '...'
+})
+export class UsersComponent implements OnInit {
+  constructor(
+    private ngQubee: NgQubeeService,
+    private pagination: PaginationService
+  ) {}
+
+  ngOnInit(): void {
+    this.ngQubee
+      .setResource('users')
+      .addFilterOperator('age', FilterOperatorEnum.GTE, 18)
+      .addFilter('status', 'active')
+      .addSelect('id', 'name', 'email')
+      .addSort('name', SortEnum.ASC)
+      .setSearch('john')
+      .setLimit(10)
+      .setPage(1);
+
+    this.ngQubee.generateUri().subscribe(uri => {
+      console.log(uri);
+      // Output: /users?filter.status=active&filter.age=$gte:18&sortBy=name:ASC&select=id,name,email&search=john&limit=10&page=1
     });
   }
 }

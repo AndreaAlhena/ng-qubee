@@ -1,10 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 
-import { NestService } from './nest.service';
+import { FilterOperatorEnum } from '../enums/filter-operator.enum';
 import { SortEnum } from '../enums/sort.enum';
-import { InvalidModelNameError } from '../errors/invalid-model-name.error';
-import { InvalidPageNumberError } from '../errors/invalid-page-number.error';
 import { InvalidLimitError } from '../errors/invalid-limit.error';
+import { InvalidPageNumberError } from '../errors/invalid-page-number.error';
+import { InvalidResourceNameError } from '../errors/invalid-resource-name.error';
+import { NestService } from './nest.service';
 
 describe('NestService', () => {
   let service: NestService;
@@ -31,9 +32,9 @@ describe('NestService', () => {
     expect(service.nest().limit).toBe(10);
   });
 
-  it('should set model', () => {
-    service.model = 'users';
-    expect(service.nest().model).toBe('users');
+  it('should set resource', () => {
+    service.resource = 'users';
+    expect(service.nest().resource).toBe('users');
   });
 
   it('should set page', () => {
@@ -142,9 +143,9 @@ describe('NestService', () => {
   });
 
   it('should reset', () => {
-    service.model = 'dummy';
+    service.resource = 'dummy';
     service.reset();
-    expect(service.nest().model).toEqual('');
+    expect(service.nest().resource).toEqual('');
   });
 
   // Duplicate Prevention Tests
@@ -361,36 +362,36 @@ describe('NestService', () => {
 
   // Input Validation Tests
   describe('Input Validation', () => {
-    describe('model validation', () => {
-      it('should throw InvalidModelNameError for empty string', () => {
+    describe('resource validation', () => {
+      it('should throw InvalidResourceNameError for empty string', () => {
         expect(() => {
-          service.model = '';
-        }).toThrowError(InvalidModelNameError);
+          service.resource = '';
+        }).toThrowError(InvalidResourceNameError);
       });
 
-      it('should throw InvalidModelNameError for whitespace-only string', () => {
+      it('should throw InvalidResourceNameError for whitespace-only string', () => {
         expect(() => {
-          service.model = '   ';
-        }).toThrowError(InvalidModelNameError);
+          service.resource = '   ';
+        }).toThrowError(InvalidResourceNameError);
       });
 
-      it('should throw InvalidModelNameError for null', () => {
+      it('should throw InvalidResourceNameError for null', () => {
         expect(() => {
-          service.model = null as any;
-        }).toThrowError(InvalidModelNameError);
+          service.resource = null as any;
+        }).toThrowError(InvalidResourceNameError);
       });
 
-      it('should throw InvalidModelNameError for undefined', () => {
+      it('should throw InvalidResourceNameError for undefined', () => {
         expect(() => {
-          service.model = undefined as any;
-        }).toThrowError(InvalidModelNameError);
+          service.resource = undefined as any;
+        }).toThrowError(InvalidResourceNameError);
       });
 
-      it('should accept valid model name', () => {
+      it('should accept valid resource name', () => {
         expect(() => {
-          service.model = 'users';
+          service.resource = 'users';
         }).not.toThrow();
-        expect(service.nest().model).toBe('users');
+        expect(service.nest().resource).toBe('users');
       });
     });
 
@@ -527,19 +528,19 @@ describe('NestService', () => {
     });
 
     describe('string edge cases', () => {
-      it('should handle model names with special characters', () => {
-        service.model = 'user-profiles';
-        expect(service.nest().model).toBe('user-profiles');
+      it('should handle resource names with special characters', () => {
+        service.resource = 'user-profiles';
+        expect(service.nest().resource).toBe('user-profiles');
       });
 
-      it('should handle model names with numbers', () => {
-        service.model = 'users123';
-        expect(service.nest().model).toBe('users123');
+      it('should handle resource names with numbers', () => {
+        service.resource = 'users123';
+        expect(service.nest().resource).toBe('users123');
       });
 
-      it('should handle model names with underscores', () => {
-        service.model = 'user_profiles';
-        expect(service.nest().model).toBe('user_profiles');
+      it('should handle resource names with underscores', () => {
+        service.resource = 'user_profiles';
+        expect(service.nest().resource).toBe('user_profiles');
       });
 
       it('should handle baseUrl with trailing slash', () => {
@@ -649,7 +650,7 @@ describe('NestService', () => {
     describe('complete query building workflow', () => {
       it('should build a complete query with all parameters', () => {
         service.baseUrl = 'https://api.example.com';
-        service.model = 'users';
+        service.resource = 'users';
         service.page = 2;
         service.limit = 25;
 
@@ -661,7 +662,7 @@ describe('NestService', () => {
         const state = service.nest();
 
         expect(state.baseUrl).toBe('https://api.example.com');
-        expect(state.model).toBe('users');
+        expect(state.resource).toBe('users');
         expect(state.page).toBe(2);
         expect(state.limit).toBe(25);
         expect(state.fields).toEqual({ users: ['id', 'email', 'username'] });
@@ -672,11 +673,11 @@ describe('NestService', () => {
 
       it('should reset and rebuild query', () => {
         // Build initial query
-        service.model = 'users';
+        service.resource = 'users';
         service.addFields({ users: ['id'] });
         service.addFilters({ status: ['active'] });
 
-        expect(service.nest().model).toBe('users');
+        expect(service.nest().resource).toBe('users');
 
         // Reset
         service.reset();
@@ -687,16 +688,19 @@ describe('NestService', () => {
           filters: {},
           includes: [],
           limit: 15,
-          model: '',
+          operatorFilters: [],
           page: 1,
+          resource: '',
+          search: '',
+          select: [],
           sorts: []
         });
 
         // Rebuild
-        service.model = 'posts';
+        service.resource = 'posts';
         service.addFields({ posts: ['title'] });
 
-        expect(service.nest().model).toBe('posts');
+        expect(service.nest().resource).toBe('posts');
         expect(service.nest().fields).toEqual({ posts: ['title'] });
       });
 
@@ -725,7 +729,7 @@ describe('NestService', () => {
       });
 
       it('should maintain state immutability across multiple reads', () => {
-        service.model = 'users';
+        service.resource = 'users';
         service.addFields({ users: ['id'] });
 
         const state1 = service.nest();
@@ -775,7 +779,7 @@ describe('NestService', () => {
 
       it('should handle mixed operations in sequence', () => {
         // Setup
-        service.model = 'users';
+        service.resource = 'users';
         service.page = 1;
         service.limit = 20;
 
@@ -806,7 +810,7 @@ describe('NestService', () => {
 
         // Reset and verify clean state
         service.reset();
-        expect(service.nest().model).toBe('');
+        expect(service.nest().resource).toBe('');
         expect(service.nest().fields).toEqual({});
       });
     });
@@ -814,12 +818,12 @@ describe('NestService', () => {
     describe('signal reactivity', () => {
       it('should emit new values when state changes', () => {
         const initialState = service.nest();
-        expect(initialState.model).toBe('');
+        expect(initialState.resource).toBe('');
 
-        service.model = 'users';
+        service.resource = 'users';
         const updatedState = service.nest();
 
-        expect(updatedState.model).toBe('users');
+        expect(updatedState.resource).toBe('users');
         expect(updatedState).not.toBe(initialState);
       });
 
@@ -837,6 +841,174 @@ describe('NestService', () => {
         // Original snapshot should remain unchanged
         expect(fields1['users']).toEqual(['id']);
         expect(fields2['users']).toEqual(['id', 'name']);
+      });
+    });
+  });
+
+  // NestJS-specific State Management
+  describe('NestJS State Management', () => {
+    describe('addOperatorFilters', () => {
+      it('should add operator filters', () => {
+        service.addOperatorFilters([
+          { field: 'age', operator: FilterOperatorEnum.GTE, values: [18] }
+        ]);
+
+        expect(service.nest().operatorFilters).toEqual([
+          { field: 'age', operator: FilterOperatorEnum.GTE, values: [18] }
+        ]);
+      });
+
+      it('should merge operator filters with same field and operator', () => {
+        service.addOperatorFilters([
+          { field: 'id', operator: FilterOperatorEnum.IN, values: [1, 2] }
+        ]);
+
+        service.addOperatorFilters([
+          { field: 'id', operator: FilterOperatorEnum.IN, values: [2, 3] }
+        ]);
+
+        expect(service.nest().operatorFilters).toEqual([
+          { field: 'id', operator: FilterOperatorEnum.IN, values: [1, 2, 3] }
+        ]);
+      });
+
+      it('should keep separate operator filters for different operators on the same field', () => {
+        service.addOperatorFilters([
+          { field: 'age', operator: FilterOperatorEnum.GTE, values: [18] },
+          { field: 'age', operator: FilterOperatorEnum.LTE, values: [65] }
+        ]);
+
+        expect(service.nest().operatorFilters).toHaveSize(2);
+        expect(service.nest().operatorFilters[0].operator).toBe(FilterOperatorEnum.GTE);
+        expect(service.nest().operatorFilters[1].operator).toBe(FilterOperatorEnum.LTE);
+      });
+
+      it('should handle multiple operator filters on different fields', () => {
+        service.addOperatorFilters([
+          { field: 'age', operator: FilterOperatorEnum.GTE, values: [18] },
+          { field: 'status', operator: FilterOperatorEnum.EQ, values: ['active'] }
+        ]);
+
+        expect(service.nest().operatorFilters).toHaveSize(2);
+      });
+    });
+
+    describe('addSelect', () => {
+      it('should add select fields', () => {
+        service.addSelect(['id', 'name', 'email']);
+
+        expect(service.nest().select).toEqual(['id', 'name', 'email']);
+      });
+
+      it('should prevent duplicate select fields', () => {
+        service.addSelect(['id', 'name']);
+        service.addSelect(['name', 'email']);
+
+        expect(service.nest().select).toEqual(['id', 'name', 'email']);
+      });
+
+      it('should handle empty array', () => {
+        service.addSelect([]);
+
+        expect(service.nest().select).toEqual([]);
+      });
+    });
+
+    describe('setSearch', () => {
+      it('should set search term', () => {
+        service.setSearch('john doe');
+
+        expect(service.nest().search).toBe('john doe');
+      });
+
+      it('should overwrite previous search term', () => {
+        service.setSearch('john');
+        service.setSearch('jane');
+
+        expect(service.nest().search).toBe('jane');
+      });
+    });
+
+    describe('deleteOperatorFilters', () => {
+      it('should remove operator filters by field name', () => {
+        service.addOperatorFilters([
+          { field: 'age', operator: FilterOperatorEnum.GTE, values: [18] },
+          { field: 'status', operator: FilterOperatorEnum.EQ, values: ['active'] }
+        ]);
+
+        service.deleteOperatorFilters('age');
+
+        expect(service.nest().operatorFilters).toHaveSize(1);
+        expect(service.nest().operatorFilters[0].field).toBe('status');
+      });
+
+      it('should remove all operator filters for a field', () => {
+        service.addOperatorFilters([
+          { field: 'age', operator: FilterOperatorEnum.GTE, values: [18] },
+          { field: 'age', operator: FilterOperatorEnum.LTE, values: [65] }
+        ]);
+
+        service.deleteOperatorFilters('age');
+
+        expect(service.nest().operatorFilters).toHaveSize(0);
+      });
+
+      it('should handle deleting non-existent field', () => {
+        service.addOperatorFilters([
+          { field: 'age', operator: FilterOperatorEnum.GTE, values: [18] }
+        ]);
+
+        service.deleteOperatorFilters('status');
+
+        expect(service.nest().operatorFilters).toHaveSize(1);
+      });
+    });
+
+    describe('deleteSearch', () => {
+      it('should clear the search term', () => {
+        service.setSearch('john');
+        service.deleteSearch();
+
+        expect(service.nest().search).toBe('');
+      });
+    });
+
+    describe('deleteSelect', () => {
+      it('should remove select fields', () => {
+        service.addSelect(['id', 'name', 'email']);
+        service.deleteSelect('name');
+
+        expect(service.nest().select).toEqual(['id', 'email']);
+      });
+
+      it('should remove multiple select fields', () => {
+        service.addSelect(['id', 'name', 'email']);
+        service.deleteSelect('name', 'email');
+
+        expect(service.nest().select).toEqual(['id']);
+      });
+
+      it('should handle deleting non-existent field', () => {
+        service.addSelect(['id', 'name']);
+        service.deleteSelect('email');
+
+        expect(service.nest().select).toEqual(['id', 'name']);
+      });
+    });
+
+    describe('reset clears NestJS state', () => {
+      it('should reset operator filters, search, and select', () => {
+        service.addOperatorFilters([
+          { field: 'age', operator: FilterOperatorEnum.GTE, values: [18] }
+        ]);
+        service.addSelect(['id', 'name']);
+        service.setSearch('john');
+
+        service.reset();
+
+        expect(service.nest().operatorFilters).toEqual([]);
+        expect(service.nest().select).toEqual([]);
+        expect(service.nest().search).toBe('');
       });
     });
   });

@@ -1,17 +1,24 @@
 import { Inject, Injectable, Optional } from '@angular/core';
-import * as qs from 'qs';
 import { BehaviorSubject, Observable, filter, throwError } from 'rxjs';
 
 // Enums
+import { DriverEnum } from '../enums/driver.enum';
+import { FilterOperatorEnum } from '../enums/filter-operator.enum';
 import { SortEnum } from '../enums/sort.enum';
 
 // Errors
-import { UnselectableModelError } from '../errors/unselectable-model.error';
+import { UnsupportedFieldSelectionError } from '../errors/unsupported-field-selection.error';
+import { UnsupportedFilterError } from '../errors/unsupported-filter.error';
+import { UnsupportedFilterOperatorError } from '../errors/unsupported-filter-operator.error';
+import { UnsupportedIncludesError } from '../errors/unsupported-includes.error';
+import { UnsupportedSearchError } from '../errors/unsupported-search.error';
+import { UnsupportedSelectError } from '../errors/unsupported-select.error';
+import { UnsupportedSortError } from '../errors/unsupported-sort.error';
 
 // Interfaces
 import { IFields } from '../interfaces/fields.interface';
 import { IQueryBuilderConfig } from '../interfaces/query-builder-config.interface';
-import { IQueryBuilderState } from '../interfaces/query-builder-state.interface';
+import { IRequestStrategy } from '../interfaces/request-strategy.interface';
 
 // Models
 import { QueryBuilderOptions } from '../models/query-builder-options';
@@ -22,159 +29,68 @@ import { NestService } from './nest.service';
 @Injectable()
 export class NgQubeeService {
 
+  /**
+   * The active pagination driver
+   */
+  private _driver: DriverEnum;
+
+  /**
+   * Resolved query parameter key name options
+   */
   private _options: QueryBuilderOptions;
 
   /**
-   * This property serves as an accumulator for holding the composed string with each query param
+   * The request strategy that builds URIs for the active driver
    */
-  private _uri = '';
+  private _requestStrategy: IRequestStrategy;
 
+  /**
+   * Internal BehaviorSubject that holds the latest generated URI
+   */
   private _uri$: BehaviorSubject<string> = new BehaviorSubject('');
 
+  /**
+   * Observable that emits non-empty generated URIs
+   */
   public uri$: Observable<string> = this._uri$.asObservable().pipe(
     filter(uri => !!uri)
   );
 
-  constructor(private _nestService: NestService, @Inject('QUERY_PARAMS_CONFIG') @Optional() options: IQueryBuilderConfig = {}) {
+  constructor(
+    private _nestService: NestService,
+    @Inject('REQUEST_STRATEGY') requestStrategy: IRequestStrategy,
+    @Inject('DRIVER') driver: DriverEnum,
+    @Inject('QUERY_PARAMS_CONFIG') @Optional() options: IQueryBuilderConfig = {}
+  ) {
+    this._driver = driver;
     this._options = new QueryBuilderOptions(options);
-  }
-
-  private _parseFields(s: IQueryBuilderState): string {
-    if (!Object.keys(s.fields).length) {
-      return this._uri;
-    }
-
-    if (!s.model) {
-      throw new Error('While selecting fields, the -> model <- is required');
-    }
-
-    if (!(s.model in s.fields)) {
-      throw new Error(`Key ${s.model} is missing in the fields object`);
-    }
-
-    const f = {};
-
-    for (const k in s.fields) {
-      if (s.fields.hasOwnProperty(k)) {
-        // Check if the key is the model or is declared in "includes".
-        // If not, it means that has not been selected anywhere and that will cause an error on the API
-        if (k !== s.model && !s.includes.includes(k)) {
-          throw new UnselectableModelError(k);
-        }
-
-        Object.assign(f, { [`${this._options.fields}[${k}]`]: s.fields[k].join(',') });
-      }
-    }
-
-    const param = `${this._prepend(s.model)}${qs.stringify(f, { encode: false })}`;
-    this._uri += param;
-
-    return param;
-  }
-
-  private _parseFilters(s: IQueryBuilderState): string {
-    const keys = Object.keys(s.filters);
-
-    if (!keys.length) {
-      return this._uri;
-    }
-
-    const f = {
-      [`${this._options.filters}`]: keys.reduce((acc, key) => {
-        return Object.assign(acc, { [key]: s.filters[key].join(',') });
-      }, {})
-    };
-    const param = `${this._prepend(s.model)}${qs.stringify(f, { encode: false })}`;
-
-    this._uri += param;
-
-    return param;
-  }
-
-  private _parseIncludes(s: IQueryBuilderState): string {
-    if (!s.includes.length) {
-      return this._uri;
-    }
-
-    const param = `${this._prepend(s.model)}${this._options.includes}=${s.includes}`;
-    this._uri += param;
-
-    return param;
-  }
-
-  private _parseLimit(s: IQueryBuilderState): string {
-    const param = `${this._prepend(s.model)}${this._options.limit}=${s.limit}`;
-    this._uri += param;
-
-    return param;
-  }
-
-  private _parsePage(s: IQueryBuilderState): string {
-    const param = `${this._prepend(s.model)}${this._options.page}=${s.page}`;
-    this._uri += param;
-
-    return param;
-  }
-
-  private _parseSort(s: IQueryBuilderState): string {
-    let param: string = '';
-
-    if (!s.sorts.length) {
-      return param;
-    }
-
-    param = `${this._prepend(s.model)}${this._options.sort}=`;
-
-    s.sorts.forEach((sort, idx) => {
-      param += `${sort.order === SortEnum.DESC ? '-' : ''}${sort.field}`;
-
-      if (idx < s.sorts.length - 1) {
-        param += ','
-      }
-    });
-
-    this._uri += param;
-
-    return param;
-  }
-
-  private _parse(s: IQueryBuilderState): string {
-    if (!s.model) {
-      throw new Error('Set the model property BEFORE adding filters or calling the url() / get() methods');
-    }
-
-    // Cleanup the previously generated URI
-    this._uri = '';
-
-    this._parseIncludes(s);
-    this._parseFields(s);
-    this._parseFilters(s);
-    this._parseLimit(s);
-    this._parsePage(s);
-    this._parseSort(s);
-
-    return this._uri;
-  }
-
-  private _prepend(model: string): string {
-    const state = this._nestService.nest();
-    const baseUrl = state.baseUrl;
-
-    if (this._uri) {
-      return '&';
-    }
-
-    return baseUrl ? `${baseUrl}/${model}?` : `/${model}?`;
+    this._requestStrategy = requestStrategy;
   }
 
   /**
-   * Add fields to the select statement for the given model
+   * Assert that the active driver is one of the allowed drivers
    *
-   * @param model Model that holds the fields
-   * @param fields Fields to select
+   * @param allowed - The allowed drivers
+   * @param error - The error to throw if the driver is not allowed
+   * @throws The provided error if the active driver is not in the allowed list
+   */
+  private _assertDriver(allowed: DriverEnum[], error: Error): void {
+    if (!allowed.includes(this._driver)) {
+      throw error;
+    }
+  }
+
+  /**
+   * Add fields to the select statement for the given model (Spatie only)
+   *
+   * @param model - Model that holds the fields
+   * @param fields - Fields to select
    * @returns {this}
+   * @throws {UnsupportedFieldSelectionError} If the active driver does not support per-model field selection
    */
   public addFields(model: string, fields: string[]): this {
+    this._assertDriver([DriverEnum.SPATIE], new UnsupportedFieldSelectionError());
+
     if (!fields.length) {
       return this;
     }
@@ -185,14 +101,18 @@ export class NgQubeeService {
   }
 
   /**
-   * Add a filter with the given value(s)
-   *  I.e. filter[field]=1 or filter[field]=1,2,3
-   * 
-   * @param {string} field Name of the field to filter
-   * @param {string[]} value The needle(s)
+   * Add a filter with the given value(s) (Spatie and NestJS only)
+   *
+   * Produces: `filter[field]=value` (Spatie) or `filter.field=value` (NestJS)
+   *
+   * @param {string} field - Name of the field to filter
+   * @param {(string | number | boolean)[]} values - The needle(s)
    * @returns {this}
+   * @throws {UnsupportedFilterError} If the active driver does not support filters
    */
   public addFilter(field: string, ...values: (string | number | boolean)[]): this {
+    this._assertDriver([DriverEnum.SPATIE, DriverEnum.NESTJS], new UnsupportedFilterError());
+
     if (!values.length) {
       return this;
     }
@@ -205,12 +125,38 @@ export class NgQubeeService {
   }
 
   /**
-   * Add related entities to include in the request
-   * 
-   * @param {string[]} models 
-   * @returns 
+   * Add a filter with an explicit operator (NestJS only)
+   *
+   * Produces: `filter.field=$operator:value`
+   *
+   * @param {string} field - Name of the field to filter
+   * @param {FilterOperatorEnum} operator - The filter operator to apply
+   * @param {(string | number | boolean)[]} values - The value(s) for the filter
+   * @returns {this}
+   * @throws {UnsupportedFilterOperatorError} If the active driver does not support filter operators
+   */
+  public addFilterOperator(field: string, operator: FilterOperatorEnum, ...values: (string | number | boolean)[]): this {
+    this._assertDriver([DriverEnum.NESTJS], new UnsupportedFilterOperatorError());
+
+    if (!values.length) {
+      return this;
+    }
+
+    this._nestService.addOperatorFilters([{ field, operator, values }]);
+
+    return this;
+  }
+
+  /**
+   * Add related entities to include in the request (Spatie only)
+   *
+   * @param {string[]} models - Models to include
+   * @returns {this}
+   * @throws {UnsupportedIncludesError} If the active driver does not support includes
    */
   public addIncludes(...models: string[]): this {
+    this._assertDriver([DriverEnum.SPATIE], new UnsupportedIncludesError());
+
     if (!models.length) {
       return this;
     }
@@ -221,13 +167,37 @@ export class NgQubeeService {
   }
 
   /**
-   * Add a field with a sort criteria
-   * 
-   * @param field Field to use for sorting
-   * @param {SortEnum} order A value from the SortEnum enumeration
+   * Add flat field selection (NestJS only)
+   *
+   * Produces: `select=col1,col2`
+   *
+   * @param {string[]} fields - Fields to select
    * @returns {this}
+   * @throws {UnsupportedSelectError} If the active driver does not support flat field selection
+   */
+  public addSelect(...fields: string[]): this {
+    this._assertDriver([DriverEnum.NESTJS], new UnsupportedSelectError());
+
+    if (!fields.length) {
+      return this;
+    }
+
+    this._nestService.addSelect(fields);
+
+    return this;
+  }
+
+  /**
+   * Add a field with a sort criteria (Spatie and NestJS only)
+   *
+   * @param field - Field to use for sorting
+   * @param {SortEnum} order - A value from the SortEnum enumeration
+   * @returns {this}
+   * @throws {UnsupportedSortError} If the active driver does not support sorts
    */
   public addSort(field: string, order: SortEnum): this {
+    this._assertDriver([DriverEnum.SPATIE, DriverEnum.NESTJS], new UnsupportedSortError());
+
     this._nestService.addSort({
       field,
       order
@@ -237,35 +207,41 @@ export class NgQubeeService {
   }
 
   /**
-   * Delete selected fields for the given models in the current query builder state
-   * 
+   * Delete selected fields for the given models in the current query builder state (Spatie only)
+   *
    * ```
    * ngQubeeService.deleteFields({
    *   users: ['email', 'password'],
    *   address: ['zipcode']
    * });
    * ```
-   * 
-   * @param {IFields} fields 
-   * @returns 
+   *
+   * @param {IFields} fields - Object mapping model names to field arrays to remove
+   * @returns {this}
+   * @throws {UnsupportedFieldSelectionError} If the active driver does not support per-model field selection
    */
   public deleteFields(fields: IFields): this {
+    this._assertDriver([DriverEnum.SPATIE], new UnsupportedFieldSelectionError());
     this._nestService.deleteFields(fields);
+
     return this;
   }
 
   /**
-   * Delete selected fields for the given model in the current query builder state
-   * 
+   * Delete selected fields for the given model in the current query builder state (Spatie only)
+   *
    * ```
-   * ngQubeeService.deleteFieldsByModel('users', 'email', 'password']);
+   * ngQubeeService.deleteFieldsByModel('users', 'email', 'password');
    * ```
-   * 
-   * @param model Model that holds the fields
-   * @param {string[]} fields Fields to delete from the state
+   *
+   * @param model - Model that holds the fields
+   * @param {string[]} fields - Fields to delete from the state
    * @returns {this}
+   * @throws {UnsupportedFieldSelectionError} If the active driver does not support per-model field selection
    */
   public deleteFieldsByModel(model: string, ...fields: string[]): this {
+    this._assertDriver([DriverEnum.SPATIE], new UnsupportedFieldSelectionError());
+
     if (!fields.length) {
       return this;
     }
@@ -278,12 +254,15 @@ export class NgQubeeService {
   }
 
   /**
-   * Remove given filters from the query builder state
-   * 
-   * @param {string[]} filters Filters to remove
+   * Remove given filters from the query builder state (Spatie and NestJS only)
+   *
+   * @param {string[]} filters - Filters to remove
    * @returns {this}
+   * @throws {UnsupportedFilterError} If the active driver does not support filters
    */
   public deleteFilters(...filters: string[]): this {
+    this._assertDriver([DriverEnum.SPATIE, DriverEnum.NESTJS], new UnsupportedFilterError());
+
     if (!filters.length) {
       return this;
     }
@@ -294,12 +273,15 @@ export class NgQubeeService {
   }
 
   /**
-   * Remove selected related models from the query builder state
-   * 
-   * @param {string[]} includes Models to remove
-   * @returns 
+   * Remove selected related models from the query builder state (Spatie only)
+   *
+   * @param {string[]} includes - Models to remove
+   * @returns {this}
+   * @throws {UnsupportedIncludesError} If the active driver does not support includes
    */
   public deleteIncludes(...includes: string[]): this {
+    this._assertDriver([DriverEnum.SPATIE], new UnsupportedIncludesError());
+
     if (!includes.length) {
       return this;
     }
@@ -310,24 +292,78 @@ export class NgQubeeService {
   }
 
   /**
-   * Remove sorts rules from the query builder state
-   * 
-   * @param sorts Fields used for sorting to remove
+   * Remove operator filters by field name (NestJS only)
+   *
+   * @param {string[]} fields - Field names of operator filters to remove
    * @returns {this}
+   * @throws {UnsupportedFilterOperatorError} If the active driver does not support filter operators
    */
-  public deleteSorts(...sorts: string[]): this {
-    this._nestService.deleteSorts(...sorts);
+  public deleteOperatorFilters(...fields: string[]): this {
+    this._assertDriver([DriverEnum.NESTJS], new UnsupportedFilterOperatorError());
+
+    if (!fields.length) {
+      return this;
+    }
+
+    this._nestService.deleteOperatorFilters(...fields);
+
     return this;
   }
 
   /**
-   * Generate an URI accordingly to the given data
+   * Remove search term from the query builder state (NestJS only)
    *
-   * @returns {Observable<string>} An observable that emits the generated uri
+   * @returns {this}
+   * @throws {UnsupportedSearchError} If the active driver does not support search
+   */
+  public deleteSearch(): this {
+    this._assertDriver([DriverEnum.NESTJS], new UnsupportedSearchError());
+    this._nestService.deleteSearch();
+
+    return this;
+  }
+
+  /**
+   * Remove flat field selections from the query builder state (NestJS only)
+   *
+   * @param {string[]} fields - Fields to remove from selection
+   * @returns {this}
+   * @throws {UnsupportedSelectError} If the active driver does not support flat field selection
+   */
+  public deleteSelect(...fields: string[]): this {
+    this._assertDriver([DriverEnum.NESTJS], new UnsupportedSelectError());
+
+    if (!fields.length) {
+      return this;
+    }
+
+    this._nestService.deleteSelect(...fields);
+
+    return this;
+  }
+
+  /**
+   * Remove sort rules from the query builder state (Spatie and NestJS only)
+   *
+   * @param sorts - Fields used for sorting to remove
+   * @returns {this}
+   * @throws {UnsupportedSortError} If the active driver does not support sorts
+   */
+  public deleteSorts(...sorts: string[]): this {
+    this._assertDriver([DriverEnum.SPATIE, DriverEnum.NESTJS], new UnsupportedSortError());
+    this._nestService.deleteSorts(...sorts);
+
+    return this;
+  }
+
+  /**
+   * Generate a URI accordingly to the given data and active driver
+   *
+   * @returns {Observable<string>} An observable that emits the generated URI
    */
   public generateUri(): Observable<string> {
     try {
-      this._uri$.next(this._parse(this._nestService.nest()));
+      this._uri$.next(this._requestStrategy.buildUri(this._nestService.nest(), this._options));
       return this.uri$;
     } catch (error) {
       return throwError(() => error);
@@ -336,56 +372,76 @@ export class NgQubeeService {
 
   /**
    * Clear the current state and reset the Query Builder to a fresh, clean condition
-   * 
+   *
    * @returns {this}
    */
   public reset(): this {
     this._nestService.reset();
+
     return this;
   }
 
   /**
-   * Set the base url to use for composing the address
-   * 
-   * @param {string} baseUrl 
+   * Set the base URL to use for composing the address
+   *
+   * @param {string} baseUrl - The base URL
    * @returns {this}
    */
   public setBaseUrl(baseUrl: string): this {
     this._nestService.baseUrl = baseUrl;
+
     return this;
   }
 
   /**
    * Set the items per page number
-   * 
-   * @param limit 
+   *
+   * @param limit - Number of items per page
    * @returns {this}
    */
   public setLimit(limit: number): this {
     this._nestService.limit = limit;
-    return this;
-  }
 
-  /**
-   * Set the model to use for running the query against
-   *   - I.e. the model "users" will return /users
-   * 
-   * @param {string} model Model name
-   * @returns {this}
-   */
-  public setModel(model: string): this {
-    this._nestService.model = model;
     return this;
   }
 
   /**
    * Set the page that the backend will use to paginate the result set
-   * 
-   * @param page Page param
+   *
+   * @param page - Page number
    * @returns {this}
    */
   public setPage(page: number): this {
     this._nestService.page = page;
+
+    return this;
+  }
+
+  /**
+   * Set the API resource to run the query against
+   *
+   * @param {string} resource - Resource name (e.g. 'users' produces /users)
+   * @returns {this}
+   */
+  public setResource(resource: string): this {
+    this._nestService.resource = resource;
+
+    return this;
+  }
+
+  /**
+   * Set the search term for full-text search (NestJS only)
+   *
+   * Produces: `search=term`
+   *
+   * @param {string} search - The search term
+   * @returns {this}
+   * @throws {UnsupportedSearchError} If the active driver does not support search
+   */
+  public setSearch(search: string): this {
+    this._assertDriver([DriverEnum.NESTJS], new UnsupportedSearchError());
+    this._nestService.setSearch(search);
+
     return this;
   }
 }
