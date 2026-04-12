@@ -6,5 +6,6 @@
  */
 export enum DriverEnum {
   LARAVEL = 'laravel',
-  NESTJS = 'nestjs'
+  NESTJS = 'nestjs',
+  SPATIE = 'spatie'
 }
