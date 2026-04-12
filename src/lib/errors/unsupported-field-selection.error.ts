@@ -1,12 +1,12 @@
 /**
- * Error thrown when per-model field selection is attempted with the NestJS driver
+ * Error thrown when per-model field selection is attempted with a driver that does not support it
  *
- * The NestJS driver uses flat field selection via `addSelect()` instead of
- * per-model field selection via `addFields()`.
+ * Per-model field selection is only supported by the Spatie driver.
+ * Use `addSelect()` for NestJS flat field selection.
  */
 export class UnsupportedFieldSelectionError extends Error {
   constructor() {
-    super('Per-model field selection is not supported by the NestJS driver. Use addSelect() instead.');
+    super('Per-model field selection is only supported by the Spatie driver. Use addSelect() for NestJS.');
     this.name = 'UnsupportedFieldSelectionError';
   }
 }

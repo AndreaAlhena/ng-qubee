@@ -1,8 +1,13 @@
-export class InvalidModelNameError extends Error {
-  constructor(model: string | null | undefined) {
+/**
+ * Error thrown when an invalid resource name is provided
+ *
+ * Resource name must be a non-empty string.
+ */
+export class InvalidResourceNameError extends Error {
+  constructor(resource: string | null | undefined) {
     super(
-      `Invalid model name: Model name must be a non-empty string. Received: ${JSON.stringify(model)}`
+      `Invalid resource name: Resource name must be a non-empty string. Received: ${JSON.stringify(resource)}`
     );
-    this.name = 'InvalidModelNameError';
+    this.name = 'InvalidResourceNameError';
   }
 }
