@@ -14,9 +14,9 @@ describe('NestjsRequestStrategy', () => {
     filters: {},
     includes: [],
     limit: 15,
-    model: 'users',
     operatorFilters: [],
     page: 1,
+    resource: 'users',
     search: '',
     select: [],
     sorts: []
@@ -27,17 +27,17 @@ describe('NestjsRequestStrategy', () => {
     options = new QueryBuilderOptions({});
   });
 
-  it('should generate a basic URI with model, limit, and page', () => {
+  it('should generate a basic URI with resource, limit, and page', () => {
     const uri = strategy.buildUri(baseState, options);
 
     expect(uri).toBe('/users?limit=15&page=1');
   });
 
-  it('should throw an error if model is not set', () => {
-    const state = { ...baseState, model: '' };
+  it('should throw an error if resource is not set', () => {
+    const state = { ...baseState, resource: '' };
 
     expect(() => strategy.buildUri(state, options)).toThrowError(
-      'Set the model property BEFORE adding filters or calling the url() / get() methods'
+      'Set the resource property BEFORE adding filters or calling the url() / get() methods'
     );
   });
 
@@ -314,11 +314,11 @@ describe('NestjsRequestStrategy', () => {
         filters: { status: ['active'] },
         includes: [],
         limit: 10,
-        model: 'users',
         operatorFilters: [
           { field: 'age', operator: FilterOperatorEnum.GTE, values: [18] }
         ],
         page: 2,
+        resource: 'users',
         search: 'john',
         select: ['id', 'name', 'email'],
         sorts: [{ field: 'name', order: SortEnum.ASC }]
