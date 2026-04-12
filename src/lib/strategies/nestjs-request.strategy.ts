@@ -33,8 +33,8 @@ export class NestjsRequestStrategy implements IRequestStrategy {
    * @throws Error if model is not set
    */
   public buildUri(state: IQueryBuilderState, options: QueryBuilderOptions): string {
-    if (!state.model) {
-      throw new Error('Set the model property BEFORE adding filters or calling the url() / get() methods');
+    if (!state.resource) {
+      throw new Error('Set the resource property BEFORE adding filters or calling the url() / get() methods');
     }
 
     this._uri = '';
@@ -185,6 +185,6 @@ export class NestjsRequestStrategy implements IRequestStrategy {
       return '&';
     }
 
-    return state.baseUrl ? `${state.baseUrl}/${state.model}?` : `/${state.model}?`;
+    return state.baseUrl ? `${state.baseUrl}/${state.resource}?` : `/${state.resource}?`;
   }
 }

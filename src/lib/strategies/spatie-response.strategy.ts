@@ -4,7 +4,7 @@ import { PaginatedCollection } from '../models/paginated-collection';
 import { ResponseOptions } from '../models/response-options';
 
 /**
- * Response strategy for the Laravel (pagination-only) driver
+ * Response strategy for the Spatie Query Builder driver
  *
  * Parses flat Laravel pagination responses:
  * ```json
@@ -18,8 +18,10 @@ import { ResponseOptions } from '../models/response-options';
  *   ...
  * }
  * ```
+ *
+ * @see https://spatie.be/docs/laravel-query-builder
  */
-export class LaravelResponseStrategy implements IResponseStrategy {
+export class SpatieResponseStrategy implements IResponseStrategy {
 
   /**
    * Parse a flat Laravel pagination response into a PaginatedCollection
