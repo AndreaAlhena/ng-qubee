@@ -1,3 +1,4 @@
+import { SortEnum } from '../enums/sort.enum';
 import { IQueryBuilderState } from '../interfaces/query-builder-state.interface';
 import { QueryBuilderOptions } from '../models/query-builder-options';
 import { LaravelRequestStrategy } from './laravel-request.strategy';
@@ -70,7 +71,7 @@ describe('LaravelRequestStrategy', () => {
   it('should ignore sorts in state', () => {
     const state = {
       ...baseState,
-      sorts: [{ field: 'name', order: 'asc' as 'asc' }]
+      sorts: [{ field: 'name', order: SortEnum.ASC }]
     };
     const uri = strategy.buildUri(state, options);
 
