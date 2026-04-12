@@ -12,6 +12,8 @@ import { LaravelRequestStrategy } from './strategies/laravel-request.strategy';
 import { LaravelResponseStrategy } from './strategies/laravel-response.strategy';
 import { NestjsRequestStrategy } from './strategies/nestjs-request.strategy';
 import { NestjsResponseStrategy } from './strategies/nestjs-response.strategy';
+import { SpatieRequestStrategy } from './strategies/spatie-request.strategy';
+import { SpatieResponseStrategy } from './strategies/spatie-response.strategy';
 
 /**
  * Resolve the request strategy instance for the given driver
@@ -20,9 +22,14 @@ import { NestjsResponseStrategy } from './strategies/nestjs-response.strategy';
  * @returns The corresponding request strategy
  */
 function resolveRequestStrategy(driver: DriverEnum): IRequestStrategy {
-  return driver === DriverEnum.NESTJS
-    ? new NestjsRequestStrategy()
-    : new LaravelRequestStrategy();
+  switch (driver) {
+    case DriverEnum.NESTJS:
+      return new NestjsRequestStrategy();
+    case DriverEnum.SPATIE:
+      return new SpatieRequestStrategy();
+    case DriverEnum.LARAVEL:
+      return new LaravelRequestStrategy();
+  }
 }
 
 /**
@@ -32,9 +39,14 @@ function resolveRequestStrategy(driver: DriverEnum): IRequestStrategy {
  * @returns The corresponding response strategy
  */
 function resolveResponseStrategy(driver: DriverEnum): IResponseStrategy {
-  return driver === DriverEnum.NESTJS
-    ? new NestjsResponseStrategy()
-    : new LaravelResponseStrategy();
+  switch (driver) {
+    case DriverEnum.NESTJS:
+      return new NestjsResponseStrategy();
+    case DriverEnum.SPATIE:
+      return new SpatieResponseStrategy();
+    case DriverEnum.LARAVEL:
+      return new LaravelResponseStrategy();
+  }
 }
 
 /**
@@ -42,12 +54,19 @@ function resolveResponseStrategy(driver: DriverEnum): IResponseStrategy {
  *
  * @usageNotes
  *
- * Basic example of how you can add NgQubee to your application:
+ * Basic example with the Laravel driver:
  * ```
- * const config = {};
+ * bootstrapApplication(AppComponent, {
+ *   providers: [provideNgQubee({ driver: DriverEnum.LARAVEL })]
+ * });
+ * ```
+ *
+ * Spatie driver example:
+ * ```
+ * import { DriverEnum } from 'ng-qubee';
  *
  * bootstrapApplication(AppComponent, {
- *   providers: [provideNgQubee(config)]
+ *   providers: [provideNgQubee({ driver: DriverEnum.SPATIE })]
  * });
  * ```
  *
@@ -64,8 +83,8 @@ function resolveResponseStrategy(driver: DriverEnum): IResponseStrategy {
  * @param config - Configuration object compliant to the IConfig interface
  * @returns A set of providers to setup NgQubee
  */
-export function provideNgQubee(config: IConfig = {}): EnvironmentProviders {
-  const driver = config.driver ?? DriverEnum.LARAVEL;
+export function provideNgQubee(config: IConfig): EnvironmentProviders {
+  const driver = config.driver;
   const requestStrategy = resolveRequestStrategy(driver);
   const responseStrategy = resolveResponseStrategy(driver);
 

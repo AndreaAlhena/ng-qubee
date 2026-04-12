@@ -1,7 +1,7 @@
 import { Injectable, Signal, WritableSignal, computed, signal } from '@angular/core';
 
 import { InvalidLimitError } from '../errors/invalid-limit.error';
-import { InvalidModelNameError } from '../errors/invalid-model-name.error';
+import { InvalidResourceNameError } from '../errors/invalid-resource-name.error';
 import { InvalidPageNumberError } from '../errors/invalid-page-number.error';
 import { IFields } from '../interfaces/fields.interface';
 import { IFilters } from '../interfaces/filters.interface';
@@ -15,9 +15,9 @@ const INITIAL_STATE: IQueryBuilderState = {
   filters: {},
   includes: [],
   limit: 15,
-  model: '',
   operatorFilters: [],
   page: 1,
+  resource: '',
   search: '',
   select: [],
   sorts: []
@@ -28,20 +28,20 @@ export class NestService {
 
   /**
    * Private writable signal that holds the Query Builder state
-   * 
+   *
    * @type {IQueryBuilderState}
    */
   private _nest: WritableSignal<IQueryBuilderState> = signal(this._clone(INITIAL_STATE));
 
   /**
    * A computed signal that makes readonly the writable signal _nest
-   * 
+   *
    * @type {Signal<IQueryBuilderState>}
    */
   public nest: Signal<IQueryBuilderState> = computed(() => this._clone(this._nest()));
 
   constructor() {
-    // Nothing to see here 👮🏻‍♀️
+    // Nothing to see here
   }
 
   /**
@@ -76,23 +76,6 @@ export class NestService {
   }
 
   /**
-   * Set the model name for the query
-   * Must be a non-empty string
-   *
-   * @param {string} model - The model/resource name (e.g., 'users', 'posts')
-   * @throws {InvalidModelNameError} If model is not a non-empty string
-   * @example
-   * service.model = 'users';
-   */
-  set model(model: string) {
-    this._validateModelName(model);
-    this._nest.update(nest => ({
-      ...nest,
-      model
-    }));
-  }
-
-  /**
    * Set the page number for pagination
    * Must be a positive integer greater than 0
    *
@@ -109,20 +92,37 @@ export class NestService {
     }));
   }
 
+  /**
+   * Set the resource name for the query
+   * Must be a non-empty string
+   *
+   * @param {string} resource - The API resource name (e.g., 'users', 'posts')
+   * @throws {InvalidResourceNameError} If resource is not a non-empty string
+   * @example
+   * service.resource = 'users';
+   */
+  set resource(resource: string) {
+    this._validateResourceName(resource);
+    this._nest.update(nest => ({
+      ...nest,
+      resource
+    }));
+  }
+
   private _clone<T>(obj: T): T {
     return JSON.parse( JSON.stringify(obj) );
   }
 
   /**
-   * Validates that the model name is a non-empty string
+   * Validates that the limit is a positive integer
    *
-   * @param {string} model - The model name to validate
-   * @throws {InvalidModelNameError} If model is not a non-empty string
+   * @param {number} limit - The limit value to validate
+   * @throws {InvalidLimitError} If limit is not a positive integer
    * @private
    */
-  private _validateModelName(model: string): void {
-    if (!model || typeof model !== 'string' || model.trim().length === 0) {
-      throw new InvalidModelNameError(model);
+  private _validateLimit(limit: number): void {
+    if (!Number.isInteger(limit) || limit < 1) {
+      throw new InvalidLimitError(limit);
     }
   }
 
@@ -140,15 +140,15 @@ export class NestService {
   }
 
   /**
-   * Validates that the limit is a positive integer
+   * Validates that the resource name is a non-empty string
    *
-   * @param {number} limit - The limit value to validate
-   * @throws {InvalidLimitError} If limit is not a positive integer
+   * @param {string} resource - The resource name to validate
+   * @throws {InvalidResourceNameError} If resource is not a non-empty string
    * @private
    */
-  private _validateLimit(limit: number): void {
-    if (!Number.isInteger(limit) || limit < 1) {
-      throw new InvalidLimitError(limit);
+  private _validateResourceName(resource: string): void {
+    if (!resource || typeof resource !== 'string' || resource.trim().length === 0) {
+      throw new InvalidResourceNameError(resource);
     }
   }
 
@@ -216,7 +216,7 @@ export class NestService {
    * Add resources to include with the request
    * Automatically prevents duplicate includes
    *
-   * @param {string[]} includes - Array of model names to include in the response
+   * @param {string[]} includes - Array of resource names to include in the response
    * @return {void}
    * @example
    * service.addIncludes(['profile', 'posts']);
@@ -468,7 +468,6 @@ export class NestService {
    * @return {void}
    * @example
    * service.reset();
-   * // State is now: { baseUrl: '', fields: {}, filters: {}, includes: [], limit: 15, model: '', page: 1, sorts: [] }
    */
   public reset(): void {
     this._nest.update(_ => this._clone(INITIAL_STATE));

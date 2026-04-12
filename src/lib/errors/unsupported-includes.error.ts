@@ -1,11 +1,11 @@
 /**
- * Error thrown when includes are attempted with the NestJS driver
+ * Error thrown when includes are attempted with a driver that does not support them
  *
- * The NestJS paginate library does not support the include concept.
+ * Includes are only supported by the Spatie driver.
  */
 export class UnsupportedIncludesError extends Error {
   constructor() {
-    super('Includes are not supported by the NestJS driver.');
+    super('Includes are only supported by the Spatie driver.');
     this.name = 'UnsupportedIncludesError';
   }
 }

@@ -18,8 +18,8 @@ import { IQueryBuilderConfig } from './query-builder-config.interface';
  * ```
  */
 export interface IConfig {
-    /** The pagination driver to use (defaults to LARAVEL) */
-    driver?: DriverEnum;
+    /** The pagination driver to use */
+    driver: DriverEnum;
     /** Custom key names for request query parameters */
     request?: IQueryBuilderConfig;
     /** Custom key names for response field mapping */

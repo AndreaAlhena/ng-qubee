@@ -1,12 +1,12 @@
 /**
- * Error thrown when filter operators are attempted with the Laravel driver
+ * Error thrown when filter operators are attempted with a driver that does not support them
  *
- * The Laravel driver uses implicit equality filters via `addFilter()` instead of
- * explicit operator filters via `addFilterOperator()`.
+ * Filter operators are only supported by the NestJS driver.
+ * Use `addFilter()` for Spatie implicit equality filters.
  */
 export class UnsupportedFilterOperatorError extends Error {
   constructor() {
-    super('Filter operators are not supported by the Laravel driver. Use addFilter() instead.');
+    super('Filter operators are only supported by the NestJS driver. Use addFilter() for Spatie.');
     this.name = 'UnsupportedFilterOperatorError';
   }
 }

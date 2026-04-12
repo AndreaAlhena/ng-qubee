@@ -6,12 +6,15 @@ import { FilterOperatorEnum } from '../enums/filter-operator.enum';
 import { SortEnum } from '../enums/sort.enum';
 import { UnselectableModelError } from '../errors/unselectable-model.error';
 import { UnsupportedFieldSelectionError } from '../errors/unsupported-field-selection.error';
+import { UnsupportedFilterError } from '../errors/unsupported-filter.error';
 import { UnsupportedFilterOperatorError } from '../errors/unsupported-filter-operator.error';
 import { UnsupportedIncludesError } from '../errors/unsupported-includes.error';
 import { UnsupportedSearchError } from '../errors/unsupported-search.error';
 import { UnsupportedSelectError } from '../errors/unsupported-select.error';
+import { UnsupportedSortError } from '../errors/unsupported-sort.error';
 import { LaravelRequestStrategy } from '../strategies/laravel-request.strategy';
 import { NestjsRequestStrategy } from '../strategies/nestjs-request.strategy';
+import { SpatieRequestStrategy } from '../strategies/spatie-request.strategy';
 import { NestService } from './nest.service';
 import { NgQubeeService } from './ng-qubee.service';
 
@@ -26,7 +29,7 @@ describe('NgQubeeService standard config', () => {
           deps: [NestService],
           provide: NgQubeeService,
           useFactory: (nestService: NestService) =>
-            new NgQubeeService(nestService, new LaravelRequestStrategy(), DriverEnum.LARAVEL)
+            new NgQubeeService(nestService, new SpatieRequestStrategy(), DriverEnum.SPATIE)
         }, NestService
       ]
     });
@@ -39,7 +42,7 @@ describe('NgQubeeService standard config', () => {
   });
 
   it('should generate a URI', (done: DoneFn) => {
-    service.setModel('users');
+    service.setResource('users');
 
     service.generateUri().subscribe(uri => {
       expect(uri).toContain('/users');
@@ -48,7 +51,7 @@ describe('NgQubeeService standard config', () => {
   });
 
   it('should generate a URI with a custom limit', (done: DoneFn) => {
-    service.setModel('users');
+    service.setResource('users');
     service.setLimit(25);
 
     service.generateUri().subscribe(uri => {
@@ -58,7 +61,7 @@ describe('NgQubeeService standard config', () => {
   });
 
   it('should generate a URI with a default limit', (done: DoneFn) => {
-    service.setModel('users');
+    service.setResource('users');
 
     service.generateUri().subscribe(uri => {
       expect(uri).toContain('limit=15');
@@ -67,7 +70,7 @@ describe('NgQubeeService standard config', () => {
   });
 
   it('should generate a URI with a custom page', (done: DoneFn) => {
-    service.setModel('users');
+    service.setResource('users');
     service.setPage(5);
 
     service.generateUri().subscribe(uri => {
@@ -77,7 +80,7 @@ describe('NgQubeeService standard config', () => {
   });
 
   it('should generate a URI with a default page', (done: DoneFn) => {
-    service.setModel('users');
+    service.setResource('users');
 
     service.generateUri().subscribe(uri => {
       expect(uri).toContain('page=1');
@@ -87,7 +90,7 @@ describe('NgQubeeService standard config', () => {
 
   it('should generate a URI with fields (single model)', (done: DoneFn) => {
     service.addFields('users', ['email', 'name']);
-    service.setModel('users');
+    service.setResource('users');
 
     service.generateUri().subscribe(uri => {
       expect(uri).toContain('fields[users]=email,name');
@@ -97,7 +100,7 @@ describe('NgQubeeService standard config', () => {
 
   it('should ignore empty fields (single model)', (done: DoneFn) => {
     service.addFields('users', []);
-    service.setModel('users');
+    service.setResource('users');
 
     service.generateUri().subscribe(uri => {
       expect(uri).not.toContain('fields[users]=');
@@ -108,7 +111,7 @@ describe('NgQubeeService standard config', () => {
   it('should generate a URI with included models', (done: DoneFn) => {
     service.addIncludes('model1', 'model2');
     service.addIncludes('model3');
-    service.setModel('users');
+    service.setResource('users');
 
     service.generateUri().subscribe(uri => {
       expect(uri).toBe('/users?include=model1,model2,model3&limit=15&page=1');
@@ -120,7 +123,7 @@ describe('NgQubeeService standard config', () => {
     service.addFields('users', ['email', 'name']);
     service.addFields('settings', ['field1', 'field2']);
     service.addIncludes('settings');
-    service.setModel('users');
+    service.setResource('users');
 
     service.generateUri().subscribe(uri => {
       expect(uri).toContain('fields[users]=email,name');
@@ -132,7 +135,7 @@ describe('NgQubeeService standard config', () => {
   it('should generate a URI with filter (multiple values)', (done: DoneFn) => {
     service.addFilter('id', 1, 2, 3);
     service.addFilter('name', 'doe');
-    service.setModel('users');
+    service.setResource('users');
 
     service.generateUri().subscribe(uri => {
       expect(uri).toContain('filter[id]=1,2,3');
@@ -143,7 +146,7 @@ describe('NgQubeeService standard config', () => {
 
   it('should generate a URI with filter (mixed values)', (done: DoneFn) => {
     service.addFilter('field', 1, '2', 3);
-    service.setModel('users');
+    service.setResource('users');
 
     service.generateUri().subscribe(uri => {
       expect(uri).toContain('filter[field]=1,2,3');
@@ -153,7 +156,7 @@ describe('NgQubeeService standard config', () => {
 
   it('should ignore empty filters', (done: DoneFn) => {
     service.addFilter('field');
-    service.setModel('users');
+    service.setResource('users');
 
     service.generateUri().subscribe(uri => {
       expect(uri).not.toContain('filter[field]=');
@@ -163,7 +166,7 @@ describe('NgQubeeService standard config', () => {
 
   it('should generate a URI with filter (boolean value)', (done: DoneFn) => {
     service.addFilter('isActive', true);
-    service.setModel('users');
+    service.setResource('users');
 
     service.generateUri().subscribe(uri => {
       expect(uri).toContain('filter[isActive]=true');
@@ -173,7 +176,7 @@ describe('NgQubeeService standard config', () => {
 
   it('should generate a URI with sorted field ASC', (done: DoneFn) => {
     service.addSort('f', SortEnum.ASC);
-    service.setModel('users');
+    service.setResource('users');
 
     service.generateUri().subscribe(uri => {
       expect(uri).toContain('sort=f');
@@ -184,7 +187,7 @@ describe('NgQubeeService standard config', () => {
   it('should generate a URI with sorted fields mixed ASC and DESC', (done: DoneFn) => {
     service.addSort('f1', SortEnum.DESC);
     service.addSort('f2', SortEnum.ASC);
-    service.setModel('users');
+    service.setResource('users');
 
     service.generateUri().subscribe(uri => {
       expect(uri).toContain('sort=-f1,f2');
@@ -194,7 +197,7 @@ describe('NgQubeeService standard config', () => {
 
   it('should generate a URI with sorted field DESC', (done: DoneFn) => {
     service.addSort('f', SortEnum.DESC);
-    service.setModel('users');
+    service.setResource('users');
 
     service.generateUri().subscribe(uri => {
       expect(uri).toContain('sort=-f');
@@ -203,10 +206,10 @@ describe('NgQubeeService standard config', () => {
   });
 
   it('should reset the internal state', (done: DoneFn) => {
-    service.setModel('users');
+    service.setResource('users');
     service.addFields('settings', ['a']);
     service.reset();
-    service.setModel('settings');
+    service.setResource('settings');
 
     service.generateUri().subscribe(uri => {
       expect(uri).toBe('/settings?limit=15&page=1');
@@ -215,7 +218,7 @@ describe('NgQubeeService standard config', () => {
   });
 
   it('should generate a URL if a base url is given', (done: DoneFn) => {
-    service.setModel('users');
+    service.setResource('users');
     service.setBaseUrl('https://domain.com');
 
     service.generateUri().subscribe(uri => {
@@ -227,7 +230,7 @@ describe('NgQubeeService standard config', () => {
   it('should throw an error if the model requested as field is not the model property / included in the includes object', (done: DoneFn) => {
     service.addFields('users', ['email', 'name']);
     service.addFields('settings', ['field1', 'field2']);
-    service.setModel('users');
+    service.setResource('users');
 
     service.generateUri().subscribe({
       next: () => {
@@ -253,7 +256,7 @@ describe('NgQubeeService custom config', () => {
           deps: [NestService],
           provide: NgQubeeService,
           useFactory: (nestService: NestService) =>
-            new NgQubeeService(nestService, new LaravelRequestStrategy(), DriverEnum.LARAVEL, {
+            new NgQubeeService(nestService, new SpatieRequestStrategy(), DriverEnum.SPATIE, {
               appends: 'app',
               fields: 'fld',
               filters: 'flt',
@@ -271,7 +274,7 @@ describe('NgQubeeService custom config', () => {
 
   it('should generate a URI with fields (single model)', (done: DoneFn) => {
     service.addFields('users', ['email', 'name']);
-    service.setModel('users');
+    service.setResource('users');
 
     service.generateUri().subscribe(uri => {
       expect(uri).toContain('fld[users]=email,name');
@@ -281,7 +284,7 @@ describe('NgQubeeService custom config', () => {
 
   it('should generate a URI with filter', (done: DoneFn) => {
     service.addFilter('id', 1, 2, 3);
-    service.setModel('users');
+    service.setResource('users');
 
     service.generateUri().subscribe(uri => {
       expect(uri).toContain('flt[id]=1,2,3');
@@ -291,7 +294,7 @@ describe('NgQubeeService custom config', () => {
 
   it('should generate a URI with included models', (done: DoneFn) => {
     service.addIncludes('model1', 'model2');
-    service.setModel('users');
+    service.setResource('users');
 
     service.generateUri().subscribe(uri => {
       expect(uri).toContain('inc=model1,model2');
@@ -300,7 +303,7 @@ describe('NgQubeeService custom config', () => {
   });
 
   it('should generate a URI with a custom limit', (done: DoneFn) => {
-    service.setModel('users');
+    service.setResource('users');
     service.setLimit(25);
 
     service.generateUri().subscribe(uri => {
@@ -310,7 +313,7 @@ describe('NgQubeeService custom config', () => {
   });
 
   it('should generate a URI with a custom page', (done: DoneFn) => {
-    service.setModel('users');
+    service.setResource('users');
     service.setPage(5);
 
     service.generateUri().subscribe(uri => {
@@ -321,7 +324,7 @@ describe('NgQubeeService custom config', () => {
 
   it('should generate a URI with sorted field ASC', (done: DoneFn) => {
     service.addSort('f', SortEnum.ASC);
-    service.setModel('users');
+    service.setResource('users');
 
     service.generateUri().subscribe(uri => {
       expect(uri).toContain('srt=f');
@@ -330,7 +333,7 @@ describe('NgQubeeService custom config', () => {
   });
 });
 
-describe('NgQubeeService driver validation (Laravel)', () => {
+describe('NgQubeeService driver validation (Spatie)', () => {
   let service: NgQubeeService;
 
   beforeEach(() => {
@@ -341,7 +344,7 @@ describe('NgQubeeService driver validation (Laravel)', () => {
           deps: [NestService],
           provide: NgQubeeService,
           useFactory: (nestService: NestService) =>
-            new NgQubeeService(nestService, new LaravelRequestStrategy(), DriverEnum.LARAVEL)
+            new NgQubeeService(nestService, new SpatieRequestStrategy(), DriverEnum.SPATIE)
         }, NestService
       ]
     });
@@ -377,6 +380,129 @@ describe('NgQubeeService driver validation (Laravel)', () => {
   it('should throw UnsupportedFilterOperatorError when calling deleteOperatorFilters', () => {
     expect(() => service.deleteOperatorFilters('field'))
       .toThrowError(UnsupportedFilterOperatorError);
+  });
+});
+
+describe('NgQubeeService driver validation (Laravel)', () => {
+  let service: NgQubeeService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [BrowserTestingModule],
+      providers: [
+        {
+          deps: [NestService],
+          provide: NgQubeeService,
+          useFactory: (nestService: NestService) =>
+            new NgQubeeService(nestService, new LaravelRequestStrategy(), DriverEnum.LARAVEL)
+        }, NestService
+      ]
+    });
+
+    service = TestBed.inject(NgQubeeService);
+  });
+
+  it('should throw UnsupportedFilterError when calling addFilter', () => {
+    expect(() => service.addFilter('field', 'value'))
+      .toThrowError(UnsupportedFilterError);
+  });
+
+  it('should throw UnsupportedSortError when calling addSort', () => {
+    expect(() => service.addSort('field', SortEnum.ASC))
+      .toThrowError(UnsupportedSortError);
+  });
+
+  it('should throw UnsupportedFieldSelectionError when calling addFields', () => {
+    expect(() => service.addFields('users', ['id']))
+      .toThrowError(UnsupportedFieldSelectionError);
+  });
+
+  it('should throw UnsupportedIncludesError when calling addIncludes', () => {
+    expect(() => service.addIncludes('model1'))
+      .toThrowError(UnsupportedIncludesError);
+  });
+
+  it('should throw UnsupportedFilterOperatorError when calling addFilterOperator', () => {
+    expect(() => service.addFilterOperator('field', FilterOperatorEnum.EQ, 'value'))
+      .toThrowError(UnsupportedFilterOperatorError);
+  });
+
+  it('should throw UnsupportedSelectError when calling addSelect', () => {
+    expect(() => service.addSelect('col1', 'col2'))
+      .toThrowError(UnsupportedSelectError);
+  });
+
+  it('should throw UnsupportedSearchError when calling setSearch', () => {
+    expect(() => service.setSearch('term'))
+      .toThrowError(UnsupportedSearchError);
+  });
+
+  it('should throw UnsupportedFilterError when calling deleteFilters with args', () => {
+    expect(() => service.deleteFilters('field'))
+      .toThrowError(UnsupportedFilterError);
+  });
+
+  it('should throw UnsupportedSortError when calling deleteSorts with args', () => {
+    expect(() => service.deleteSorts('field'))
+      .toThrowError(UnsupportedSortError);
+  });
+
+  it('should throw UnsupportedFieldSelectionError when calling deleteFields', () => {
+    expect(() => service.deleteFields({ users: ['id'] }))
+      .toThrowError(UnsupportedFieldSelectionError);
+  });
+
+  it('should throw UnsupportedFieldSelectionError when calling deleteFieldsByModel', () => {
+    expect(() => service.deleteFieldsByModel('users', 'id'))
+      .toThrowError(UnsupportedFieldSelectionError);
+  });
+
+  it('should throw UnsupportedIncludesError when calling deleteIncludes', () => {
+    expect(() => service.deleteIncludes('model1'))
+      .toThrowError(UnsupportedIncludesError);
+  });
+
+  it('should throw UnsupportedFilterOperatorError when calling deleteOperatorFilters', () => {
+    expect(() => service.deleteOperatorFilters('field'))
+      .toThrowError(UnsupportedFilterOperatorError);
+  });
+
+  it('should throw UnsupportedSelectError when calling deleteSelect', () => {
+    expect(() => service.deleteSelect('col1'))
+      .toThrowError(UnsupportedSelectError);
+  });
+
+  it('should throw UnsupportedSearchError when calling deleteSearch', () => {
+    expect(() => service.deleteSearch())
+      .toThrowError(UnsupportedSearchError);
+  });
+
+  it('should not throw when calling setResource', () => {
+    expect(() => service.setResource('users')).not.toThrow();
+  });
+
+  it('should not throw when calling setBaseUrl', () => {
+    expect(() => service.setBaseUrl('https://api.example.com')).not.toThrow();
+  });
+
+  it('should not throw when calling setLimit', () => {
+    expect(() => service.setLimit(10)).not.toThrow();
+  });
+
+  it('should not throw when calling setPage', () => {
+    expect(() => service.setPage(1)).not.toThrow();
+  });
+
+  it('should not throw when calling reset', () => {
+    expect(() => service.reset()).not.toThrow();
+  });
+
+  it('should not throw when calling generateUri', (done: DoneFn) => {
+    service.setResource('users');
+    service.generateUri().subscribe(uri => {
+      expect(uri).toContain('/users');
+      done();
+    });
   });
 });
 
@@ -424,6 +550,24 @@ describe('NgQubeeService driver validation (NestJS)', () => {
       .toThrowError(UnsupportedIncludesError);
   });
 
+  it('should not throw when calling addFilter', () => {
+    expect(() => service.addFilter('status', 'active')).not.toThrow();
+  });
+
+  it('should not throw when calling addSort', () => {
+    expect(() => service.addSort('name', SortEnum.ASC)).not.toThrow();
+  });
+
+  it('should not throw when calling deleteFilters', () => {
+    service.addFilter('status', 'active');
+    expect(() => service.deleteFilters('status')).not.toThrow();
+  });
+
+  it('should not throw when calling deleteSorts', () => {
+    service.addSort('name', SortEnum.ASC);
+    expect(() => service.deleteSorts('name')).not.toThrow();
+  });
+
   it('should allow NestJS-specific methods', () => {
     expect(() => service.addFilterOperator('age', FilterOperatorEnum.GTE, 18)).not.toThrow();
     expect(() => service.addSelect('col1', 'col2')).not.toThrow();
@@ -434,7 +578,7 @@ describe('NgQubeeService driver validation (NestJS)', () => {
   });
 
   it('should generate a URI with NestJS format', (done: DoneFn) => {
-    service.setModel('users');
+    service.setResource('users');
     service.addFilter('status', 'active');
     service.addSort('name', SortEnum.ASC);
 
@@ -449,7 +593,7 @@ describe('NgQubeeService driver validation (NestJS)', () => {
   });
 
   it('should generate a URI with operator filters', (done: DoneFn) => {
-    service.setModel('users');
+    service.setResource('users');
     service.addFilterOperator('age', FilterOperatorEnum.GTE, 18);
 
     service.generateUri().subscribe(uri => {
@@ -459,7 +603,7 @@ describe('NgQubeeService driver validation (NestJS)', () => {
   });
 
   it('should generate a URI with select', (done: DoneFn) => {
-    service.setModel('users');
+    service.setResource('users');
     service.addSelect('id', 'name', 'email');
 
     service.generateUri().subscribe(uri => {
@@ -469,7 +613,7 @@ describe('NgQubeeService driver validation (NestJS)', () => {
   });
 
   it('should generate a URI with search', (done: DoneFn) => {
-    service.setModel('users');
+    service.setResource('users');
     service.setSearch('john');
 
     service.generateUri().subscribe(uri => {
