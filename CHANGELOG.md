@@ -10,9 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.0.0] - 2026-04-12
 
 ### Added
-- **Multi-Driver Support**: Introduced a driver-based strategy pattern supporting both Laravel (Spatie Query Builder) and NestJS (nestjs-paginate) backends
-  - `DriverEnum.LARAVEL` (default) - backward-compatible Laravel format
+- **Three-Driver Support**: Introduced a driver-based strategy pattern supporting Laravel, Spatie Query Builder, and NestJS backends
+  - `DriverEnum.LARAVEL` - Pagination-only driver (limit + page)
+  - `DriverEnum.SPATIE` - Spatie Query Builder format with filters, sorts, fields, and includes
   - `DriverEnum.NESTJS` - NestJS paginate format with operator filters, search, and flat select
+- **Spatie Request/Response Strategy**: Full URI generation and response parsing for Spatie Query Builder format (previously named "Laravel")
+  - Bracket-notation filters: `filter[field]=value`
+  - Sort format: `sort=field` / `sort=-field`
+  - Per-model field selection: `fields[model]=col1,col2`
+  - Includes: `include=model1,model2`
 - **NestJS Request Strategy**: Full URI generation for nestjs-paginate format
   - Dot-notation filters: `filter.field=value`
   - Operator filters: `filter.field=$operator:value` with 12 operators (`$eq`, `$not`, `$null`, `$in`, `$gt`, `$gte`, `$lt`, `$lte`, `$btw`, `$ilike`, `$sw`, `$contains`)
@@ -26,13 +32,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **FilterOperatorEnum**: Enum with all 12 nestjs-paginate filter operators
 - **IOperatorFilter Interface**: Typed operator filter configuration
 - **IRequestStrategy / IResponseStrategy**: Strategy interfaces for extensibility
-- **Driver Validation Errors**: Five specific error classes for driver-incompatible method calls
-  - `UnsupportedFieldSelectionError` - `addFields()`/`deleteFields()` with NestJS
-  - `UnsupportedIncludesError` - `addIncludes()`/`deleteIncludes()` with NestJS
-  - `UnsupportedFilterOperatorError` - `addFilterOperator()`/`deleteOperatorFilters()` with Laravel
-  - `UnsupportedSelectError` - `addSelect()`/`deleteSelect()` with Laravel
-  - `UnsupportedSearchError` - `setSearch()`/`deleteSearch()` with Laravel
+- **Driver Validation Errors**: Seven specific error classes for driver-incompatible method calls
+  - `UnsupportedFilterError` - `addFilter()`/`deleteFilters()` with Laravel
+  - `UnsupportedSortError` - `addSort()`/`deleteSorts()` with Laravel
+  - `UnsupportedFieldSelectionError` - `addFields()`/`deleteFields()` with NestJS/Laravel
+  - `UnsupportedIncludesError` - `addIncludes()`/`deleteIncludes()` with NestJS/Laravel
+  - `UnsupportedFilterOperatorError` - `addFilterOperator()`/`deleteOperatorFilters()` with Spatie/Laravel
+  - `UnsupportedSelectError` - `addSelect()`/`deleteSelect()` with Spatie/Laravel
+  - `UnsupportedSearchError` - `setSearch()`/`deleteSearch()` with Spatie/Laravel
 - **New Public API Methods**:
+  - `setResource(name)` - Set the API resource (replaces `setModel()`)
   - `addFilterOperator(field, operator, ...values)` - Add operator filter (NestJS)
   - `addSelect(...fields)` - Add flat field selection (NestJS)
   - `setSearch(term)` - Set search term (NestJS)
@@ -40,23 +49,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `deleteSelect(...fields)` - Remove select fields (NestJS)
   - `deleteSearch()` - Clear search term (NestJS)
 - **NestService State Extensions**: `operatorFilters`, `search`, `select` fields in query builder state
-- **Test Coverage**: 62 new tests (197 total) covering all NestJS features, driver validation, and strategy logic
-- **Documentation**: Updated README with NestJS driver section, filter operators, driver validation table
+- **Test Coverage**: Comprehensive tests (257 total) covering all drivers, driver validation, and strategy logic
+- **Documentation**: Updated README with three-driver table, migration guide, and per-driver examples
 
 ### Changed
+- **[Breaking]** `setModel()` renamed to `setResource()` — "model" implied ORM semantics; "resource" better reflects the API path
+- **[Breaking]** `IQueryBuilderState.model` renamed to `IQueryBuilderState.resource`
+- **[Breaking]** `InvalidModelNameError` renamed to `InvalidResourceNameError`
+- **[Breaking]** `driver` is now **required** in `IConfig` — no default driver
 - **[Breaking]** `NgQubeeService` constructor now requires `requestStrategy` and `driver` parameters (injected via DI)
 - **[Breaking]** `PaginationService` constructor now requires `responseStrategy` parameter (injected via DI)
+- **[Breaking]** `addFilter()`, `deleteFilters()`, `addSort()`, `deleteSorts()` now throw `UnsupportedFilterError` / `UnsupportedSortError` when used with the Laravel driver
 - **IQueryBuilderState** extended with `operatorFilters`, `search`, `select` fields
 - **IQueryBuilderConfig** extended with `search`, `select`, `sortBy` keys
-- **IConfig** extended with optional `driver` field
 - `QueryBuilderOptions` extended with `search`, `select`, `sortBy` properties
 - `provideNgQubee()` and `NgQubeeModule.forRoot()` now resolve strategies based on `config.driver`
 - URI generation and response parsing extracted into strategy classes
 
 ### Internal
-- Refactored URI generation from `NgQubeeService` into `LaravelRequestStrategy`
-- Refactored response parsing from `PaginationService` into `LaravelResponseStrategy`
+- Refactored URI generation into `SpatieRequestStrategy`, `LaravelRequestStrategy`, and `NestjsRequestStrategy`
+- Refactored response parsing into `SpatieResponseStrategy`, `LaravelResponseStrategy`, and `NestjsResponseStrategy`
 - Added `NestjsResponseOptions` class for NestJS-specific response key defaults
+- `_assertDriver()` refactored to accept an array of allowed drivers
+
+### Migration Guide (2.x → 3.0)
+
+1. **Choose a driver** — `driver` is now required:
+   ```typescript
+   // Before (2.x)
+   provideNgQubee({})
+   // After (3.0) — use SPATIE for the same behavior as the old LARAVEL default
+   provideNgQubee({ driver: DriverEnum.SPATIE })
+   ```
+2. **Rename `setModel()` → `setResource()`**:
+   ```typescript
+   // Before
+   this.ngQubee.setModel('users');
+   // After
+   this.ngQubee.setResource('users');
+   ```
+3. **Error class rename**: `InvalidModelNameError` → `InvalidResourceNameError`
+4. **Laravel driver is now pagination-only** — if you were using filters, sorts, fields, or includes with the old `DriverEnum.LARAVEL`, switch to `DriverEnum.SPATIE`
 
 ## [2.1.0] - 2025-12-06
 
