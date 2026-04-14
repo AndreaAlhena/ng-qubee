@@ -1,4 +1,3 @@
-import { Inject, Injectable, Optional } from '@angular/core';
 import { BehaviorSubject, Observable, filter, throwError } from 'rxjs';
 
 // Enums
@@ -26,7 +25,6 @@ import { QueryBuilderOptions } from '../models/query-builder-options';
 // Services
 import { NestService } from './nest.service';
 
-@Injectable()
 export class NgQubeeService {
 
   /**
@@ -58,9 +56,9 @@ export class NgQubeeService {
 
   constructor(
     private _nestService: NestService,
-    @Inject('REQUEST_STRATEGY') requestStrategy: IRequestStrategy,
-    @Inject('DRIVER') driver: DriverEnum,
-    @Inject('QUERY_PARAMS_CONFIG') @Optional() options: IQueryBuilderConfig = {}
+    requestStrategy: IRequestStrategy,
+    driver: DriverEnum,
+    options: IQueryBuilderConfig = {}
   ) {
     this._driver = driver;
     this._options = new QueryBuilderOptions(options);
