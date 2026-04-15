@@ -5,6 +5,7 @@
  * request building (URI generation) and response parsing.
  */
 export enum DriverEnum {
+  JSON_API = 'json-api',
   LARAVEL = 'laravel',
   NESTJS = 'nestjs',
   SPATIE = 'spatie'
