@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.0] - 2026-04-18
+
 ### Added
 - **JSON:API Driver** (`DriverEnum.JSON_API`): New driver implementing the [JSON:API specification](https://jsonapi.org/format/) for any compliant backend (Rails, Django, .NET, Java, Elixir, etc.)
   - `JsonApiRequestStrategy`: Bracket pagination (`page[number]=1&page[size]=15`), bracket filters (`filter[field]=value`), comma-separated sorts with `-` prefix, per-type field selection (`fields[type]=col1,col2`), and includes (`include=author,comments.author`)
