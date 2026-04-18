@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `JsonApiResponseStrategy`: Parses nested `meta` and `links` envelope with dot-notation path support and automatic `from`/`to` computation
   - `JsonApiResponseOptions`: Pre-configured response key defaults (`meta.current-page`, `meta.per-page`, `meta.total`, `meta.page-count`, `links.first`, `links.prev`, `links.next`, `links.last`)
 - JSON:API driver supports fields, filters, includes, and sorts (same feature set as Spatie)
+- **Fetch-all pagination for NestJS** (#63): `setLimit(-1)` is now accepted on the NestJS driver and honors nestjs-paginate's convention for returning all items in a single response (server must opt-in via `maxLimit: -1`)
+
+### Changed
+- **Driver-scoped limit validation** (#63): Limit validation moved from `NestService` into each `IRequestStrategy` via a new `validateLimit(limit: number): void` contract. The NestJS strategy accepts integer `-1` or `>= 1`; Laravel, Spatie, and JSON:API strategies continue to accept integer `>= 1`. `NgQubeeService.setLimit()` now delegates to the active strategy's validator, so invalid values throw `InvalidLimitError` at call time
+- `InvalidLimitError` message now reflects which values are accepted by the active driver (adds "or -1 to fetch all items" for drivers that support the sentinel)
 
 ### Internal
 - Removed dead `@Inject` string tokens and `@Injectable()` decorator from `NgQubeeService` and `PaginationService` constructors (services are instantiated via `useFactory`, not Angular DI)
