@@ -1,3 +1,4 @@
+import { InvalidLimitError } from '../errors/invalid-limit.error';
 import { IQueryBuilderState } from '../interfaces/query-builder-state.interface';
 import { IRequestStrategy } from '../interfaces/request-strategy.interface';
 import { QueryBuilderOptions } from '../models/query-builder-options';
@@ -28,5 +29,22 @@ export class LaravelRequestStrategy implements IRequestStrategy {
     const base = state.baseUrl ? `${state.baseUrl}/${state.resource}` : `/${state.resource}`;
 
     return `${base}?${options.limit}=${state.limit}&${options.page}=${state.page}`;
+  }
+
+  /**
+   * Validate that the given limit is accepted by the Laravel driver
+   *
+   * Laravel pagination does not recognize `-1` as a "fetch all" sentinel,
+   * so only positive integers are accepted.
+   *
+   * @param limit - The limit value to validate
+   * @throws {InvalidLimitError} If the value is not a positive integer
+   */
+  public validateLimit(limit: number): void {
+    if (Number.isInteger(limit) && limit >= 1) {
+      return;
+    }
+
+    throw new InvalidLimitError(limit);
   }
 }

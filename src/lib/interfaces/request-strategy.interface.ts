@@ -17,4 +17,16 @@ export interface IRequestStrategy {
    * @returns The composed URI string
    */
   buildUri(state: IQueryBuilderState, options: QueryBuilderOptions): string;
+
+  /**
+   * Assert that the given limit value is valid for this driver
+   *
+   * Validation is driver-scoped because the accepted range differs by
+   * backend: nestjs-paginate treats `-1` as a "fetch all" sentinel, while
+   * other backends (Laravel, Spatie, JSON:API) require a positive integer.
+   *
+   * @param limit - The limit value to validate
+   * @throws {import('../errors/invalid-limit.error').InvalidLimitError} If the value is not accepted by the driver
+   */
+  validateLimit(limit: number): void;
 }

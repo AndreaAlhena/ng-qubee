@@ -8,18 +8,18 @@ import { IRequestStrategy } from '../interfaces/request-strategy.interface';
 import { QueryBuilderOptions } from '../models/query-builder-options';
 
 /**
- * Request strategy for the Spatie Query Builder driver
+ * Request strategy for the JSON:API driver
  *
- * Generates URIs in the Spatie format:
- * - Fields: `fields[model]=col1,col2`
- * - Filters: `filter[field]=value`
- * - Includes: `include=model1,model2`
- * - Sorts: `sort=-field1,field2` (- prefix = DESC)
- * - Pagination: `limit=N&page=N`
+ * Generates URIs in the JSON:API format:
+ * - Fields: `fields[articles]=title,body&fields[people]=name`
+ * - Filters: `filter[status]=active`
+ * - Includes: `include=author,comments.author`
+ * - Pagination: `page[number]=1&page[size]=15`
+ * - Sort: `sort=-created_at,name` (- prefix = DESC)
  *
- * @see https://spatie.be/docs/laravel-query-builder
+ * @see https://jsonapi.org/format/
  */
-export class SpatieRequestStrategy implements IRequestStrategy {
+export class JsonApiRequestStrategy implements IRequestStrategy {
 
   /**
    * Accumulator for composing the URI string
@@ -27,7 +27,7 @@ export class SpatieRequestStrategy implements IRequestStrategy {
   private _uri = '';
 
   /**
-   * Build a URI string from the given state using the Spatie format
+   * Build a URI string from the given state using the JSON:API format
    *
    * @param state - The current query builder state
    * @param options - The query parameter key name configuration
@@ -44,18 +44,18 @@ export class SpatieRequestStrategy implements IRequestStrategy {
     this._parseIncludes(state, options);
     this._parseFields(state, options);
     this._parseFilters(state, options);
-    this._parseLimit(state, options);
-    this._parsePage(state, options);
+    this._parsePagination(state, options);
     this._parseSort(state, options);
 
     return this._uri;
   }
 
   /**
-   * Validate that the given limit is accepted by the Spatie driver
+   * Validate that the given limit is accepted by the JSON:API driver
    *
-   * Spatie query-builder does not recognize `-1` as a "fetch all" sentinel,
-   * so only positive integers are accepted.
+   * The JSON:API specification leaves pagination semantics to the server and
+   * does not define a "fetch all" sentinel, so only positive integers are
+   * accepted.
    *
    * @param limit - The limit value to validate
    * @throws {InvalidLimitError} If the value is not a positive integer
@@ -72,7 +72,7 @@ export class SpatieRequestStrategy implements IRequestStrategy {
    * Parse and append field selection parameters
    *
    * Validates that each field model exists either as the main resource
-   * or in the includes list. Fields are grouped by model in bracket notation.
+   * or in the includes list. Fields are grouped by type in bracket notation.
    *
    * @param state - The current query builder state
    * @param options - The query parameter key name configuration
@@ -142,7 +142,7 @@ export class SpatieRequestStrategy implements IRequestStrategy {
   /**
    * Parse and append include parameters
    *
-   * Generates: `include=model1,model2`
+   * Generates: `include=author,comments.author`
    *
    * @param state - The current query builder state
    * @param options - The query parameter key name configuration
@@ -160,28 +160,21 @@ export class SpatieRequestStrategy implements IRequestStrategy {
   }
 
   /**
-   * Parse and append the limit parameter
+   * Parse and append pagination parameters in JSON:API bracket notation
+   *
+   * Generates: `page[number]=1&page[size]=15`
    *
    * @param state - The current query builder state
    * @param options - The query parameter key name configuration
-   * @returns The generated limit parameter string
+   * @returns The generated pagination parameter string
    */
-  private _parseLimit(state: IQueryBuilderState, options: QueryBuilderOptions): string {
-    const param = `${this._prepend(state)}${options.limit}=${state.limit}`;
-    this._uri += param;
+  private _parsePagination(state: IQueryBuilderState, options: QueryBuilderOptions): string {
+    const pagination = qs.stringify(
+      { [options.page]: { number: state.page, size: state.limit } },
+      { encode: false }
+    );
+    const param = `${this._prepend(state)}${pagination}`;
 
-    return param;
-  }
-
-  /**
-   * Parse and append the page parameter
-   *
-   * @param state - The current query builder state
-   * @param options - The query parameter key name configuration
-   * @returns The generated page parameter string
-   */
-  private _parsePage(state: IQueryBuilderState, options: QueryBuilderOptions): string {
-    const param = `${this._prepend(state)}${options.page}=${state.page}`;
     this._uri += param;
 
     return param;

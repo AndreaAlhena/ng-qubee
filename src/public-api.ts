@@ -43,6 +43,8 @@ export * from './lib/interfaces/response-strategy.interface';
 export * from './lib/interfaces/sort.interface';
 
 // Strategies
+export * from './lib/strategies/json-api-request.strategy';
+export * from './lib/strategies/json-api-response.strategy';
 export * from './lib/strategies/laravel-request.strategy';
 export * from './lib/strategies/laravel-response.strategy';
 export * from './lib/strategies/nestjs-request.strategy';

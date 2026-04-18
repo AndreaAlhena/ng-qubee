@@ -1,4 +1,3 @@
-import { Inject, Injectable, Optional } from '@angular/core';
 import { BehaviorSubject, Observable, filter, throwError } from 'rxjs';
 
 // Enums
@@ -26,7 +25,6 @@ import { QueryBuilderOptions } from '../models/query-builder-options';
 // Services
 import { NestService } from './nest.service';
 
-@Injectable()
 export class NgQubeeService {
 
   /**
@@ -58,9 +56,9 @@ export class NgQubeeService {
 
   constructor(
     private _nestService: NestService,
-    @Inject('REQUEST_STRATEGY') requestStrategy: IRequestStrategy,
-    @Inject('DRIVER') driver: DriverEnum,
-    @Inject('QUERY_PARAMS_CONFIG') @Optional() options: IQueryBuilderConfig = {}
+    requestStrategy: IRequestStrategy,
+    driver: DriverEnum,
+    options: IQueryBuilderConfig = {}
   ) {
     this._driver = driver;
     this._options = new QueryBuilderOptions(options);
@@ -81,7 +79,7 @@ export class NgQubeeService {
   }
 
   /**
-   * Add fields to the select statement for the given model (Spatie only)
+   * Add fields to the select statement for the given model (JSON:API and Spatie only)
    *
    * @param model - Model that holds the fields
    * @param fields - Fields to select
@@ -89,7 +87,7 @@ export class NgQubeeService {
    * @throws {UnsupportedFieldSelectionError} If the active driver does not support per-model field selection
    */
   public addFields(model: string, fields: string[]): this {
-    this._assertDriver([DriverEnum.SPATIE], new UnsupportedFieldSelectionError());
+    this._assertDriver([DriverEnum.JSON_API, DriverEnum.SPATIE], new UnsupportedFieldSelectionError());
 
     if (!fields.length) {
       return this;
@@ -101,9 +99,9 @@ export class NgQubeeService {
   }
 
   /**
-   * Add a filter with the given value(s) (Spatie and NestJS only)
+   * Add a filter with the given value(s) (JSON:API, NestJS, and Spatie)
    *
-   * Produces: `filter[field]=value` (Spatie) or `filter.field=value` (NestJS)
+   * Produces: `filter[field]=value` (JSON:API / Spatie) or `filter.field=value` (NestJS)
    *
    * @param {string} field - Name of the field to filter
    * @param {(string | number | boolean)[]} values - The needle(s)
@@ -111,7 +109,7 @@ export class NgQubeeService {
    * @throws {UnsupportedFilterError} If the active driver does not support filters
    */
   public addFilter(field: string, ...values: (string | number | boolean)[]): this {
-    this._assertDriver([DriverEnum.SPATIE, DriverEnum.NESTJS], new UnsupportedFilterError());
+    this._assertDriver([DriverEnum.JSON_API, DriverEnum.NESTJS, DriverEnum.SPATIE], new UnsupportedFilterError());
 
     if (!values.length) {
       return this;
@@ -148,14 +146,14 @@ export class NgQubeeService {
   }
 
   /**
-   * Add related entities to include in the request (Spatie only)
+   * Add related entities to include in the request (JSON:API and Spatie only)
    *
    * @param {string[]} models - Models to include
    * @returns {this}
    * @throws {UnsupportedIncludesError} If the active driver does not support includes
    */
   public addIncludes(...models: string[]): this {
-    this._assertDriver([DriverEnum.SPATIE], new UnsupportedIncludesError());
+    this._assertDriver([DriverEnum.JSON_API, DriverEnum.SPATIE], new UnsupportedIncludesError());
 
     if (!models.length) {
       return this;
@@ -188,7 +186,7 @@ export class NgQubeeService {
   }
 
   /**
-   * Add a field with a sort criteria (Spatie and NestJS only)
+   * Add a field with a sort criteria (JSON:API, NestJS, and Spatie)
    *
    * @param field - Field to use for sorting
    * @param {SortEnum} order - A value from the SortEnum enumeration
@@ -196,7 +194,7 @@ export class NgQubeeService {
    * @throws {UnsupportedSortError} If the active driver does not support sorts
    */
   public addSort(field: string, order: SortEnum): this {
-    this._assertDriver([DriverEnum.SPATIE, DriverEnum.NESTJS], new UnsupportedSortError());
+    this._assertDriver([DriverEnum.JSON_API, DriverEnum.NESTJS, DriverEnum.SPATIE], new UnsupportedSortError());
 
     this._nestService.addSort({
       field,
@@ -207,7 +205,7 @@ export class NgQubeeService {
   }
 
   /**
-   * Delete selected fields for the given models in the current query builder state (Spatie only)
+   * Delete selected fields for the given models in the current query builder state (JSON:API and Spatie only)
    *
    * ```
    * ngQubeeService.deleteFields({
@@ -221,14 +219,14 @@ export class NgQubeeService {
    * @throws {UnsupportedFieldSelectionError} If the active driver does not support per-model field selection
    */
   public deleteFields(fields: IFields): this {
-    this._assertDriver([DriverEnum.SPATIE], new UnsupportedFieldSelectionError());
+    this._assertDriver([DriverEnum.JSON_API, DriverEnum.SPATIE], new UnsupportedFieldSelectionError());
     this._nestService.deleteFields(fields);
 
     return this;
   }
 
   /**
-   * Delete selected fields for the given model in the current query builder state (Spatie only)
+   * Delete selected fields for the given model in the current query builder state (JSON:API and Spatie only)
    *
    * ```
    * ngQubeeService.deleteFieldsByModel('users', 'email', 'password');
@@ -240,7 +238,7 @@ export class NgQubeeService {
    * @throws {UnsupportedFieldSelectionError} If the active driver does not support per-model field selection
    */
   public deleteFieldsByModel(model: string, ...fields: string[]): this {
-    this._assertDriver([DriverEnum.SPATIE], new UnsupportedFieldSelectionError());
+    this._assertDriver([DriverEnum.JSON_API, DriverEnum.SPATIE], new UnsupportedFieldSelectionError());
 
     if (!fields.length) {
       return this;
@@ -254,14 +252,14 @@ export class NgQubeeService {
   }
 
   /**
-   * Remove given filters from the query builder state (Spatie and NestJS only)
+   * Remove given filters from the query builder state (JSON:API, NestJS, and Spatie)
    *
    * @param {string[]} filters - Filters to remove
    * @returns {this}
    * @throws {UnsupportedFilterError} If the active driver does not support filters
    */
   public deleteFilters(...filters: string[]): this {
-    this._assertDriver([DriverEnum.SPATIE, DriverEnum.NESTJS], new UnsupportedFilterError());
+    this._assertDriver([DriverEnum.JSON_API, DriverEnum.NESTJS, DriverEnum.SPATIE], new UnsupportedFilterError());
 
     if (!filters.length) {
       return this;
@@ -273,14 +271,14 @@ export class NgQubeeService {
   }
 
   /**
-   * Remove selected related models from the query builder state (Spatie only)
+   * Remove selected related models from the query builder state (JSON:API and Spatie only)
    *
    * @param {string[]} includes - Models to remove
    * @returns {this}
    * @throws {UnsupportedIncludesError} If the active driver does not support includes
    */
   public deleteIncludes(...includes: string[]): this {
-    this._assertDriver([DriverEnum.SPATIE], new UnsupportedIncludesError());
+    this._assertDriver([DriverEnum.JSON_API, DriverEnum.SPATIE], new UnsupportedIncludesError());
 
     if (!includes.length) {
       return this;
@@ -343,14 +341,14 @@ export class NgQubeeService {
   }
 
   /**
-   * Remove sort rules from the query builder state (Spatie and NestJS only)
+   * Remove sort rules from the query builder state (JSON:API, NestJS, and Spatie)
    *
    * @param sorts - Fields used for sorting to remove
    * @returns {this}
    * @throws {UnsupportedSortError} If the active driver does not support sorts
    */
   public deleteSorts(...sorts: string[]): this {
-    this._assertDriver([DriverEnum.SPATIE, DriverEnum.NESTJS], new UnsupportedSortError());
+    this._assertDriver([DriverEnum.JSON_API, DriverEnum.NESTJS, DriverEnum.SPATIE], new UnsupportedSortError());
     this._nestService.deleteSorts(...sorts);
 
     return this;
@@ -396,10 +394,17 @@ export class NgQubeeService {
   /**
    * Set the items per page number
    *
-   * @param limit - Number of items per page
+   * Validation is delegated to the active request strategy because the
+   * accepted range is driver-specific: nestjs-paginate additionally accepts
+   * `-1` as a "fetch all" sentinel, while Laravel, Spatie, and JSON:API
+   * require a positive integer.
+   *
+   * @param limit - Number of items per page (or `-1` to fetch all, NestJS only)
    * @returns {this}
+   * @throws {import('../errors/invalid-limit.error').InvalidLimitError} If the value is not accepted by the active driver
    */
   public setLimit(limit: number): this {
+    this._requestStrategy.validateLimit(limit);
     this._nestService.limit = limit;
 
     return this;

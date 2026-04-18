@@ -3,10 +3,10 @@ import { InvalidLimitError } from '../errors/invalid-limit.error';
 import { UnselectableModelError } from '../errors/unselectable-model.error';
 import { IQueryBuilderState } from '../interfaces/query-builder-state.interface';
 import { QueryBuilderOptions } from '../models/query-builder-options';
-import { SpatieRequestStrategy } from './spatie-request.strategy';
+import { JsonApiRequestStrategy } from './json-api-request.strategy';
 
-describe('SpatieRequestStrategy', () => {
-  let strategy: SpatieRequestStrategy;
+describe('JsonApiRequestStrategy', () => {
+  let strategy: JsonApiRequestStrategy;
   let options: QueryBuilderOptions;
 
   const baseState: IQueryBuilderState = {
@@ -17,21 +17,21 @@ describe('SpatieRequestStrategy', () => {
     limit: 15,
     operatorFilters: [],
     page: 1,
-    resource: 'users',
+    resource: 'articles',
     search: '',
     select: [],
     sorts: []
   };
 
   beforeEach(() => {
-    strategy = new SpatieRequestStrategy();
+    strategy = new JsonApiRequestStrategy();
     options = new QueryBuilderOptions({});
   });
 
-  it('should generate a basic URI with resource, limit, and page', () => {
+  it('should generate a basic URI with resource and bracket pagination', () => {
     const uri = strategy.buildUri(baseState, options);
 
-    expect(uri).toBe('/users?limit=15&page=1');
+    expect(uri).toBe('/articles?page[number]=1&page[size]=15');
   });
 
   it('should throw an error if resource is not set', () => {
@@ -44,42 +44,56 @@ describe('SpatieRequestStrategy', () => {
 
   // Includes
   describe('includes', () => {
-    it('should generate URI with includes', () => {
-      const state = { ...baseState, includes: ['model1', 'model2', 'model3'] };
+    it('should generate URI with a single include', () => {
+      const state = { ...baseState, includes: ['author'] };
       const uri = strategy.buildUri(state, options);
 
-      expect(uri).toBe('/users?include=model1,model2,model3&limit=15&page=1');
+      expect(uri).toContain('include=author');
+    });
+
+    it('should generate URI with multiple includes', () => {
+      const state = { ...baseState, includes: ['author', 'comments'] };
+      const uri = strategy.buildUri(state, options);
+
+      expect(uri).toContain('include=author,comments');
+    });
+
+    it('should generate URI with nested dot-notation includes', () => {
+      const state = { ...baseState, includes: ['author', 'comments.author'] };
+      const uri = strategy.buildUri(state, options);
+
+      expect(uri).toContain('include=author,comments.author');
     });
   });
 
   // Fields
   describe('fields', () => {
-    it('should generate URI with fields (single model)', () => {
+    it('should generate URI with fields for a single type', () => {
       const state = {
         ...baseState,
-        fields: { users: ['email', 'name'] }
+        fields: { articles: ['title', 'body'] }
       };
       const uri = strategy.buildUri(state, options);
 
-      expect(uri).toContain('fields[users]=email,name');
+      expect(uri).toContain('fields[articles]=title,body');
     });
 
-    it('should generate URI with fields (multiple models with includes)', () => {
+    it('should generate URI with fields for multiple types with includes', () => {
       const state = {
         ...baseState,
-        fields: { users: ['email', 'name'], settings: ['field1', 'field2'] },
-        includes: ['settings']
+        fields: { articles: ['title', 'body'], people: ['name'] },
+        includes: ['people']
       };
       const uri = strategy.buildUri(state, options);
 
-      expect(uri).toContain('fields[users]=email,name');
-      expect(uri).toContain('fields[settings]=field1,field2');
+      expect(uri).toContain('fields[articles]=title,body');
+      expect(uri).toContain('fields[people]=name');
     });
 
-    it('should throw UnselectableModelError if field model is not resource or in includes', () => {
+    it('should throw UnselectableModelError if field type is not resource or in includes', () => {
       const state = {
         ...baseState,
-        fields: { users: ['email'], settings: ['field1'] }
+        fields: { articles: ['title'], people: ['name'] }
       };
 
       expect(() => strategy.buildUri(state, options)).toThrowError(UnselectableModelError);
@@ -89,28 +103,28 @@ describe('SpatieRequestStrategy', () => {
   // Filters
   describe('filters', () => {
     it('should generate URI with a single filter', () => {
-      const state = { ...baseState, filters: { id: [1, 2, 3] } };
+      const state = { ...baseState, filters: { status: ['active'] } };
       const uri = strategy.buildUri(state, options);
 
-      expect(uri).toContain('filter[id]=1,2,3');
+      expect(uri).toContain('filter[status]=active');
     });
 
     it('should generate URI with multiple filters', () => {
       const state = {
         ...baseState,
-        filters: { id: [1, 2, 3], name: ['doe'] }
+        filters: { status: ['active'], category: ['tech'] }
       };
       const uri = strategy.buildUri(state, options);
 
-      expect(uri).toContain('filter[id]=1,2,3');
-      expect(uri).toContain('filter[name]=doe');
+      expect(uri).toContain('filter[status]=active');
+      expect(uri).toContain('filter[category]=tech');
     });
 
     it('should generate URI with boolean filter value', () => {
-      const state = { ...baseState, filters: { isActive: [true] } };
+      const state = { ...baseState, filters: { published: [true] } };
       const uri = strategy.buildUri(state, options);
 
-      expect(uri).toContain('filter[isActive]=true');
+      expect(uri).toContain('filter[published]=true');
     });
   });
 
@@ -119,45 +133,45 @@ describe('SpatieRequestStrategy', () => {
     it('should generate URI with ASC sort', () => {
       const state = {
         ...baseState,
-        sorts: [{ field: 'f', order: SortEnum.ASC }]
+        sorts: [{ field: 'name', order: SortEnum.ASC }]
       };
       const uri = strategy.buildUri(state, options);
 
-      expect(uri).toContain('sort=f');
+      expect(uri).toContain('sort=name');
     });
 
     it('should generate URI with DESC sort', () => {
       const state = {
         ...baseState,
-        sorts: [{ field: 'f', order: SortEnum.DESC }]
+        sorts: [{ field: 'created_at', order: SortEnum.DESC }]
       };
       const uri = strategy.buildUri(state, options);
 
-      expect(uri).toContain('sort=-f');
+      expect(uri).toContain('sort=-created_at');
     });
 
     it('should generate URI with mixed sorts', () => {
       const state = {
         ...baseState,
         sorts: [
-          { field: 'f1', order: SortEnum.DESC },
-          { field: 'f2', order: SortEnum.ASC }
+          { field: 'created_at', order: SortEnum.DESC },
+          { field: 'name', order: SortEnum.ASC }
         ]
       };
       const uri = strategy.buildUri(state, options);
 
-      expect(uri).toContain('sort=-f1,f2');
+      expect(uri).toContain('sort=-created_at,name');
     });
   });
 
   // Pagination
   describe('pagination', () => {
-    it('should include custom limit and page', () => {
+    it('should include custom page number and page size', () => {
       const state = { ...baseState, limit: 25, page: 3 };
       const uri = strategy.buildUri(state, options);
 
-      expect(uri).toContain('limit=25');
-      expect(uri).toContain('page=3');
+      expect(uri).toContain('page[number]=3');
+      expect(uri).toContain('page[size]=25');
     });
   });
 
@@ -167,7 +181,7 @@ describe('SpatieRequestStrategy', () => {
       const state = { ...baseState, baseUrl: 'https://api.example.com' };
       const uri = strategy.buildUri(state, options);
 
-      expect(uri).toContain('https://api.example.com/users?');
+      expect(uri).toContain('https://api.example.com/articles?');
     });
   });
 
@@ -177,83 +191,77 @@ describe('SpatieRequestStrategy', () => {
       const customOptions = new QueryBuilderOptions({ fields: 'fld' });
       const state = {
         ...baseState,
-        fields: { users: ['email', 'name'] }
+        fields: { articles: ['title', 'body'] }
       };
       const uri = strategy.buildUri(state, customOptions);
 
-      expect(uri).toContain('fld[users]=email,name');
+      expect(uri).toContain('fld[articles]=title,body');
     });
 
     it('should use custom filter key', () => {
       const customOptions = new QueryBuilderOptions({ filters: 'flt' });
-      const state = { ...baseState, filters: { id: [1, 2, 3] } };
+      const state = { ...baseState, filters: { status: ['active'] } };
       const uri = strategy.buildUri(state, customOptions);
 
-      expect(uri).toContain('flt[id]=1,2,3');
+      expect(uri).toContain('flt[status]=active');
     });
 
     it('should use custom includes key', () => {
       const customOptions = new QueryBuilderOptions({ includes: 'inc' });
-      const state = { ...baseState, includes: ['model1', 'model2'] };
+      const state = { ...baseState, includes: ['author', 'comments'] };
       const uri = strategy.buildUri(state, customOptions);
 
-      expect(uri).toContain('inc=model1,model2');
+      expect(uri).toContain('inc=author,comments');
     });
 
-    it('should use custom limit key', () => {
-      const customOptions = new QueryBuilderOptions({ limit: 'lmt' });
+    it('should use custom page key for bracket pagination', () => {
+      const customOptions = new QueryBuilderOptions({ page: 'pg' });
       const uri = strategy.buildUri(baseState, customOptions);
 
-      expect(uri).toContain('lmt=15');
-    });
-
-    it('should use custom page key', () => {
-      const customOptions = new QueryBuilderOptions({ page: 'p' });
-      const uri = strategy.buildUri(baseState, customOptions);
-
-      expect(uri).toContain('p=1');
+      expect(uri).toContain('pg[number]=1');
+      expect(uri).toContain('pg[size]=15');
     });
 
     it('should use custom sort key', () => {
       const customOptions = new QueryBuilderOptions({ sort: 'srt' });
       const state = {
         ...baseState,
-        sorts: [{ field: 'f', order: SortEnum.ASC }]
+        sorts: [{ field: 'name', order: SortEnum.ASC }]
       };
       const uri = strategy.buildUri(state, customOptions);
 
-      expect(uri).toContain('srt=f');
+      expect(uri).toContain('srt=name');
     });
   });
 
   // Combined query
   describe('combined queries', () => {
-    it('should build a complete Spatie query URI', () => {
+    it('should build a complete JSON:API query URI', () => {
       const state: IQueryBuilderState = {
         baseUrl: 'https://api.example.com',
-        fields: { users: ['id', 'email'] },
-        filters: { status: ['active'] },
+        fields: { articles: ['title', 'body'] },
+        filters: { status: ['published'] },
         includes: [],
         limit: 10,
         operatorFilters: [],
         page: 2,
-        resource: 'users',
+        resource: 'articles',
         search: '',
         select: [],
-        sorts: [{ field: 'name', order: SortEnum.ASC }]
+        sorts: [{ field: 'created_at', order: SortEnum.DESC }]
       };
       const uri = strategy.buildUri(state, options);
 
-      expect(uri).toContain('https://api.example.com/users?');
-      expect(uri).toContain('fields[users]=id,email');
-      expect(uri).toContain('filter[status]=active');
-      expect(uri).toContain('sort=name');
-      expect(uri).toContain('limit=10');
-      expect(uri).toContain('page=2');
+      expect(uri).toContain('https://api.example.com/articles?');
+      expect(uri).toContain('fields[articles]=title,body');
+      expect(uri).toContain('filter[status]=published');
+      expect(uri).toContain('sort=-created_at');
+      expect(uri).toContain('page[number]=2');
+      expect(uri).toContain('page[size]=10');
     });
   });
 
-  // validateLimit (Spatie does not recognize -1)
+  // validateLimit (JSON:API spec does not define a "fetch all" sentinel)
   describe('validateLimit', () => {
     it('should accept 1', () => {
       expect(() => strategy.validateLimit(1)).not.toThrow();

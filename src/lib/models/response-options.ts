@@ -45,6 +45,32 @@ export class ResponseOptions {
 }
 
 /**
+ * Pre-configured ResponseOptions for the JSON:API driver
+ *
+ * Uses dot-notation paths to access nested values in the JSON:API response format.
+ * JSON:API meta key names vary by implementation; these defaults cover the most
+ * common conventions and can be fully customised via `IPaginationConfig`.
+ */
+export class JsonApiResponseOptions extends ResponseOptions {
+    constructor(options: IPaginationConfig) {
+        super({
+            currentPage: options.currentPage || 'meta.current-page',
+            data: options.data || 'data',
+            firstPageUrl: options.firstPageUrl || 'links.first',
+            from: options.from || 'meta.from',
+            lastPage: options.lastPage || 'meta.page-count',
+            lastPageUrl: options.lastPageUrl || 'links.last',
+            nextPageUrl: options.nextPageUrl || 'links.next',
+            path: options.path || 'path',
+            perPage: options.perPage || 'meta.per-page',
+            prevPageUrl: options.prevPageUrl || 'links.prev',
+            to: options.to || 'meta.to',
+            total: options.total || 'meta.total'
+        });
+    }
+}
+
+/**
  * Pre-configured ResponseOptions for the NestJS driver
  *
  * Uses dot-notation paths to access nested values in the NestJS response format.

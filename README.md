@@ -15,7 +15,7 @@ NgQubee is a Query Builder for Angular. Easily compose your API requests without
 - Pagination ready
 - Reactive, as the results are emitted with a RxJS Observable
 - Developed with a test-driven approach
-- **Multi-driver support**: Laravel (pagination-only), Spatie Query Builder, and NestJS (nestjs-paginate)
+- **Multi-driver support**: JSON:API, Laravel (pagination-only), Spatie Query Builder, and NestJS (nestjs-paginate)
 
 ## We love it, we use it ❤️
 NgQubee uses some open source projects to work properly:
@@ -41,15 +41,45 @@ npm  i  ng-qubee
 
 ## Drivers
 
-NgQubee supports three drivers out of the box. A driver **must** be specified in the configuration:
+NgQubee supports four drivers out of the box. A driver **must** be specified in the configuration:
 
 | Driver | Backend | Request Format | Response Format |
 |---|---|---|---|
+| **JSON:API** | Any JSON:API-compliant backend | `filter[field]=value`, `sort=-field`, `page[number]=N&page[size]=N` | Nested: `{ data, meta: {...}, links: {...} }` |
 | **Laravel** | Plain Laravel pagination | `limit=N&page=N` (pagination only) | Flat: `{ data, current_page, total, ... }` |
 | **Spatie** | Spatie Query Builder | `filter[field]=value`, `sort=-field` | Flat: `{ data, current_page, total, ... }` |
 | **NestJS** | nestjs-paginate | `filter.field=$operator:value`, `sortBy=field:DESC` | Nested: `{ data, meta: {...}, links: {...} }` |
 
 ## Usage
+
+### JSON:API Driver
+
+The JSON:API driver generates URIs compatible with any [JSON:API](https://jsonapi.org/format/)-compliant backend (Rails, Django, .NET, Java, Elixir, etc.):
+
+```typescript
+import { DriverEnum } from 'ng-qubee';
+
+// Standalone approach
+bootstrapApplication(AppComponent, {
+  providers: [provideNgQubee({ driver: DriverEnum.JSON_API })]
+});
+
+// Module approach
+@NgModule({
+  imports: [
+    NgQubeeModule.forRoot({ driver: DriverEnum.JSON_API })
+  ]
+})
+export class AppModule {}
+```
+
+The JSON:API driver supports:
+
+-  **Filters** are composed as `filter[field]=value`
+-  **Fields** are composed as `fields[type]=col1,col2`
+-  **Includes** are composed as `include=author,comments.author`
+-  **Sort** is composed as `sort=-created_at,name` (`-` prefix = DESC)
+-  **Pagination** uses bracket notation: `page[number]=1&page[size]=15`
 
 ### Laravel Driver (pagination-only)
 
@@ -166,7 +196,7 @@ this._ngQubeeService.setResource('users');
 This is necessary to build the prefix of the URI (/users)
 
 
-### Fields (Spatie only)
+### Fields (JSON:API + Spatie)
 Fields can be selected as following:
 
 ```typescript
@@ -184,7 +214,7 @@ this._ngQubeeService.addSelect('id', 'name', 'email');
 
 Will output _/users?select=id,name,email_
 
-### Filters (Spatie + NestJS)
+### Filters (JSON:API + Spatie + NestJS)
 Filters are applied as following:
 
 ```typescript
@@ -234,7 +264,7 @@ this._ngQubeeService.addFilterOperator('name', FilterOperatorEnum.ILIKE, 'john')
 
 **Available operators:** `$eq`, `$not`, `$null`, `$in`, `$gt`, `$gte`, `$lt`, `$lte`, `$btw`, `$ilike`, `$sw`, `$contains`
 
-### Includes (Spatie only)
+### Includes (JSON:API + Spatie)
 Ask to include related models with:
 
 ```typescript
@@ -252,7 +282,7 @@ this._ngQubeeService.setSearch('john doe');
 
 Will output _/users?search=john doe_
 
-### Sort (Spatie + NestJS)
+### Sort (JSON:API + Spatie + NestJS)
 Sort elements as following:
 
 ```typescript
@@ -297,11 +327,11 @@ this._ngQubeeService.generateUri().subscribe(uri  => console.log(uri));
 All query features have corresponding delete methods:
 
 ```typescript
-// Spatie + NestJS
+// JSON:API + Spatie + NestJS
 this._ngQubeeService.deleteFilters('status', 'role');
 this._ngQubeeService.deleteSorts('created_at');
 
-// Spatie only
+// JSON:API + Spatie only
 this._ngQubeeService.deleteFields({ users: ['email'] });
 this._ngQubeeService.deleteFieldsByModel('users', 'email');
 this._ngQubeeService.deleteIncludes('profile');
@@ -323,15 +353,15 @@ this._ngQubeeService.reset();
 
 Calling a method that is not supported by the active driver throws a descriptive error immediately:
 
-| Method | Laravel | Spatie | NestJS |
-|---|---|---|---|
-| `addFilter()` / `deleteFilters()` | throws `UnsupportedFilterError` | supported | supported |
-| `addSort()` / `deleteSorts()` | throws `UnsupportedSortError` | supported | supported |
-| `addFields()` / `deleteFields()` / `deleteFieldsByModel()` | throws `UnsupportedFieldSelectionError` | supported | throws `UnsupportedFieldSelectionError` |
-| `addIncludes()` / `deleteIncludes()` | throws `UnsupportedIncludesError` | supported | throws `UnsupportedIncludesError` |
-| `addFilterOperator()` / `deleteOperatorFilters()` | throws `UnsupportedFilterOperatorError` | throws `UnsupportedFilterOperatorError` | supported |
-| `addSelect()` / `deleteSelect()` | throws `UnsupportedSelectError` | throws `UnsupportedSelectError` | supported |
-| `setSearch()` / `deleteSearch()` | throws `UnsupportedSearchError` | throws `UnsupportedSearchError` | supported |
+| Method | JSON:API | Laravel | Spatie | NestJS |
+|---|---|---|---|---|
+| `addFilter()` / `deleteFilters()` | supported | throws `UnsupportedFilterError` | supported | supported |
+| `addSort()` / `deleteSorts()` | supported | throws `UnsupportedSortError` | supported | supported |
+| `addFields()` / `deleteFields()` / `deleteFieldsByModel()` | supported | throws `UnsupportedFieldSelectionError` | supported | throws `UnsupportedFieldSelectionError` |
+| `addIncludes()` / `deleteIncludes()` | supported | throws `UnsupportedIncludesError` | supported | throws `UnsupportedIncludesError` |
+| `addFilterOperator()` / `deleteOperatorFilters()` | throws `UnsupportedFilterOperatorError` | throws `UnsupportedFilterOperatorError` | throws `UnsupportedFilterOperatorError` | supported |
+| `addSelect()` / `deleteSelect()` | throws `UnsupportedSelectError` | throws `UnsupportedSelectError` | throws `UnsupportedSelectError` | supported |
+| `setSearch()` / `deleteSearch()` | throws `UnsupportedSearchError` | throws `UnsupportedSearchError` | throws `UnsupportedSearchError` | supported |
 
 ## Pagination
 If you are working with an API that supports pagination, we have got you covered 😉 NgQubee provides:
@@ -367,6 +397,30 @@ When using the Laravel or Spatie driver, the paginated collection will check for
 - last_page - Last page number
 - first_page_url - URL to the first page
 - last_page_url - URL to the last page
+
+### JSON:API Response Format
+
+When using the JSON:API driver, the PaginationService automatically parses nested responses:
+
+```json
+{
+  "data": [...],
+  "meta": {
+    "current-page": 1,
+    "per-page": 10,
+    "total": 100,
+    "page-count": 10
+  },
+  "links": {
+    "first": "http://api.com/articles?page[number]=1&page[size]=10",
+    "prev": null,
+    "next": "http://api.com/articles?page[number]=2&page[size]=10",
+    "last": "http://api.com/articles?page[number]=10&page[size]=10"
+  }
+}
+```
+
+The `from` and `to` values are computed automatically from `current-page` and `per-page` when not present in the response. JSON:API meta key names vary by implementation; defaults can be fully customised via response configuration.
 
 ### NestJS Response Format
 
@@ -426,6 +480,7 @@ NgQubee is fully typed and exports all public interfaces, enums, and types for T
 import { DriverEnum, FilterOperatorEnum, SortEnum } from 'ng-qubee';
 
 // Driver options
+DriverEnum.JSON_API // 'json-api'
 DriverEnum.LARAVEL  // 'laravel' (pagination only)
 DriverEnum.SPATIE   // 'spatie'
 DriverEnum.NESTJS   // 'nestjs'

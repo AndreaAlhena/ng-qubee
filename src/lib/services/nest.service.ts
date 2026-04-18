@@ -1,6 +1,5 @@
 import { Injectable, Signal, WritableSignal, computed, signal } from '@angular/core';
 
-import { InvalidLimitError } from '../errors/invalid-limit.error';
 import { InvalidResourceNameError } from '../errors/invalid-resource-name.error';
 import { InvalidPageNumberError } from '../errors/invalid-page-number.error';
 import { IFields } from '../interfaces/fields.interface';
@@ -60,15 +59,17 @@ export class NestService {
 
   /**
    * Set the limit for paginated results
-   * Must be a positive integer greater than 0
+   *
+   * This setter performs a raw state write. Validation of the value is the
+   * responsibility of the active request strategy and is enforced upstream
+   * by `NgQubeeService.setLimit()`, because the accepted range depends on
+   * the driver (e.g. nestjs-paginate accepts `-1` for "fetch all").
    *
    * @param {number} limit - The number of items per page
-   * @throws {InvalidLimitError} If limit is not a positive integer
    * @example
    * service.limit = 25;
    */
   set limit(limit: number) {
-    this._validateLimit(limit);
     this._nest.update(nest => ({
       ...nest,
       limit
@@ -111,19 +112,6 @@ export class NestService {
 
   private _clone<T>(obj: T): T {
     return JSON.parse( JSON.stringify(obj) );
-  }
-
-  /**
-   * Validates that the limit is a positive integer
-   *
-   * @param {number} limit - The limit value to validate
-   * @throws {InvalidLimitError} If limit is not a positive integer
-   * @private
-   */
-  private _validateLimit(limit: number): void {
-    if (!Number.isInteger(limit) || limit < 1) {
-      throw new InvalidLimitError(limit);
-    }
   }
 
   /**
