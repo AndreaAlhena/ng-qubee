@@ -35,6 +35,4 @@ jobs:
 
       - name: Publish to npm
         working-directory: dist/ng-qubee
-        run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
