@@ -35,4 +35,4 @@ jobs:
 
       - name: Publish to npm
         working-directory: dist/ng-qubee
-        run: npm publish --access public
+        run: npm publish --provenance --access public
