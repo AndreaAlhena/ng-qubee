@@ -315,6 +315,28 @@ Default values are automatically added to the query:
 
 Always expect your query to include _limit=15&page=1_
 
+#### Fetch all (NestJS only)
+
+When the active driver is NestJS, `setLimit(-1)` is accepted as a "fetch all items" sentinel, following the [nestjs-paginate](https://github.com/ppetzold/nestjs-paginate) convention (the server must opt in via `maxLimit: -1`):
+
+```typescript
+// NestJS driver only
+this._ngQubeeService.setLimit(-1);
+```
+
+JSON:API, Laravel, and Spatie drivers reject `-1` and throw `InvalidLimitError`.
+
+#### Limit validation
+
+Limit validation is driver-scoped — each request strategy enforces its own accepted range and invalid values throw `InvalidLimitError` immediately when passed to `setLimit()`:
+
+| Driver | Accepted limit values |
+|---|---|
+| NestJS | integer `-1` (fetch all) or `>= 1` |
+| JSON:API / Laravel / Spatie | integer `>= 1` |
+
+Non-integer values, zero, negative numbers (other than `-1` for NestJS), `NaN`, and `Infinity` are all rejected.
+
 ### Retrieving data
 URI is generated invoking the _generateUri_ method of the NgQubeeService. An observable is returned and the URI will be emitted:
 
