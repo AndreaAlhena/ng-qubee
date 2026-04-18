@@ -1,4 +1,5 @@
 import { SortEnum } from '../enums/sort.enum';
+import { InvalidLimitError } from '../errors/invalid-limit.error';
 import { IOperatorFilter } from '../interfaces/operator-filter.interface';
 import { IQueryBuilderState } from '../interfaces/query-builder-state.interface';
 import { IRequestStrategy } from '../interfaces/request-strategy.interface';
@@ -48,6 +49,23 @@ export class NestjsRequestStrategy implements IRequestStrategy {
     this._parsePage(state, options);
 
     return this._uri;
+  }
+
+  /**
+   * Validate that the given limit is accepted by nestjs-paginate
+   *
+   * Accepts any integer `>= 1` as a page size, plus `-1` which nestjs-paginate
+   * interprets as "fetch all items" (server must opt-in via `maxLimit: -1`).
+   *
+   * @param limit - The limit value to validate
+   * @throws {InvalidLimitError} If the value is not an integer, or is 0, or is a negative number other than -1
+   */
+  public validateLimit(limit: number): void {
+    if (Number.isInteger(limit) && (limit === -1 || limit >= 1)) {
+      return;
+    }
+
+    throw new InvalidLimitError(limit, true);
   }
 
   /**

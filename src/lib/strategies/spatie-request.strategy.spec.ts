@@ -1,4 +1,5 @@
 import { SortEnum } from '../enums/sort.enum';
+import { InvalidLimitError } from '../errors/invalid-limit.error';
 import { UnselectableModelError } from '../errors/unselectable-model.error';
 import { IQueryBuilderState } from '../interfaces/query-builder-state.interface';
 import { QueryBuilderOptions } from '../models/query-builder-options';
@@ -249,6 +250,41 @@ describe('SpatieRequestStrategy', () => {
       expect(uri).toContain('sort=name');
       expect(uri).toContain('limit=10');
       expect(uri).toContain('page=2');
+    });
+  });
+
+  // validateLimit (Spatie does not recognize -1)
+  describe('validateLimit', () => {
+    it('should accept 1', () => {
+      expect(() => strategy.validateLimit(1)).not.toThrow();
+    });
+
+    it('should accept a large positive integer', () => {
+      expect(() => strategy.validateLimit(1_000_000)).not.toThrow();
+    });
+
+    it('should throw InvalidLimitError for -1', () => {
+      expect(() => strategy.validateLimit(-1)).toThrowError(InvalidLimitError);
+    });
+
+    it('should throw InvalidLimitError for 0', () => {
+      expect(() => strategy.validateLimit(0)).toThrowError(InvalidLimitError);
+    });
+
+    it('should throw InvalidLimitError for a decimal', () => {
+      expect(() => strategy.validateLimit(15.5)).toThrowError(InvalidLimitError);
+    });
+
+    it('should throw InvalidLimitError for NaN', () => {
+      expect(() => strategy.validateLimit(NaN)).toThrowError(InvalidLimitError);
+    });
+
+    it('should throw InvalidLimitError for Infinity', () => {
+      expect(() => strategy.validateLimit(Infinity)).toThrowError(InvalidLimitError);
+    });
+
+    it('should not mention the -1 sentinel in the error message', () => {
+      expect(() => strategy.validateLimit(0)).not.toThrowError(/-1 to fetch all items/);
     });
   });
 });

@@ -1,6 +1,7 @@
 import * as qs from 'qs';
 
 import { SortEnum } from '../enums/sort.enum';
+import { InvalidLimitError } from '../errors/invalid-limit.error';
 import { UnselectableModelError } from '../errors/unselectable-model.error';
 import { IQueryBuilderState } from '../interfaces/query-builder-state.interface';
 import { IRequestStrategy } from '../interfaces/request-strategy.interface';
@@ -47,6 +48,24 @@ export class JsonApiRequestStrategy implements IRequestStrategy {
     this._parseSort(state, options);
 
     return this._uri;
+  }
+
+  /**
+   * Validate that the given limit is accepted by the JSON:API driver
+   *
+   * The JSON:API specification leaves pagination semantics to the server and
+   * does not define a "fetch all" sentinel, so only positive integers are
+   * accepted.
+   *
+   * @param limit - The limit value to validate
+   * @throws {InvalidLimitError} If the value is not a positive integer
+   */
+  public validateLimit(limit: number): void {
+    if (Number.isInteger(limit) && limit >= 1) {
+      return;
+    }
+
+    throw new InvalidLimitError(limit);
   }
 
   /**
