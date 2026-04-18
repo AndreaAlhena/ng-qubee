@@ -394,10 +394,17 @@ export class NgQubeeService {
   /**
    * Set the items per page number
    *
-   * @param limit - Number of items per page
+   * Validation is delegated to the active request strategy because the
+   * accepted range is driver-specific: nestjs-paginate additionally accepts
+   * `-1` as a "fetch all" sentinel, while Laravel, Spatie, and JSON:API
+   * require a positive integer.
+   *
+   * @param limit - Number of items per page (or `-1` to fetch all, NestJS only)
    * @returns {this}
+   * @throws {import('../errors/invalid-limit.error').InvalidLimitError} If the value is not accepted by the active driver
    */
   public setLimit(limit: number): this {
+    this._requestStrategy.validateLimit(limit);
     this._nestService.limit = limit;
 
     return this;

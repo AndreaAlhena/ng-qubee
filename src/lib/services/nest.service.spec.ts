@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 
 import { FilterOperatorEnum } from '../enums/filter-operator.enum';
 import { SortEnum } from '../enums/sort.enum';
-import { InvalidLimitError } from '../errors/invalid-limit.error';
 import { InvalidPageNumberError } from '../errors/invalid-page-number.error';
 import { InvalidResourceNameError } from '../errors/invalid-resource-name.error';
 import { NestService } from './nest.service';
@@ -435,45 +434,8 @@ describe('NestService', () => {
       });
     });
 
-    describe('limit validation', () => {
-      it('should throw InvalidLimitError for zero', () => {
-        expect(() => {
-          service.limit = 0;
-        }).toThrowError(InvalidLimitError);
-      });
-
-      it('should throw InvalidLimitError for negative numbers', () => {
-        expect(() => {
-          service.limit = -10;
-        }).toThrowError(InvalidLimitError);
-      });
-
-      it('should throw InvalidLimitError for decimal numbers', () => {
-        expect(() => {
-          service.limit = 15.5;
-        }).toThrowError(InvalidLimitError);
-      });
-
-      it('should throw InvalidLimitError for NaN', () => {
-        expect(() => {
-          service.limit = NaN;
-        }).toThrowError(InvalidLimitError);
-      });
-
-      it('should accept valid limit (1)', () => {
-        expect(() => {
-          service.limit = 1;
-        }).not.toThrow();
-        expect(service.nest().limit).toBe(1);
-      });
-
-      it('should accept valid limit (50)', () => {
-        expect(() => {
-          service.limit = 50;
-        }).not.toThrow();
-        expect(service.nest().limit).toBe(50);
-      });
-    });
+    // Limit validation is driver-scoped and lives on each IRequestStrategy;
+    // see the per-strategy specs and ng-qubee.service.spec.ts for coverage.
   });
 
   // Edge Case Tests

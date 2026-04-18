@@ -12,6 +12,7 @@ import { UnsupportedIncludesError } from '../errors/unsupported-includes.error';
 import { UnsupportedSearchError } from '../errors/unsupported-search.error';
 import { UnsupportedSelectError } from '../errors/unsupported-select.error';
 import { UnsupportedSortError } from '../errors/unsupported-sort.error';
+import { InvalidLimitError } from '../errors/invalid-limit.error';
 import { LaravelRequestStrategy } from '../strategies/laravel-request.strategy';
 import { NestjsRequestStrategy } from '../strategies/nestjs-request.strategy';
 import { SpatieRequestStrategy } from '../strategies/spatie-request.strategy';
@@ -381,6 +382,10 @@ describe('NgQubeeService driver validation (Spatie)', () => {
     expect(() => service.deleteOperatorFilters('field'))
       .toThrowError(UnsupportedFilterOperatorError);
   });
+
+  it('should delegate setLimit validation to the active strategy (rejects -1 for Spatie)', () => {
+    expect(() => service.setLimit(-1)).toThrowError(InvalidLimitError);
+  });
 });
 
 describe('NgQubeeService driver validation (Laravel)', () => {
@@ -618,6 +623,16 @@ describe('NgQubeeService driver validation (NestJS)', () => {
 
     service.generateUri().subscribe(uri => {
       expect(uri).toContain('search=john');
+      done();
+    });
+  });
+
+  it('should accept setLimit(-1) (fetch all) and propagate to the generated URI', (done: DoneFn) => {
+    service.setResource('users');
+    expect(() => service.setLimit(-1)).not.toThrow();
+
+    service.generateUri().subscribe(uri => {
+      expect(uri).toContain('limit=-1');
       done();
     });
   });
