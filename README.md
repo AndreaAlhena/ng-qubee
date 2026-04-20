@@ -176,6 +176,27 @@ The NestJS driver generates URIs compatible with [nestjs-paginate](https://githu
 -  **Limit** is composed as `limit=15`
 -  **Page** is composed as `page=1`
 
+### Per-component instances
+
+By default, `provideNgQubee()` / `NgQubeeModule.forRoot()` register `NgQubeeService` at the environment injector, so every component that injects it shares the same query-builder state. If you need a dedicated instance — e.g. a feature component whose filters and pagination must not bleed into the app-wide one — spread `provideNgQubeeInstance()` into the component's `providers`:
+
+```typescript
+import { Component } from '@angular/core';
+import { NgQubeeService, provideNgQubeeInstance } from 'ng-qubee';
+
+@Component({
+  selector: 'app-product-list',
+  standalone: true,
+  providers: [...provideNgQubeeInstance()],
+  template: '...'
+})
+export class ProductListComponent {
+  constructor(private _qb: NgQubeeService) {}
+}
+```
+
+The component gets its own `NgQubeeService`, `NestService`, and `PaginationService`. The driver, strategies, and options are inherited from the environment injector configured by `provideNgQubee()` — you still configure the library once at bootstrap.
+
 ## Query Builder API
 
 For composing queries, the first step is to inject the proper NgQubeeService:
