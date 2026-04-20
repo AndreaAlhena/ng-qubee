@@ -42,6 +42,9 @@ export * from './lib/interfaces/request-strategy.interface';
 export * from './lib/interfaces/response-strategy.interface';
 export * from './lib/interfaces/sort.interface';
 
+// Injection tokens
+export * from './lib/tokens/ng-qubee.tokens';
+
 // Strategies
 export * from './lib/strategies/json-api-request.strategy';
 export * from './lib/strategies/json-api-response.strategy';
