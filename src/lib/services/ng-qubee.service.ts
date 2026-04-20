@@ -1,3 +1,4 @@
+import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, filter, throwError } from 'rxjs';
 
 // Enums
@@ -16,7 +17,6 @@ import { UnsupportedSortError } from '../errors/unsupported-sort.error';
 
 // Interfaces
 import { IFields } from '../interfaces/fields.interface';
-import { IQueryBuilderConfig } from '../interfaces/query-builder-config.interface';
 import { IRequestStrategy } from '../interfaces/request-strategy.interface';
 
 // Models
@@ -25,6 +25,10 @@ import { QueryBuilderOptions } from '../models/query-builder-options';
 // Services
 import { NestService } from './nest.service';
 
+// Tokens
+import { NG_QUBEE_DRIVER, NG_QUBEE_REQUEST_OPTIONS, NG_QUBEE_REQUEST_STRATEGY } from '../tokens/ng-qubee.tokens';
+
+@Injectable()
 export class NgQubeeService {
 
   /**
@@ -56,12 +60,12 @@ export class NgQubeeService {
 
   constructor(
     private _nestService: NestService,
-    requestStrategy: IRequestStrategy,
-    driver: DriverEnum,
-    options: IQueryBuilderConfig = {}
+    @Inject(NG_QUBEE_REQUEST_STRATEGY) requestStrategy: IRequestStrategy,
+    @Inject(NG_QUBEE_DRIVER) driver: DriverEnum,
+    @Inject(NG_QUBEE_REQUEST_OPTIONS) options: QueryBuilderOptions = new QueryBuilderOptions({})
   ) {
     this._driver = driver;
-    this._options = new QueryBuilderOptions(options);
+    this._options = options;
     this._requestStrategy = requestStrategy;
   }
 

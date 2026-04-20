@@ -1,9 +1,12 @@
+import { Inject, Injectable } from '@angular/core';
+
 import { IPaginatedObject } from '../interfaces/paginated-object.interface';
-import { IPaginationConfig } from '../interfaces/pagination-config.interface';
 import { IResponseStrategy } from '../interfaces/response-strategy.interface';
 import { PaginatedCollection } from '../models/paginated-collection';
 import { ResponseOptions } from '../models/response-options';
+import { NG_QUBEE_RESPONSE_OPTIONS, NG_QUBEE_RESPONSE_STRATEGY } from '../tokens/ng-qubee.tokens';
 
+@Injectable()
 export class PaginationService {
 
   /**
@@ -17,10 +20,10 @@ export class PaginationService {
   private _responseStrategy: IResponseStrategy;
 
   constructor(
-    responseStrategy: IResponseStrategy,
-    options: IPaginationConfig = {}
+    @Inject(NG_QUBEE_RESPONSE_STRATEGY) responseStrategy: IResponseStrategy,
+    @Inject(NG_QUBEE_RESPONSE_OPTIONS) options: ResponseOptions = new ResponseOptions({})
   ) {
-    this._options = new ResponseOptions(options);
+    this._options = options;
     this._responseStrategy = responseStrategy;
   }
 

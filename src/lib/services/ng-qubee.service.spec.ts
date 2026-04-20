@@ -13,6 +13,7 @@ import { UnsupportedSearchError } from '../errors/unsupported-search.error';
 import { UnsupportedSelectError } from '../errors/unsupported-select.error';
 import { UnsupportedSortError } from '../errors/unsupported-sort.error';
 import { InvalidLimitError } from '../errors/invalid-limit.error';
+import { QueryBuilderOptions } from '../models/query-builder-options';
 import { LaravelRequestStrategy } from '../strategies/laravel-request.strategy';
 import { NestjsRequestStrategy } from '../strategies/nestjs-request.strategy';
 import { SpatieRequestStrategy } from '../strategies/spatie-request.strategy';
@@ -257,7 +258,7 @@ describe('NgQubeeService custom config', () => {
           deps: [NestService],
           provide: NgQubeeService,
           useFactory: (nestService: NestService) =>
-            new NgQubeeService(nestService, new SpatieRequestStrategy(), DriverEnum.SPATIE, {
+            new NgQubeeService(nestService, new SpatieRequestStrategy(), DriverEnum.SPATIE, new QueryBuilderOptions({
               appends: 'app',
               fields: 'fld',
               filters: 'flt',
@@ -265,7 +266,7 @@ describe('NgQubeeService custom config', () => {
               limit: 'lmt',
               page: 'p',
               sort: 'srt'
-            })
+            }))
         }, NestService
       ]
     });
