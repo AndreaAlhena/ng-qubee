@@ -1,12 +1,14 @@
-import { EnvironmentProviders, makeEnvironmentProviders } from '@angular/core';
+import { EnvironmentProviders, Provider, makeEnvironmentProviders } from '@angular/core';
 
 import { DriverEnum } from './enums/driver.enum';
 import { IConfig } from './interfaces/config.interface';
+import { IPaginationConfig } from './interfaces/pagination-config.interface';
 import { IRequestStrategy } from './interfaces/request-strategy.interface';
 import { IResponseStrategy } from './interfaces/response-strategy.interface';
-import { JsonApiResponseOptions, NestjsResponseOptions } from './models/response-options';
-import { NgQubeeService } from './services/ng-qubee.service';
+import { QueryBuilderOptions } from './models/query-builder-options';
+import { JsonApiResponseOptions, NestjsResponseOptions, ResponseOptions } from './models/response-options';
 import { NestService } from './services/nest.service';
+import { NgQubeeService } from './services/ng-qubee.service';
 import { PaginationService } from './services/pagination.service';
 import { JsonApiRequestStrategy } from './strategies/json-api-request.strategy';
 import { JsonApiResponseStrategy } from './strategies/json-api-response.strategy';
@@ -16,6 +18,13 @@ import { NestjsRequestStrategy } from './strategies/nestjs-request.strategy';
 import { NestjsResponseStrategy } from './strategies/nestjs-response.strategy';
 import { SpatieRequestStrategy } from './strategies/spatie-request.strategy';
 import { SpatieResponseStrategy } from './strategies/spatie-response.strategy';
+import {
+  NG_QUBEE_DRIVER,
+  NG_QUBEE_REQUEST_OPTIONS,
+  NG_QUBEE_REQUEST_STRATEGY,
+  NG_QUBEE_RESPONSE_OPTIONS,
+  NG_QUBEE_RESPONSE_STRATEGY
+} from './tokens/ng-qubee.tokens';
 
 /**
  * Resolve the request strategy instance for the given driver
@@ -53,6 +62,53 @@ function resolveResponseStrategy(driver: DriverEnum): IResponseStrategy {
     case DriverEnum.LARAVEL:
       return new LaravelResponseStrategy();
   }
+}
+
+/**
+ * Resolve the driver-specific `ResponseOptions` instance
+ *
+ * @param driver - The pagination driver
+ * @param responseConfig - User-supplied response key overrides
+ * @returns A pre-built ResponseOptions (or driver-specific subclass)
+ */
+function resolveResponseOptions(driver: DriverEnum, responseConfig: IPaginationConfig): ResponseOptions {
+  if (driver === DriverEnum.JSON_API) {
+    return new JsonApiResponseOptions(responseConfig);
+  }
+
+  if (driver === DriverEnum.NESTJS) {
+    return new NestjsResponseOptions(responseConfig);
+  }
+
+  return new ResponseOptions(responseConfig);
+}
+
+/**
+ * Build the core provider list shared by `provideNgQubee()` and
+ * `NgQubeeModule.forRoot()`
+ *
+ * Exposes the driver, strategies, and options via injection tokens so that
+ * consumers can request a component-scoped instance of the services through
+ * `provideNgQubeeInstance()`.
+ *
+ * @param config - Configuration object compliant to the IConfig interface
+ * @returns An array of Providers for the environment injector
+ */
+export function buildNgQubeeProviders(config: IConfig): Provider[] {
+  const driver = config.driver;
+  const requestOptions = new QueryBuilderOptions(Object.assign({}, config.request));
+  const responseOptions = resolveResponseOptions(driver, Object.assign({}, config.response));
+
+  return [
+    { provide: NG_QUBEE_DRIVER, useValue: driver },
+    { provide: NG_QUBEE_REQUEST_STRATEGY, useValue: resolveRequestStrategy(driver) },
+    { provide: NG_QUBEE_REQUEST_OPTIONS, useValue: requestOptions },
+    { provide: NG_QUBEE_RESPONSE_STRATEGY, useValue: resolveResponseStrategy(driver) },
+    { provide: NG_QUBEE_RESPONSE_OPTIONS, useValue: responseOptions },
+    NestService,
+    NgQubeeService,
+    PaginationService
+  ];
 }
 
 /**
@@ -99,39 +155,36 @@ function resolveResponseStrategy(driver: DriverEnum): IResponseStrategy {
  * @returns A set of providers to setup NgQubee
  */
 export function provideNgQubee(config: IConfig): EnvironmentProviders {
-  const driver = config.driver;
-  const requestStrategy = resolveRequestStrategy(driver);
-  const responseStrategy = resolveResponseStrategy(driver);
+  return makeEnvironmentProviders(buildNgQubeeProviders(config));
+}
 
-  return makeEnvironmentProviders([
-    {
-      provide: NestService,
-      useClass: NestService
-    },
-    {
-      deps: [NestService],
-      provide: NgQubeeService,
-      useFactory: (nestService: NestService) =>
-        new NgQubeeService(
-          nestService,
-          requestStrategy,
-          driver,
-          Object.assign({}, config.request)
-        )
-    },
-    {
-      provide: PaginationService,
-      useFactory: () => {
-        const responseConfig = Object.assign({}, config.response);
-
-        if (driver === DriverEnum.JSON_API) {
-          return new PaginationService(responseStrategy, new JsonApiResponseOptions(responseConfig));
-        }
-
-        return driver === DriverEnum.NESTJS
-          ? new PaginationService(responseStrategy, new NestjsResponseOptions(responseConfig))
-          : new PaginationService(responseStrategy, responseConfig);
-      }
-    }
-  ]);
+/**
+ * Providers for a component-scoped NgQubee instance
+ *
+ * Use this inside a standalone component's `providers: [...]` to get a
+ * dedicated `NgQubeeService` (and its `NestService` / `PaginationService`
+ * collaborators) whose query-builder and pagination state does not bleed
+ * with the app-wide shared instance provided by `provideNgQubee()`.
+ *
+ * @usageNotes
+ *
+ * ```
+ * @Component({
+ *   standalone: true,
+ *   providers: [...provideNgQubeeInstance()]
+ * })
+ * export class MyFeatureComponent {
+ *   constructor(private _qb: NgQubeeService) {}
+ * }
+ * ```
+ *
+ * The driver, strategies, and options are inherited from the environment
+ * injector (`provideNgQubee()` at root), so only the service instances are
+ * re-created at the component level.
+ *
+ * @publicApi
+ * @returns A provider array to spread into a component's `providers`
+ */
+export function provideNgQubeeInstance(): Provider[] {
+  return [NestService, NgQubeeService, PaginationService];
 }

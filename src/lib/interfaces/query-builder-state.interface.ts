@@ -18,6 +18,10 @@ export interface IQueryBuilderState {
     filters: IFilters;
     /** Related models to include (Spatie only) */
     includes: string[];
+    /** Whether the last paginated response has synced `lastPage` into state */
+    isLastPageKnown: boolean;
+    /** Last page number known from the most recent paginated response; only meaningful when `isLastPageKnown` is true */
+    lastPage: number;
     /** Number of items per page (all drivers) */
     limit: number;
     /** Filters with explicit operators (NestJS only) */

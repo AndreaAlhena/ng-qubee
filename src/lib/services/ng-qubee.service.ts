@@ -1,3 +1,4 @@
+import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, filter, throwError } from 'rxjs';
 
 // Enums
@@ -6,6 +7,8 @@ import { FilterOperatorEnum } from '../enums/filter-operator.enum';
 import { SortEnum } from '../enums/sort.enum';
 
 // Errors
+import { InvalidPageNumberError } from '../errors/invalid-page-number.error';
+import { PaginationNotSyncedError } from '../errors/pagination-not-synced.error';
 import { UnsupportedFieldSelectionError } from '../errors/unsupported-field-selection.error';
 import { UnsupportedFilterError } from '../errors/unsupported-filter.error';
 import { UnsupportedFilterOperatorError } from '../errors/unsupported-filter-operator.error';
@@ -16,7 +19,6 @@ import { UnsupportedSortError } from '../errors/unsupported-sort.error';
 
 // Interfaces
 import { IFields } from '../interfaces/fields.interface';
-import { IQueryBuilderConfig } from '../interfaces/query-builder-config.interface';
 import { IRequestStrategy } from '../interfaces/request-strategy.interface';
 
 // Models
@@ -25,6 +27,10 @@ import { QueryBuilderOptions } from '../models/query-builder-options';
 // Services
 import { NestService } from './nest.service';
 
+// Tokens
+import { NG_QUBEE_DRIVER, NG_QUBEE_REQUEST_OPTIONS, NG_QUBEE_REQUEST_STRATEGY } from '../tokens/ng-qubee.tokens';
+
+@Injectable()
 export class NgQubeeService {
 
   /**
@@ -56,12 +62,12 @@ export class NgQubeeService {
 
   constructor(
     private _nestService: NestService,
-    requestStrategy: IRequestStrategy,
-    driver: DriverEnum,
-    options: IQueryBuilderConfig = {}
+    @Inject(NG_QUBEE_REQUEST_STRATEGY) requestStrategy: IRequestStrategy,
+    @Inject(NG_QUBEE_DRIVER) driver: DriverEnum,
+    @Inject(NG_QUBEE_REQUEST_OPTIONS) options: QueryBuilderOptions = new QueryBuilderOptions({})
   ) {
     this._driver = driver;
-    this._options = new QueryBuilderOptions(options);
+    this._options = options;
     this._requestStrategy = requestStrategy;
   }
 
@@ -118,6 +124,7 @@ export class NgQubeeService {
     this._nestService.addFilters({
       [field]: values
     });
+    this._nestService.page = 1;
 
     return this;
   }
@@ -141,6 +148,7 @@ export class NgQubeeService {
     }
 
     this._nestService.addOperatorFilters([{ field, operator, values }]);
+    this._nestService.page = 1;
 
     return this;
   }
@@ -200,8 +208,19 @@ export class NgQubeeService {
       field,
       order
     });
+    this._nestService.page = 1;
 
     return this;
+  }
+
+  /**
+   * Get the current page number
+   *
+   * @remarks Always safe to call. Thin accessor over the internal state's `page` field.
+   * @returns The current page number
+   */
+  public currentPage(): number {
+    return this._nestService.nest().page;
   }
 
   /**
@@ -266,6 +285,7 @@ export class NgQubeeService {
     }
 
     this._nestService.deleteFilters(...filters);
+    this._nestService.page = 1;
 
     return this;
   }
@@ -304,6 +324,7 @@ export class NgQubeeService {
     }
 
     this._nestService.deleteOperatorFilters(...fields);
+    this._nestService.page = 1;
 
     return this;
   }
@@ -317,6 +338,7 @@ export class NgQubeeService {
   public deleteSearch(): this {
     this._assertDriver([DriverEnum.NESTJS], new UnsupportedSearchError());
     this._nestService.deleteSearch();
+    this._nestService.page = 1;
 
     return this;
   }
@@ -350,6 +372,19 @@ export class NgQubeeService {
   public deleteSorts(...sorts: string[]): this {
     this._assertDriver([DriverEnum.JSON_API, DriverEnum.NESTJS, DriverEnum.SPATIE], new UnsupportedSortError());
     this._nestService.deleteSorts(...sorts);
+    this._nestService.page = 1;
+
+    return this;
+  }
+
+  /**
+   * Navigate to the first page (page 1)
+   *
+   * @remarks Never throws. Idempotent when already on page 1.
+   * @returns {this}
+   */
+  public firstPage(): this {
+    this._nestService.page = 1;
 
     return this;
   }
@@ -366,6 +401,128 @@ export class NgQubeeService {
     } catch (error) {
       return throwError(() => error);
     }
+  }
+
+  /**
+   * Navigate directly to the specified page
+   *
+   * Validates integer/positive via the existing `setPage` path, and
+   * additionally rejects values that exceed `state.lastPage` when
+   * pagination bounds are known.
+   *
+   * @param n - Target page number
+   * @returns {this}
+   * @throws {InvalidPageNumberError} If `n` is not a positive integer, or if `n > state.lastPage` when `state.isLastPageKnown` is true
+   */
+  public goToPage(n: number): this {
+    const state = this._nestService.nest();
+
+    if (state.isLastPageKnown && n > state.lastPage) {
+      throw new InvalidPageNumberError(n);
+    }
+
+    this._nestService.page = n;
+
+    return this;
+  }
+
+  /**
+   * Check whether a next page exists
+   *
+   * @remarks Template-safe. Returns `true` when pagination bounds are unknown (conservative default — keeps a "Next" button enabled before the first `paginate()` call).
+   * @returns `true` if `state.page < state.lastPage` when bounds are known, or `true` when bounds are unknown
+   */
+  public hasNextPage(): boolean {
+    const state = this._nestService.nest();
+
+    return !state.isLastPageKnown || state.page < state.lastPage;
+  }
+
+  /**
+   * Check whether a previous page exists
+   *
+   * @remarks Always safe. Does not require a synced paginated response.
+   * @returns `true` if `state.page > 1`
+   */
+  public hasPreviousPage(): boolean {
+    return this._nestService.nest().page > 1;
+  }
+
+  /**
+   * Check whether the current page is the first page
+   *
+   * @remarks Always safe. Does not require a synced paginated response.
+   * @returns `true` if `state.page === 1`
+   */
+  public isFirstPage(): boolean {
+    return this._nestService.nest().page === 1;
+  }
+
+  /**
+   * Check whether the current page is the last page
+   *
+   * @remarks Template-safe. Returns `false` when pagination bounds are unknown (no paginated response has been synced yet) — keeps "Next" navigation unblocked until the first `paginate()` call syncs.
+   * @returns `true` only when `state.isLastPageKnown` and `state.page === state.lastPage`
+   */
+  public isLastPage(): boolean {
+    const state = this._nestService.nest();
+
+    return state.isLastPageKnown && state.page === state.lastPage;
+  }
+
+  /**
+   * Navigate to the last page known from the most recent paginated response
+   *
+   * @remarks Requires at least one `PaginationService.paginate()` call to have synced `state.lastPage`. Before that, the bound is unknown and this method throws.
+   * @returns {this}
+   * @throws {PaginationNotSyncedError} If `state.isLastPageKnown` is false (no paginated response has been synced yet)
+   */
+  public lastPage(): this {
+    const state = this._nestService.nest();
+
+    if (!state.isLastPageKnown) {
+      throw new PaginationNotSyncedError('navigate to last page');
+    }
+
+    this._nestService.page = state.lastPage;
+
+    return this;
+  }
+
+  /**
+   * Navigate to the next page
+   *
+   * @remarks Never throws. Idempotent at the known last page (no-op). Pair with `hasNextPage()` for a disable-state binding.
+   * @returns {this}
+   */
+  public nextPage(): this {
+    const state = this._nestService.nest();
+
+    if (state.isLastPageKnown && state.page >= state.lastPage) {
+      return this;
+    }
+
+    this._nestService.page = state.page + 1;
+
+    return this;
+  }
+
+  /**
+   * Navigate to the previous page
+   *
+   * @remarks Never throws. Idempotent at page 1 (floored). Pair with `hasPreviousPage()` for a disable-state binding.
+   * @returns {this}
+   */
+  public previousPage(): this {
+    const state = this._nestService.nest();
+
+    if (state.page <= 1) {
+      return this;
+    }
+
+    this._nestService.page = state.page - 1;
+
+    return this;
   }
 
   /**
@@ -406,6 +563,7 @@ export class NgQubeeService {
   public setLimit(limit: number): this {
     this._requestStrategy.validateLimit(limit);
     this._nestService.limit = limit;
+    this._nestService.page = 1;
 
     return this;
   }
@@ -430,6 +588,7 @@ export class NgQubeeService {
    */
   public setResource(resource: string): this {
     this._nestService.resource = resource;
+    this._nestService.page = 1;
 
     return this;
   }
@@ -446,7 +605,25 @@ export class NgQubeeService {
   public setSearch(search: string): this {
     this._assertDriver([DriverEnum.NESTJS], new UnsupportedSearchError());
     this._nestService.setSearch(search);
+    this._nestService.page = 1;
 
     return this;
+  }
+
+  /**
+   * Get the total number of pages reported by the most recent paginated response
+   *
+   * @remarks Throws when called before any `paginate()` has synced a value. For a non-throwing read in a template, read `nest().isLastPageKnown` first as a guard.
+   * @returns The last page number
+   * @throws {PaginationNotSyncedError} If `state.isLastPageKnown` is false (no paginated response has been synced yet)
+   */
+  public totalPages(): number {
+    const state = this._nestService.nest();
+
+    if (!state.isLastPageKnown) {
+      throw new PaginationNotSyncedError('read totalPages');
+    }
+
+    return state.lastPage;
   }
 }
