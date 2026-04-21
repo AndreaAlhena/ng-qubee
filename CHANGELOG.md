@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **BEHAVIOR CHANGE — auto-reset `page` to 1 on result-set-changing mutations** (#65): `setLimit()`, `setResource()`, `setSearch()`, `deleteSearch()`, `addFilter()`, `deleteFilters()`, `addFilterOperator()`, `deleteOperatorFilters()`, `addSort()`, and `deleteSorts()` now internally reset `state.page` to `1` after mutating. Rationale: staying on page 5 of an old result set after a filter/sort/limit/search change is almost always a bug. **Migration:** if your code relied on `page` persisting across one of these mutations, call `setPage(n)` explicitly afterwards. Methods that change the record *shape* (`addFields`, `addIncludes`, `addSelect`, etc.) do NOT reset `page` — unchanged behavior.
+- `NgQubeeService`, `NestService`, and `PaginationService` are now `@Injectable()` and constructed by Angular DI from tokens instead of a closure-captured `useFactory`. `provideNgQubee()` and `NgQubeeModule.forRoot()` still accept the same `IConfig` and behave identically at the root level; the refactor unlocks component-scoped instances (#64)
+- `NgQubeeService` constructor now takes a pre-built `QueryBuilderOptions` (was `IQueryBuilderConfig`); `PaginationService` constructor now takes a pre-built `ResponseOptions` (was `IPaginationConfig`). Both default to a fresh empty instance when omitted. Affects direct manual construction only — the `provideNgQubee()` entry point is unchanged
+- `PaginationService.paginate()` now auto-syncs the parsed `page` and `lastPage` back into `NestService` (#65), so pagination navigation helpers on `NgQubeeService` work without consumer bookkeeping. Only positive integer `lastPage` values flip the `isLastPageKnown` flag; server-emitted `0` (empty-collection edge case) and absent fields leave the flag `false`
+
+### Added
+- **Per-component service instances** (#64): new `provideNgQubeeInstance()` helper returns a provider array for use in a standalone component's `providers: [...]`, yielding a dedicated `NgQubeeService` + `NestService` + `PaginationService` whose state does not bleed with the app-wide instance. Driver, strategies, and options are inherited from the environment injector, so the library is still configured once at bootstrap via `provideNgQubee()` / `NgQubeeModule.forRoot()`
+- Public `InjectionToken`s backing the DI wiring: `NG_QUBEE_DRIVER`, `NG_QUBEE_REQUEST_STRATEGY`, `NG_QUBEE_REQUEST_OPTIONS`, `NG_QUBEE_RESPONSE_STRATEGY`, `NG_QUBEE_RESPONSE_OPTIONS`
+- **Pagination navigation helpers on `NgQubeeService`** (#65): `nextPage()`, `previousPage()`, `firstPage()`, `lastPage()`, `goToPage(n)` — fluent navigation methods that return `this`. `nextPage()` / `previousPage()` are idempotent at bounds; `lastPage()` and `goToPage(n)` enforce bounds when known
+- **Pagination state predicates and accessors on `NgQubeeService`** (#65): `isFirstPage()`, `isLastPage()`, `hasNextPage()`, `hasPreviousPage()`, `currentPage()`, `totalPages()`. Predicates are template-safe with conservative defaults when pagination bounds have not yet been synced. `totalPages()` throws `PaginationNotSyncedError` before the first `paginate()` call
+- **Pagination state tracking** (#65): `IQueryBuilderState` gains `lastPage: number` and `isLastPageKnown: boolean` fields, populated automatically by `PaginationService.paginate()`
+- `PaginationNotSyncedError` — new public error class thrown by `lastPage()` and `totalPages()` when called before any paginated response has been synced into state. Exported from the library root
+
 ## [3.1.0] - 2026-04-18
 
 ### Added

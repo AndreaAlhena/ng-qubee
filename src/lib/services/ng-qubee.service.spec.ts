@@ -13,6 +13,9 @@ import { UnsupportedSearchError } from '../errors/unsupported-search.error';
 import { UnsupportedSelectError } from '../errors/unsupported-select.error';
 import { UnsupportedSortError } from '../errors/unsupported-sort.error';
 import { InvalidLimitError } from '../errors/invalid-limit.error';
+import { InvalidPageNumberError } from '../errors/invalid-page-number.error';
+import { PaginationNotSyncedError } from '../errors/pagination-not-synced.error';
+import { QueryBuilderOptions } from '../models/query-builder-options';
 import { LaravelRequestStrategy } from '../strategies/laravel-request.strategy';
 import { NestjsRequestStrategy } from '../strategies/nestjs-request.strategy';
 import { SpatieRequestStrategy } from '../strategies/spatie-request.strategy';
@@ -257,7 +260,7 @@ describe('NgQubeeService custom config', () => {
           deps: [NestService],
           provide: NgQubeeService,
           useFactory: (nestService: NestService) =>
-            new NgQubeeService(nestService, new SpatieRequestStrategy(), DriverEnum.SPATIE, {
+            new NgQubeeService(nestService, new SpatieRequestStrategy(), DriverEnum.SPATIE, new QueryBuilderOptions({
               appends: 'app',
               fields: 'fld',
               filters: 'flt',
@@ -265,7 +268,7 @@ describe('NgQubeeService custom config', () => {
               limit: 'lmt',
               page: 'p',
               sort: 'srt'
-            })
+            }))
         }, NestService
       ]
     });
@@ -635,5 +638,372 @@ describe('NgQubeeService driver validation (NestJS)', () => {
       expect(uri).toContain('limit=-1');
       done();
     });
+  });
+});
+
+describe('NgQubeeService pagination navigation helpers', () => {
+  let service: NgQubeeService;
+  let nestService: NestService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [BrowserTestingModule],
+      providers: [
+        {
+          deps: [NestService],
+          provide: NgQubeeService,
+          useFactory: (nest: NestService) =>
+            new NgQubeeService(nest, new NestjsRequestStrategy(), DriverEnum.NESTJS)
+        }, NestService
+      ]
+    });
+
+    service = TestBed.inject(NgQubeeService);
+    nestService = TestBed.inject(NestService);
+  });
+
+  describe('currentPage', () => {
+    it('should return state.page', () => {
+      expect(service.currentPage()).toBe(1);
+      service.setPage(7);
+      expect(service.currentPage()).toBe(7);
+    });
+  });
+
+  describe('firstPage', () => {
+    it('should set page to 1', () => {
+      service.setPage(5);
+      service.firstPage();
+      expect(service.currentPage()).toBe(1);
+    });
+
+    it('should be idempotent when already on page 1', () => {
+      service.firstPage();
+      expect(service.currentPage()).toBe(1);
+    });
+
+    it('should return this for chaining', () => {
+      expect(service.firstPage()).toBe(service);
+    });
+  });
+
+  describe('nextPage', () => {
+    it('should increment page by 1 when bounds are unknown', () => {
+      service.setPage(3);
+      service.nextPage();
+      expect(service.currentPage()).toBe(4);
+    });
+
+    it('should no-op when already at lastPage (bounds known)', () => {
+      nestService.syncLastPage(5);
+      service.setPage(5);
+      service.nextPage();
+      expect(service.currentPage()).toBe(5);
+    });
+
+    it('should increment when below lastPage (bounds known)', () => {
+      nestService.syncLastPage(5);
+      service.setPage(3);
+      service.nextPage();
+      expect(service.currentPage()).toBe(4);
+    });
+
+    it('should return this for chaining', () => {
+      expect(service.nextPage()).toBe(service);
+    });
+  });
+
+  describe('previousPage', () => {
+    it('should decrement page by 1', () => {
+      service.setPage(4);
+      service.previousPage();
+      expect(service.currentPage()).toBe(3);
+    });
+
+    it('should be floored at 1 (idempotent on page 1)', () => {
+      service.previousPage();
+      expect(service.currentPage()).toBe(1);
+    });
+
+    it('should return this for chaining', () => {
+      expect(service.previousPage()).toBe(service);
+    });
+  });
+
+  describe('lastPage', () => {
+    it('should throw PaginationNotSyncedError before any paginate()', () => {
+      expect(() => service.lastPage()).toThrowError(PaginationNotSyncedError);
+    });
+
+    it('should set page to state.lastPage after sync', () => {
+      nestService.syncLastPage(8);
+      service.lastPage();
+      expect(service.currentPage()).toBe(8);
+    });
+
+    it('should return this for chaining after sync', () => {
+      nestService.syncLastPage(3);
+      expect(service.lastPage()).toBe(service);
+    });
+  });
+
+  describe('goToPage', () => {
+    it('should set page to n', () => {
+      service.goToPage(4);
+      expect(service.currentPage()).toBe(4);
+    });
+
+    it('should throw InvalidPageNumberError for 0', () => {
+      expect(() => service.goToPage(0)).toThrowError(InvalidPageNumberError);
+    });
+
+    it('should throw InvalidPageNumberError for a negative page', () => {
+      expect(() => service.goToPage(-3)).toThrowError(InvalidPageNumberError);
+    });
+
+    it('should throw InvalidPageNumberError for a non-integer', () => {
+      expect(() => service.goToPage(2.5)).toThrowError(InvalidPageNumberError);
+    });
+
+    it('should throw InvalidPageNumberError when n > lastPage and bounds known', () => {
+      nestService.syncLastPage(5);
+      expect(() => service.goToPage(10)).toThrowError(InvalidPageNumberError);
+    });
+
+    it('should allow n === lastPage when bounds known', () => {
+      nestService.syncLastPage(5);
+      service.goToPage(5);
+      expect(service.currentPage()).toBe(5);
+    });
+
+    it('should allow any positive n when bounds unknown', () => {
+      service.goToPage(999);
+      expect(service.currentPage()).toBe(999);
+    });
+
+    it('should return this for chaining', () => {
+      expect(service.goToPage(2)).toBe(service);
+    });
+  });
+
+  describe('isFirstPage', () => {
+    it('should return true on page 1', () => {
+      expect(service.isFirstPage()).toBe(true);
+    });
+
+    it('should return false on other pages', () => {
+      service.setPage(3);
+      expect(service.isFirstPage()).toBe(false);
+    });
+  });
+
+  describe('isLastPage', () => {
+    it('should return false when bounds unknown (conservative default)', () => {
+      expect(service.isLastPage()).toBe(false);
+      service.setPage(99);
+      expect(service.isLastPage()).toBe(false);
+    });
+
+    it('should return true when page === lastPage (bounds known)', () => {
+      nestService.syncLastPage(5);
+      service.setPage(5);
+      expect(service.isLastPage()).toBe(true);
+    });
+
+    it('should return false when page < lastPage (bounds known)', () => {
+      nestService.syncLastPage(5);
+      service.setPage(3);
+      expect(service.isLastPage()).toBe(false);
+    });
+  });
+
+  describe('hasNextPage', () => {
+    it('should return true when bounds unknown (conservative default)', () => {
+      expect(service.hasNextPage()).toBe(true);
+    });
+
+    it('should return true when page < lastPage', () => {
+      nestService.syncLastPage(5);
+      service.setPage(3);
+      expect(service.hasNextPage()).toBe(true);
+    });
+
+    it('should return false when page === lastPage', () => {
+      nestService.syncLastPage(5);
+      service.setPage(5);
+      expect(service.hasNextPage()).toBe(false);
+    });
+  });
+
+  describe('hasPreviousPage', () => {
+    it('should return false on page 1', () => {
+      expect(service.hasPreviousPage()).toBe(false);
+    });
+
+    it('should return true on any page > 1', () => {
+      service.setPage(2);
+      expect(service.hasPreviousPage()).toBe(true);
+    });
+  });
+
+  describe('totalPages', () => {
+    it('should throw PaginationNotSyncedError before any paginate()', () => {
+      expect(() => service.totalPages()).toThrowError(PaginationNotSyncedError);
+    });
+
+    it('should return state.lastPage after sync', () => {
+      nestService.syncLastPage(12);
+      expect(service.totalPages()).toBe(12);
+    });
+  });
+});
+
+describe('NgQubeeService auto-reset page on result-set-changing mutations', () => {
+  let service: NgQubeeService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [BrowserTestingModule],
+      providers: [
+        {
+          deps: [NestService],
+          provide: NgQubeeService,
+          useFactory: (nest: NestService) =>
+            new NgQubeeService(nest, new NestjsRequestStrategy(), DriverEnum.NESTJS)
+        }, NestService
+      ]
+    });
+
+    service = TestBed.inject(NgQubeeService);
+    service.setResource('users');
+    service.setPage(5);
+  });
+
+  it('setLimit should reset page to 1', () => {
+    service.setLimit(25);
+    expect(service.currentPage()).toBe(1);
+  });
+
+  it('setResource should reset page to 1', () => {
+    service.setResource('posts');
+    expect(service.currentPage()).toBe(1);
+  });
+
+  it('setSearch should reset page to 1', () => {
+    service.setSearch('term');
+    expect(service.currentPage()).toBe(1);
+  });
+
+  it('deleteSearch should reset page to 1', () => {
+    service.setSearch('term');
+    service.setPage(5);
+    service.deleteSearch();
+    expect(service.currentPage()).toBe(1);
+  });
+
+  it('addFilter should reset page to 1', () => {
+    service.addFilter('status', 'active');
+    expect(service.currentPage()).toBe(1);
+  });
+
+  it('deleteFilters should reset page to 1', () => {
+    service.addFilter('status', 'active');
+    service.setPage(5);
+    service.deleteFilters('status');
+    expect(service.currentPage()).toBe(1);
+  });
+
+  it('addFilterOperator should reset page to 1', () => {
+    service.addFilterOperator('age', FilterOperatorEnum.GTE, 18);
+    expect(service.currentPage()).toBe(1);
+  });
+
+  it('deleteOperatorFilters should reset page to 1', () => {
+    service.addFilterOperator('age', FilterOperatorEnum.GTE, 18);
+    service.setPage(5);
+    service.deleteOperatorFilters('age');
+    expect(service.currentPage()).toBe(1);
+  });
+
+  it('addSort should reset page to 1', () => {
+    service.addSort('name', SortEnum.ASC);
+    expect(service.currentPage()).toBe(1);
+  });
+
+  it('deleteSorts should reset page to 1', () => {
+    service.addSort('name', SortEnum.ASC);
+    service.setPage(5);
+    service.deleteSorts('name');
+    expect(service.currentPage()).toBe(1);
+  });
+
+  it('setBaseUrl should NOT reset page', () => {
+    service.setBaseUrl('https://api.example.com');
+    expect(service.currentPage()).toBe(5);
+  });
+
+  it('addSelect should NOT reset page', () => {
+    service.addSelect('id', 'name');
+    expect(service.currentPage()).toBe(5);
+  });
+
+  it('deleteSelect should NOT reset page', () => {
+    service.addSelect('id', 'name');
+    service.setPage(5);
+    service.deleteSelect('id');
+    expect(service.currentPage()).toBe(5);
+  });
+});
+
+describe('NgQubeeService auto-reset page — Spatie-only mutations', () => {
+  let service: NgQubeeService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [BrowserTestingModule],
+      providers: [
+        {
+          deps: [NestService],
+          provide: NgQubeeService,
+          useFactory: (nest: NestService) =>
+            new NgQubeeService(nest, new SpatieRequestStrategy(), DriverEnum.SPATIE)
+        }, NestService
+      ]
+    });
+
+    service = TestBed.inject(NgQubeeService);
+    service.setResource('users');
+    service.setPage(5);
+  });
+
+  it('addFields should NOT reset page', () => {
+    service.addFields('users', ['id', 'email']);
+    expect(service.currentPage()).toBe(5);
+  });
+
+  it('deleteFields should NOT reset page', () => {
+    service.addFields('users', ['id', 'email']);
+    service.setPage(5);
+    service.deleteFields({ users: ['id'] });
+    expect(service.currentPage()).toBe(5);
+  });
+
+  it('deleteFieldsByModel should NOT reset page', () => {
+    service.addFields('users', ['id', 'email']);
+    service.setPage(5);
+    service.deleteFieldsByModel('users', 'id');
+    expect(service.currentPage()).toBe(5);
+  });
+
+  it('addIncludes should NOT reset page', () => {
+    service.addIncludes('profile');
+    expect(service.currentPage()).toBe(5);
+  });
+
+  it('deleteIncludes should NOT reset page', () => {
+    service.addIncludes('profile');
+    service.setPage(5);
+    service.deleteIncludes('profile');
+    expect(service.currentPage()).toBe(5);
   });
 });

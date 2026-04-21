@@ -13,6 +13,8 @@ const INITIAL_STATE: IQueryBuilderState = {
   fields: {},
   filters: {},
   includes: [],
+  isLastPageKnown: false,
+  lastPage: 1,
   limit: 15,
   operatorFilters: [],
   page: 1,
@@ -446,6 +448,26 @@ export class NestService {
     this._nest.update(nest => ({
       ...nest,
       search
+    }));
+  }
+
+  /**
+   * Atomically record the `lastPage` value from a paginated response and
+   * flip `isLastPageKnown` to `true`
+   *
+   * Called exclusively by `PaginationService.paginate()` as part of the
+   * auto-sync contract; not intended to be invoked by consumers directly.
+   * Keeping the two fields under a single write guarantees they cannot
+   * drift out of sync.
+   *
+   * @param {number} lastPage - The last page number parsed from the most recent paginated response
+   * @return {void}
+   */
+  public syncLastPage(lastPage: number): void {
+    this._nest.update(nest => ({
+      ...nest,
+      isLastPageKnown: true,
+      lastPage
     }));
   }
 

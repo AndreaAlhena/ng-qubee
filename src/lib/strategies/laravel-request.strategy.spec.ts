@@ -13,6 +13,8 @@ describe('LaravelRequestStrategy', () => {
     fields: {},
     filters: {},
     includes: [],
+    isLastPageKnown: false,
+    lastPage: 1,
     limit: 15,
     operatorFilters: [],
     page: 1,

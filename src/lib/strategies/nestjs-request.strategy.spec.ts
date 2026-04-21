@@ -14,6 +14,8 @@ describe('NestjsRequestStrategy', () => {
     fields: {},
     filters: {},
     includes: [],
+    isLastPageKnown: false,
+    lastPage: 1,
     limit: 15,
     operatorFilters: [],
     page: 1,
@@ -314,6 +316,8 @@ describe('NestjsRequestStrategy', () => {
         fields: {},
         filters: { status: ['active'] },
         includes: [],
+        isLastPageKnown: false,
+        lastPage: 1,
         limit: 10,
         operatorFilters: [
           { field: 'age', operator: FilterOperatorEnum.GTE, values: [18] }
