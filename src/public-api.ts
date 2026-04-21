@@ -18,6 +18,7 @@ export * from './lib/errors/invalid-limit.error';
 export * from './lib/errors/invalid-page-number.error';
 export * from './lib/errors/invalid-resource-name.error';
 export * from './lib/errors/key-not-found.error';
+export * from './lib/errors/pagination-not-synced.error';
 export * from './lib/errors/unselectable-model.error';
 export * from './lib/errors/unsupported-field-selection.error';
 export * from './lib/errors/unsupported-filter.error';
