@@ -358,6 +358,94 @@ Limit validation is driver-scoped — each request strategy enforces its own acc
 
 Non-integer values, zero, negative numbers (other than `-1` for NestJS), `NaN`, and `Infinity` are all rejected.
 
+#### Auto-reset of page on result-set-changing mutations
+
+Any mutation that changes *which records* the server would return also resets `state.page` to `1` automatically. Staying on page 5 of an old result set after changing filters is almost always a bug, so the library makes the reset explicit:
+
+| Resets page to 1 | Does NOT reset page |
+|---|---|
+| `setLimit()` | `setBaseUrl()` |
+| `setResource()` | `setPage()` |
+| `setSearch()` / `deleteSearch()` | `addFields()` / `deleteFields()` / `deleteFieldsByModel()` |
+| `addFilter()` / `deleteFilters()` | `addIncludes()` / `deleteIncludes()` |
+| `addFilterOperator()` / `deleteOperatorFilters()` | `addSelect()` / `deleteSelect()` |
+| `addSort()` / `deleteSorts()` | |
+
+Rule of thumb: if a mutation changes the record *set* (filters, sort, search, limit, resource), page resets. If it only changes the record *shape* (fields, includes, select), page stays. If you intentionally want to keep the previous page number, call `setPage(n)` again after the mutation.
+
+### Pagination navigation
+
+The service exposes a fluent navigation surface so you can wire a standard paginator UI (Prev / N of M / Next) with no manual bookkeeping. All navigation methods return `this` and can be chained.
+
+```typescript
+this._ngQubeeService.nextPage().generateUri().subscribe(uri => /* fire the request */);
+this._ngQubeeService.previousPage();
+this._ngQubeeService.firstPage();
+this._ngQubeeService.lastPage();
+this._ngQubeeService.goToPage(3);
+```
+
+#### Auto-sync from `PaginationService.paginate()`
+
+When you hand a paginated response to `PaginationService.paginate()`, the library automatically copies the response's `page` and `lastPage` back into the query-builder state. That means `lastPage()`, `goToPage(n)` bounds checks, and the predicates below become accurate immediately — you don't thread the collection's `lastPage` back in yourself.
+
+```typescript
+this._paginationService.paginate(response); // auto-writes page + lastPage
+this._ngQubeeService.lastPage();            // now safe; jumps to the last page
+```
+
+The auto-sync only flips `isLastPageKnown` to `true` when the response carries a **positive integer** `lastPage`. Server-emitted `0` (empty collection) and absent fields leave the flag `false` — the helpers fall back to their conservative defaults.
+
+#### Predicates and accessors
+
+Template-safe methods for driving button disable-states and labels:
+
+```typescript
+qb.isFirstPage();     // true on page 1
+qb.isLastPage();      // true only when bounds known and page === lastPage
+qb.hasNextPage();     // true when bounds unknown, or page < lastPage
+qb.hasPreviousPage(); // true when page > 1
+qb.currentPage();     // state.page (always safe)
+qb.totalPages();      // state.lastPage (throws if never synced)
+```
+
+Angular template wiring:
+
+```html
+<button [disabled]="qb.isFirstPage()" (click)="qb.previousPage()">Prev</button>
+<span>Page {{ qb.currentPage() }} of {{ qb.totalPages() }}</span>
+<button [disabled]="qb.isLastPage()" (click)="qb.nextPage()">Next</button>
+```
+
+For the `qb.totalPages()` template usage above, either call `paginate()` at least once before the template renders, or guard the display with `*ngIf="qb.hasNextPage() || !qb.isFirstPage()"` / by reading `qb.nest().isLastPageKnown` directly.
+
+#### Error behavior
+
+| Helper | Throws | When |
+|---|---|---|
+| `nextPage()` | — | Never throws. No-op when already at `lastPage` (bounds known). |
+| `previousPage()` | — | Never throws. No-op at page 1. |
+| `firstPage()` | — | Never throws. |
+| `lastPage()` | `PaginationNotSyncedError` | `paginate()` has never run (`state.isLastPageKnown` is `false`). |
+| `goToPage(n)` | `InvalidPageNumberError` | `n` is not a positive integer, or exceeds `lastPage` when bounds are known. |
+| `isFirstPage()` / `isLastPage()` / `hasNextPage()` / `hasPreviousPage()` | — | Template-safe. Conservative defaults when bounds unknown. |
+| `currentPage()` | — | Always safe. |
+| `totalPages()` | `PaginationNotSyncedError` | `paginate()` has never run. Guard with `nest().isLastPageKnown` for a non-throwing check. |
+
+#### Guarding the imperative "jump to last" button
+
+`lastPage()` and `totalPages()` need a synced response. A safe pattern:
+
+```html
+<button
+  [disabled]="!qb.nest().isLastPageKnown || qb.isLastPage()"
+  (click)="qb.lastPage()">
+  Last
+</button>
+```
+
+The `isLastPageKnown` read short-circuits before `qb.lastPage()` could throw.
+
 ### Retrieving data
 URI is generated invoking the _generateUri_ method of the NgQubeeService. An observable is returned and the URI will be emitted:
 
