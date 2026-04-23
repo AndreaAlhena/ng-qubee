@@ -48,7 +48,7 @@ jobs:
         run: npm test -- --browsers=ChromeHeadless --watch=false --code-coverage
 
       - name: Upload coverage reports
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         if: success()
         with:
           files: ./coverage/ng-qubee/lcov.info
