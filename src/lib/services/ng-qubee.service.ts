@@ -130,7 +130,7 @@ export class NgQubeeService {
   }
 
   /**
-   * Add a filter with an explicit operator (NestJS only)
+   * Add a filter with an explicit operator (NestJS and PostgREST)
    *
    * Produces: `filter.field=$operator:value`
    *
@@ -141,7 +141,7 @@ export class NgQubeeService {
    * @throws {UnsupportedFilterOperatorError} If the active driver does not support filter operators
    */
   public addFilterOperator(field: string, operator: FilterOperatorEnum, ...values: (string | number | boolean)[]): this {
-    this._assertDriver([DriverEnum.NESTJS], new UnsupportedFilterOperatorError());
+    this._assertDriver([DriverEnum.NESTJS, DriverEnum.POSTGREST], new UnsupportedFilterOperatorError());
 
     if (!values.length) {
       return this;
@@ -310,14 +310,14 @@ export class NgQubeeService {
   }
 
   /**
-   * Remove operator filters by field name (NestJS only)
+   * Remove operator filters by field name (NestJS and PostgREST)
    *
    * @param {string[]} fields - Field names of operator filters to remove
    * @returns {this}
    * @throws {UnsupportedFilterOperatorError} If the active driver does not support filter operators
    */
   public deleteOperatorFilters(...fields: string[]): this {
-    this._assertDriver([DriverEnum.NESTJS], new UnsupportedFilterOperatorError());
+    this._assertDriver([DriverEnum.NESTJS, DriverEnum.POSTGREST], new UnsupportedFilterOperatorError());
 
     if (!fields.length) {
       return this;

@@ -1082,14 +1082,13 @@ describe('NgQubeeService driver validation (PostgREST)', () => {
       .toThrowError(UnsupportedIncludesError);
   });
 
-  it('should throw UnsupportedFilterOperatorError when calling addFilterOperator', () => {
-    expect(() => service.addFilterOperator('age', FilterOperatorEnum.GTE, 18))
-      .toThrowError(UnsupportedFilterOperatorError);
+  it('should accept addFilterOperator', () => {
+    expect(() => service.addFilterOperator('age', FilterOperatorEnum.GTE, 18)).not.toThrow();
   });
 
-  it('should throw UnsupportedFilterOperatorError when calling deleteOperatorFilters', () => {
-    expect(() => service.deleteOperatorFilters('age'))
-      .toThrowError(UnsupportedFilterOperatorError);
+  it('should accept deleteOperatorFilters', () => {
+    service.addFilterOperator('age', FilterOperatorEnum.GTE, 18);
+    expect(() => service.deleteOperatorFilters('age')).not.toThrow();
   });
 
   it('should throw UnsupportedSearchError when calling setSearch', () => {
