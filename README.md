@@ -41,7 +41,7 @@ npm  i  ng-qubee
 
 ## Drivers
 
-NgQubee supports four drivers out of the box. A driver **must** be specified in the configuration:
+NgQubee supports five drivers out of the box. A driver **must** be specified in the configuration:
 
 | Driver | Backend | Request Format | Response Format |
 |---|---|---|---|
@@ -49,6 +49,7 @@ NgQubee supports four drivers out of the box. A driver **must** be specified in 
 | **Laravel** | Plain Laravel pagination | `limit=N&page=N` (pagination only) | Flat: `{ data, current_page, total, ... }` |
 | **Spatie** | Spatie Query Builder | `filter[field]=value`, `sort=-field` | Flat: `{ data, current_page, total, ... }` |
 | **NestJS** | nestjs-paginate | `filter.field=$operator:value`, `sortBy=field:DESC` | Nested: `{ data, meta: {...}, links: {...} }` |
+| **PostgREST** | PostgREST / Supabase | `col=eq.value`, `order=col.asc`, `limit=N&offset=M` | Bare array body + `Content-Range` header for total |
 
 ## Usage
 
@@ -175,6 +176,67 @@ The NestJS driver generates URIs compatible with [nestjs-paginate](https://githu
 -  **Search** is composed as `search=term`
 -  **Limit** is composed as `limit=15`
 -  **Page** is composed as `page=1`
+
+### PostgREST / Supabase Driver
+
+The PostgREST driver generates URIs compatible with [PostgREST](https://postgrest.org/) and anything built on top of it (notably [Supabase](https://supabase.com/)):
+
+```typescript
+import { DriverEnum } from 'ng-qubee';
+
+// Standalone approach
+bootstrapApplication(AppComponent, {
+  providers: [provideNgQubee({ driver: DriverEnum.POSTGREST })]
+});
+
+// Module approach
+@NgModule({
+  imports: [
+    NgQubeeModule.forRoot({ driver: DriverEnum.POSTGREST })
+  ]
+})
+export class AppModule {}
+```
+
+The PostgREST driver supports:
+
+-  **Filters** (single value) are composed as `col=eq.value`
+-  **Filters** (multi-value) are composed as `col=in.(v1,v2,v3)` — PostgREST's native IN-list syntax
+-  **Sorts** are composed as `order=col1.asc,col2.desc`
+-  **Select** is composed as `select=col1,col2`
+-  **Limit** is composed as `limit=15`
+-  **Offset** is derived from `page` and `limit` (`offset=(page-1)*limit`) — omitted on page 1
+
+#### Reading totals from the `Content-Range` header
+
+PostgREST returns a bare array body and reports the total row count in the `Content-Range` HTTP response header (e.g. `0-9/50`). Opt in by sending `Prefer: count=exact` on the request, then pass the headers to `paginate()`:
+
+```typescript
+this._http.get<User[]>(uri, {
+  observe: 'response',
+  headers: { 'Prefer': 'count=exact' }
+}).subscribe(response => {
+  const collection = this._paginationService.paginate(response.body, response.headers);
+  // collection.total, collection.page, collection.lastPage are populated
+});
+```
+
+The second argument to `paginate()` accepts Angular's `HttpHeaders`, the native `Headers` class, or a plain `Record<string, string>` — whatever shape your HTTP client emits. If you omit the header (or the server returns `Content-Range: 0-9/*`), the collection still populates `data` and `page` but leaves `total` / `lastPage` undefined — the pagination helpers' conservative defaults then kick in (`hasNextPage()` returns `true`, `isLastPage()` returns `false`).
+
+#### Feature matrix
+
+The MVP driver intentionally leaves a few features out. They throw the existing `Unsupported*Error` classes so the limitation is explicit:
+
+| Method | Supported? | Notes |
+|---|---|---|
+| `addFilter` / `deleteFilters` | ✓ | Implicit `eq`; multi-value becomes `in.(...)` |
+| `addSort` / `deleteSorts` | ✓ | Emits `order=col.asc,col.desc` |
+| `addSelect` / `deleteSelect` | ✓ | Flat column selection |
+| `setLimit` / `setPage` | ✓ | `offset` derived from `page` |
+| `addFilterOperator` / `deleteOperatorFilters` | ✗ | Throws `UnsupportedFilterOperatorError`. Follow-up issue planned to map the NestJS-shaped `FilterOperatorEnum` to PostgREST's prefix operators. |
+| `addFields` / `deleteFields` / `deleteFieldsByModel` | ✗ | Throws `UnsupportedFieldSelectionError`. Per-type field selection is a JSON:API/Spatie concept; use `addSelect` for PostgREST's column pruning. |
+| `addIncludes` / `deleteIncludes` | ✗ | Throws `UnsupportedIncludesError`. PostgREST uses embedded resources via `select=col,rel(*)`; a dedicated API is tracked as a follow-up. |
+| `setSearch` / `deleteSearch` | ✗ | Throws `UnsupportedSearchError`. PostgREST's `fts`/`plfts`/`phfts`/`wfts` operators are column-scoped; a dedicated API is planned. |
 
 ### Per-component instances
 
