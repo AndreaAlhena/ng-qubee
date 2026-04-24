@@ -13,7 +13,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **PostgREST / Supabase driver** (`DriverEnum.POSTGREST`) (#50): new driver targeting [PostgREST](https://postgrest.org/) and Supabase.
   - `PostgrestRequestStrategy`: operator-prefixed filters (`col=eq.val` single, `col=in.(v1,v2,v3)` multi-value), `order=col.asc,col.desc` sorting, flat `select=col1,col2`, offset-based pagination (`limit=N&offset=M` with offset derived from `page`)
   - `PostgrestResponseStrategy`: parses the total count from the HTTP `Content-Range` response header (opt-in via `Prefer: count=exact`), derives `page`/`perPage`/`lastPage`/`total` with 0-to-1-indexed conversion, tolerates missing/malformed headers gracefully
-  - PostgREST driver supports `addFilter`/`deleteFilters`, `addSort`/`deleteSorts`, `addSelect`/`deleteSelect`, `setLimit`/`setPage` + their delete counterparts. `addFields`, `addIncludes`, `addFilterOperator`, and `setSearch` throw the matching `Unsupported*Error` (follow-up issues will relax some of these)
+  - PostgREST driver supports `addFilter`/`deleteFilters`, `addFilterOperator`/`deleteOperatorFilters`, `addSort`/`deleteSorts`, `addSelect`/`deleteSelect`, `setLimit`/`setPage` + their delete counterparts. `addFields`, `addIncludes`, and `setSearch` throw the matching `Unsupported*Error` (embedded-resource support tracked as #66)
+- **Full `FilterOperatorEnum` mapping on PostgREST** (#50): every existing operator (`EQ`, `GT`, `GTE`, `LT`, `LTE`, `ILIKE`, `IN`, `NOT`, `NULL`, `BTW`, `SW`, `CONTAINS`) is translated to PostgREST's prefix syntax, with correct semantics for the awkward ones:
+  - `NOT` dispatches to `not.eq.val` (single) or `not.in.(v1,v2)` (multi) by arity
+  - `NULL` maps a boolean value to `is.null` / `is.not.null`
+  - `BTW` expands to **two** query params (`col=gte.min&col=lte.max`)
+  - `SW` emits `like.val*`; `CONTAINS` emits `ilike.%val%`
+- **PostgREST full-text search operators** (#50): four new `FilterOperatorEnum` entries — `FTS`, `PLFTS`, `PHFTS`, `WFTS` — map to PostgREST's `to_tsquery`, `plainto_tsquery`, `phraseto_tsquery`, and `websearch_to_tsquery` respectively. Column-scoped; use via `addFilterOperator(column, FilterOperatorEnum.FTS, term)`. Language modifiers (e.g. `fts(english)`) are not supported in this release.
+- **`InvalidFilterOperatorValueError`** (new public error) (#50): thrown by the PostgREST strategy when an operator's value arity or type is unambiguously wrong at call time. `BTW` requires exactly 2 values; `NULL` requires exactly 1 boolean. Other operators leave validation to the server.
+- **`PaginationModeEnum`** (new enum export) (#50): `QUERY` (default) or `RANGE`. Set via `IConfig.pagination`; currently honoured only by the PostgREST driver.
+- **RANGE-header pagination on PostgREST** (#50): when `IConfig.pagination` is `PaginationModeEnum.RANGE`, `generateUri()` omits `limit`/`offset` from the URL and `NgQubeeService.paginationHeaders()` returns `{ 'Range-Unit': 'items', 'Range': 'from-to' }` for the consumer to merge into the HTTP request. Other drivers leave the setting as a no-op.
+- **`NgQubeeService.paginationHeaders()`** (new method) (#50): thin passthrough to the active strategy's optional `buildPaginationHeaders`. Returns `null` for drivers that don't use header-based pagination.
+- **`IRequestStrategy.buildPaginationHeaders?`** (new optional interface method) (#50): drivers that ship pagination metadata via HTTP headers implement it; all four pre-existing strategies omit it and the type is satisfied via TypeScript's structural typing without source changes.
 - **`HeaderBag` type** (new export): union of `{ get(name): string | null }` (Angular `HttpHeaders`, native `Headers`) and `Record<string, string | null | undefined>` (plain object). Plus a `readHeader` helper that normalises access across both shapes.
 
 ### Changed

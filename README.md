@@ -202,10 +202,10 @@ The PostgREST driver supports:
 
 -  **Filters** (single value) are composed as `col=eq.value`
 -  **Filters** (multi-value) are composed as `col=in.(v1,v2,v3)` — PostgREST's native IN-list syntax
+-  **Operator filters** cover the full `FilterOperatorEnum` (eq, gt, gte, lt, lte, ilike, in, not, null, btw, sw, contains) plus PostgREST-native full-text search (`fts`, `plfts`, `phfts`, `wfts`) — see the Operator filters section below
 -  **Sorts** are composed as `order=col1.asc,col2.desc`
 -  **Select** is composed as `select=col1,col2`
--  **Limit** is composed as `limit=15`
--  **Offset** is derived from `page` and `limit` (`offset=(page-1)*limit`) — omitted on page 1
+-  **Pagination** defaults to `limit=N&offset=M` on the URL and can optionally move to `Range-Unit` + `Range` HTTP headers — see the RANGE-header pagination section below
 
 #### Reading totals from the `Content-Range` header
 
@@ -223,20 +223,73 @@ this._http.get<User[]>(uri, {
 
 The second argument to `paginate()` accepts Angular's `HttpHeaders`, the native `Headers` class, or a plain `Record<string, string>` — whatever shape your HTTP client emits. If you omit the header (or the server returns `Content-Range: 0-9/*`), the collection still populates `data` and `page` but leaves `total` / `lastPage` undefined — the pagination helpers' conservative defaults then kick in (`hasNextPage()` returns `true`, `isLastPage()` returns `false`).
 
-#### Feature matrix
+#### Operator filters
 
-The MVP driver intentionally leaves a few features out. They throw the existing `Unsupported*Error` classes so the limitation is explicit:
+Every `FilterOperatorEnum` value maps to a PostgREST prefix operator. Call `addFilterOperator(column, operator, ...values)` and the strategy emits the correct wire format:
+
+```typescript
+qb.addFilterOperator('age', FilterOperatorEnum.GTE, 18);             // age=gte.18
+qb.addFilterOperator('id', FilterOperatorEnum.IN, 1, 2, 3);           // id=in.(1,2,3)
+qb.addFilterOperator('status', FilterOperatorEnum.NOT, 'deleted');    // status=not.eq.deleted
+qb.addFilterOperator('id', FilterOperatorEnum.NOT, 1, 2);             // id=not.in.(1,2)
+qb.addFilterOperator('deletedAt', FilterOperatorEnum.NULL, true);     // deletedAt=is.null
+qb.addFilterOperator('deletedAt', FilterOperatorEnum.NULL, false);    // deletedAt=is.not.null
+qb.addFilterOperator('price', FilterOperatorEnum.BTW, 10, 100);       // price=gte.10&price=lte.100
+qb.addFilterOperator('email', FilterOperatorEnum.SW, 'admin');        // email=like.admin*
+qb.addFilterOperator('name', FilterOperatorEnum.CONTAINS, 'john');    // name=ilike.%john%
+qb.addFilterOperator('description', FilterOperatorEnum.FTS, 'rat');   // description=fts.rat
+qb.addFilterOperator('description', FilterOperatorEnum.PLFTS, 'a b'); // description=plfts.a b
+qb.addFilterOperator('description', FilterOperatorEnum.PHFTS, 'a b'); // description=phfts.a b
+qb.addFilterOperator('description', FilterOperatorEnum.WFTS, 'a -b'); // description=wfts.a -b
+```
+
+Value shape rules enforced at call time (throw `InvalidFilterOperatorValueError`):
+- `BTW` — exactly 2 values (`[min, max]`).
+- `NULL` — exactly 1 boolean value (`true` → `IS NULL`, `false` → `IS NOT NULL`).
+
+All other operators let PostgREST validate server-side.
+
+The four `*FTS` operators are PostgREST's full-text search variants (`to_tsquery`, `plainto_tsquery`, `phraseto_tsquery`, `websearch_to_tsquery`). They're column-scoped — pick the column to search, pass the term. Language modifiers (`fts(english).term`) are not supported in this release.
+
+#### RANGE-header pagination (alternative to limit/offset)
+
+PostgREST also accepts pagination via the `Range` HTTP request header instead of URL query params. Opt in via `IConfig.pagination`:
+
+```typescript
+import { DriverEnum, PaginationModeEnum } from 'ng-qubee';
+
+provideNgQubee({
+  driver: DriverEnum.POSTGREST,
+  pagination: PaginationModeEnum.RANGE
+});
+```
+
+When `RANGE` is active, `generateUri()` omits `limit` and `offset` from the URL and `NgQubeeService.paginationHeaders()` returns the headers the consumer applies to the HTTP request:
+
+```typescript
+const uri = await firstValueFrom(qb.generateUri());
+const extraHeaders = qb.paginationHeaders();  // { 'Range-Unit': 'items', 'Range': '0-9' }
+
+this._http.get<User[]>(uri, {
+  observe: 'response',
+  headers: { 'Prefer': 'count=exact', ...extraHeaders }
+}).subscribe(resp => this._pagination.paginate(resp.body, resp.headers));
+```
+
+`paginationHeaders()` returns `null` for any driver that doesn't use header-based pagination — safe to spread into a headers map unconditionally with the nullish-coalescing pattern above.
+
+#### Feature matrix
 
 | Method | Supported? | Notes |
 |---|---|---|
 | `addFilter` / `deleteFilters` | ✓ | Implicit `eq`; multi-value becomes `in.(...)` |
+| `addFilterOperator` / `deleteOperatorFilters` | ✓ | All 16 operators including `FTS`/`PLFTS`/`PHFTS`/`WFTS` |
 | `addSort` / `deleteSorts` | ✓ | Emits `order=col.asc,col.desc` |
 | `addSelect` / `deleteSelect` | ✓ | Flat column selection |
-| `setLimit` / `setPage` | ✓ | `offset` derived from `page` |
-| `addFilterOperator` / `deleteOperatorFilters` | ✗ | Throws `UnsupportedFilterOperatorError`. Follow-up issue planned to map the NestJS-shaped `FilterOperatorEnum` to PostgREST's prefix operators. |
+| `setLimit` / `setPage` | ✓ | `offset` derived from `page` (QUERY mode) or emitted via `Range` header (RANGE mode) |
 | `addFields` / `deleteFields` / `deleteFieldsByModel` | ✗ | Throws `UnsupportedFieldSelectionError`. Per-type field selection is a JSON:API/Spatie concept; use `addSelect` for PostgREST's column pruning. |
-| `addIncludes` / `deleteIncludes` | ✗ | Throws `UnsupportedIncludesError`. PostgREST uses embedded resources via `select=col,rel(*)`; a dedicated API is tracked as a follow-up. |
-| `setSearch` / `deleteSearch` | ✗ | Throws `UnsupportedSearchError`. PostgREST's `fts`/`plfts`/`phfts`/`wfts` operators are column-scoped; a dedicated API is planned. |
+| `addIncludes` / `deleteIncludes` | ✗ | Throws `UnsupportedIncludesError`. PostgREST uses embedded resources via `select=col,rel(*)` — tracked as #66. |
+| `setSearch` / `deleteSearch` | ✗ | Throws `UnsupportedSearchError`. PostgREST's FTS operators are per-column — use `addFilterOperator(col, FilterOperatorEnum.FTS, term)` instead. |
 
 ### Per-component instances
 
