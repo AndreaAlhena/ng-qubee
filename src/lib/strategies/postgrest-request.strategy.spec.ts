@@ -1,4 +1,6 @@
+import { FilterOperatorEnum } from '../enums/filter-operator.enum';
 import { SortEnum } from '../enums/sort.enum';
+import { InvalidFilterOperatorValueError } from '../errors/invalid-filter-operator-value.error';
 import { InvalidLimitError } from '../errors/invalid-limit.error';
 import { IQueryBuilderState } from '../interfaces/query-builder-state.interface';
 import { QueryBuilderOptions } from '../models/query-builder-options';
@@ -102,6 +104,187 @@ describe('PostgrestRequestStrategy', () => {
       const uri = strategy.buildUri(state, options);
 
       expect(uri).not.toContain('status=');
+    });
+  });
+
+  // Operator filters — the full PostgREST operator mapping
+  describe('operator filters', () => {
+    it('should emit EQ as col=eq.val', () => {
+      const state = {
+        ...baseState,
+        operatorFilters: [{ field: 'status', operator: FilterOperatorEnum.EQ, values: ['active'] }]
+      };
+      const uri = strategy.buildUri(state, options);
+
+      expect(uri).toContain('status=eq.active');
+    });
+
+    it('should emit GT / GTE / LT / LTE with direct prefixes', () => {
+      const state = {
+        ...baseState,
+        operatorFilters: [
+          { field: 'a', operator: FilterOperatorEnum.GT, values: [1] },
+          { field: 'b', operator: FilterOperatorEnum.GTE, values: [2] },
+          { field: 'c', operator: FilterOperatorEnum.LT, values: [3] },
+          { field: 'd', operator: FilterOperatorEnum.LTE, values: [4] }
+        ]
+      };
+      const uri = strategy.buildUri(state, options);
+
+      expect(uri).toContain('a=gt.1');
+      expect(uri).toContain('b=gte.2');
+      expect(uri).toContain('c=lt.3');
+      expect(uri).toContain('d=lte.4');
+    });
+
+    it('should emit ILIKE as col=ilike.pattern', () => {
+      const state = {
+        ...baseState,
+        operatorFilters: [{ field: 'name', operator: FilterOperatorEnum.ILIKE, values: ['%john%'] }]
+      };
+      const uri = strategy.buildUri(state, options);
+
+      expect(uri).toContain('name=ilike.%john%');
+    });
+
+    it('should emit IN as col=in.(v1,v2,v3)', () => {
+      const state = {
+        ...baseState,
+        operatorFilters: [{ field: 'id', operator: FilterOperatorEnum.IN, values: [1, 2, 3] }]
+      };
+      const uri = strategy.buildUri(state, options);
+
+      expect(uri).toContain('id=in.(1,2,3)');
+    });
+
+    it('should emit NOT for a single value as col=not.eq.val', () => {
+      const state = {
+        ...baseState,
+        operatorFilters: [{ field: 'status', operator: FilterOperatorEnum.NOT, values: ['deleted'] }]
+      };
+      const uri = strategy.buildUri(state, options);
+
+      expect(uri).toContain('status=not.eq.deleted');
+    });
+
+    it('should emit NOT for multi-value as col=not.in.(v1,v2)', () => {
+      const state = {
+        ...baseState,
+        operatorFilters: [{ field: 'id', operator: FilterOperatorEnum.NOT, values: [1, 2, 3] }]
+      };
+      const uri = strategy.buildUri(state, options);
+
+      expect(uri).toContain('id=not.in.(1,2,3)');
+    });
+
+    it('should emit NULL(true) as col=is.null', () => {
+      const state = {
+        ...baseState,
+        operatorFilters: [{ field: 'deletedAt', operator: FilterOperatorEnum.NULL, values: [true] }]
+      };
+      const uri = strategy.buildUri(state, options);
+
+      expect(uri).toContain('deletedAt=is.null');
+    });
+
+    it('should emit NULL(false) as col=is.not.null', () => {
+      const state = {
+        ...baseState,
+        operatorFilters: [{ field: 'deletedAt', operator: FilterOperatorEnum.NULL, values: [false] }]
+      };
+      const uri = strategy.buildUri(state, options);
+
+      expect(uri).toContain('deletedAt=is.not.null');
+    });
+
+    it('should throw InvalidFilterOperatorValueError for NULL with non-boolean value', () => {
+      const state = {
+        ...baseState,
+        operatorFilters: [{ field: 'deletedAt', operator: FilterOperatorEnum.NULL, values: ['true' as unknown as boolean] }]
+      };
+
+      expect(() => strategy.buildUri(state, options)).toThrowError(InvalidFilterOperatorValueError);
+    });
+
+    it('should throw InvalidFilterOperatorValueError for NULL with wrong arity', () => {
+      const state = {
+        ...baseState,
+        operatorFilters: [{ field: 'deletedAt', operator: FilterOperatorEnum.NULL, values: [true, false] }]
+      };
+
+      expect(() => strategy.buildUri(state, options)).toThrowError(InvalidFilterOperatorValueError);
+    });
+
+    it('should emit BTW as two params col=gte.min&col=lte.max', () => {
+      const state = {
+        ...baseState,
+        operatorFilters: [{ field: 'price', operator: FilterOperatorEnum.BTW, values: [10, 100] }]
+      };
+      const uri = strategy.buildUri(state, options);
+
+      expect(uri).toContain('price=gte.10');
+      expect(uri).toContain('price=lte.100');
+    });
+
+    it('should throw InvalidFilterOperatorValueError for BTW with wrong arity', () => {
+      const state = {
+        ...baseState,
+        operatorFilters: [{ field: 'price', operator: FilterOperatorEnum.BTW, values: [10] }]
+      };
+
+      expect(() => strategy.buildUri(state, options)).toThrowError(InvalidFilterOperatorValueError);
+    });
+
+    it('should emit SW as col=like.val*', () => {
+      const state = {
+        ...baseState,
+        operatorFilters: [{ field: 'email', operator: FilterOperatorEnum.SW, values: ['admin'] }]
+      };
+      const uri = strategy.buildUri(state, options);
+
+      expect(uri).toContain('email=like.admin*');
+    });
+
+    it('should emit CONTAINS as col=ilike.%val%', () => {
+      const state = {
+        ...baseState,
+        operatorFilters: [{ field: 'name', operator: FilterOperatorEnum.CONTAINS, values: ['john'] }]
+      };
+      const uri = strategy.buildUri(state, options);
+
+      expect(uri).toContain('name=ilike.%john%');
+    });
+
+    it('should emit FTS / PLFTS / PHFTS / WFTS for full-text search', () => {
+      const state = {
+        ...baseState,
+        operatorFilters: [
+          { field: 'd', operator: FilterOperatorEnum.FTS, values: ['fat&rat'] },
+          { field: 'e', operator: FilterOperatorEnum.PLFTS, values: ['fat rat'] },
+          { field: 'f', operator: FilterOperatorEnum.PHFTS, values: ['fat rat'] },
+          { field: 'g', operator: FilterOperatorEnum.WFTS, values: ['fat -rat'] }
+        ]
+      };
+      const uri = strategy.buildUri(state, options);
+
+      expect(uri).toContain('d=fts.fat&rat');
+      expect(uri).toContain('e=plfts.fat rat');
+      expect(uri).toContain('f=phfts.fat rat');
+      expect(uri).toContain('g=wfts.fat -rat');
+    });
+
+    it('should emit multiple operator filters together', () => {
+      const state = {
+        ...baseState,
+        operatorFilters: [
+          { field: 'age', operator: FilterOperatorEnum.GTE, values: [18] },
+          { field: 'age', operator: FilterOperatorEnum.LTE, values: [65] }
+        ]
+      };
+      const uri = strategy.buildUri(state, options);
+
+      expect(uri).toContain('age=gte.18');
+      expect(uri).toContain('age=lte.65');
     });
   });
 

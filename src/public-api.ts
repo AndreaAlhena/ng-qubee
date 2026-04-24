@@ -14,6 +14,7 @@ export * from './lib/enums/filter-operator.enum';
 export * from './lib/enums/sort.enum';
 
 // Error classes
+export * from './lib/errors/invalid-filter-operator-value.error';
 export * from './lib/errors/invalid-limit.error';
 export * from './lib/errors/invalid-page-number.error';
 export * from './lib/errors/invalid-resource-name.error';

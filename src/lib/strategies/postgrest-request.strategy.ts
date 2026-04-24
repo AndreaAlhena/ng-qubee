@@ -1,5 +1,8 @@
+import { FilterOperatorEnum } from '../enums/filter-operator.enum';
 import { SortEnum } from '../enums/sort.enum';
+import { InvalidFilterOperatorValueError } from '../errors/invalid-filter-operator-value.error';
 import { InvalidLimitError } from '../errors/invalid-limit.error';
+import { IOperatorFilter } from '../interfaces/operator-filter.interface';
 import { IQueryBuilderState } from '../interfaces/query-builder-state.interface';
 import { IRequestStrategy } from '../interfaces/request-strategy.interface';
 import { QueryBuilderOptions } from '../models/query-builder-options';
@@ -50,6 +53,7 @@ export class PostgrestRequestStrategy implements IRequestStrategy {
     this._uri = '';
 
     this._parseFilters(state, options);
+    this._parseOperatorFilters(state);
     this._parseOrder(state);
     this._parseSelect(state, options);
     this._parseLimit(state, options);
@@ -138,6 +142,113 @@ export class PostgrestRequestStrategy implements IRequestStrategy {
     }
 
     this._uri += `&${PostgrestRequestStrategy._offsetKey}=${offset}`;
+  }
+
+  /**
+   * Parse and append explicit operator filters
+   *
+   * Maps each `FilterOperatorEnum` value to PostgREST's prefix-operator
+   * syntax. `BTW` expands to two query params (`gte` + `lte`); `NULL`
+   * emits `is.null` / `is.not.null` based on the boolean value; `NOT`
+   * picks its inner operator by arity (`not.eq.val` for single values,
+   * `not.in.(v1,v2)` for multi-value).
+   *
+   * @param state - The current query builder state
+   * @throws {InvalidFilterOperatorValueError} If `BTW` does not receive exactly 2 values, or `NULL` does not receive exactly 1 boolean
+   */
+  private _parseOperatorFilters(state: IQueryBuilderState): void {
+    if (!state.operatorFilters.length) {
+      return;
+    }
+
+    state.operatorFilters.forEach(filter => {
+      // BTW is special: expands to two separate query params
+      if (filter.operator === FilterOperatorEnum.BTW) {
+        this._emitBetweenFilter(filter);
+        return;
+      }
+
+      const rhs = this._formatOperatorRhs(filter);
+      this._uri += `${this._prepend(state)}${filter.field}=${rhs}`;
+    });
+  }
+
+  /**
+   * Emit a `BTW` operator filter as two PostgREST params
+   *
+   * Produces: `col=gte.min&col=lte.max`. Values must be exactly `[min, max]`.
+   *
+   * @param filter - The operator filter carrying the BTW bounds
+   * @throws {InvalidFilterOperatorValueError} If values.length !== 2
+   */
+  private _emitBetweenFilter(filter: IOperatorFilter): void {
+    if (filter.values.length !== 2) {
+      throw new InvalidFilterOperatorValueError(
+        filter.operator,
+        'BTW requires exactly 2 values (min, max)'
+      );
+    }
+
+    const [min, max] = filter.values;
+
+    // Both params use _prepend so the `?` vs `&` glue stays consistent
+    this._uri += `${this._prepend({} as IQueryBuilderState)}${filter.field}=gte.${min}`;
+    this._uri += `&${filter.field}=lte.${max}`;
+  }
+
+  /**
+   * Build the right-hand-side of a PostgREST filter param for the given operator
+   *
+   * Kept as a separate helper so each operator's shape is visible in one
+   * place and the dispatch is exhaustively typed against
+   * `FilterOperatorEnum`.
+   *
+   * @param filter - The operator filter (field, operator, values)
+   * @returns The PostgREST-formatted value portion (right of the `=` sign)
+   * @throws {InvalidFilterOperatorValueError} If NULL receives a non-boolean or wrong arity
+   */
+  private _formatOperatorRhs(filter: IOperatorFilter): string {
+    const { operator, values } = filter;
+    const first = values[0];
+
+    switch (operator) {
+      case FilterOperatorEnum.EQ: return `eq.${first}`;
+      case FilterOperatorEnum.GT: return `gt.${first}`;
+      case FilterOperatorEnum.GTE: return `gte.${first}`;
+      case FilterOperatorEnum.LT: return `lt.${first}`;
+      case FilterOperatorEnum.LTE: return `lte.${first}`;
+      case FilterOperatorEnum.ILIKE: return `ilike.${first}`;
+      case FilterOperatorEnum.IN: return `in.(${values.join(',')})`;
+      case FilterOperatorEnum.SW: return `like.${first}*`;
+      case FilterOperatorEnum.CONTAINS: return `ilike.%${first}%`;
+      case FilterOperatorEnum.FTS: return `fts.${first}`;
+      case FilterOperatorEnum.PLFTS: return `plfts.${first}`;
+      case FilterOperatorEnum.PHFTS: return `phfts.${first}`;
+      case FilterOperatorEnum.WFTS: return `wfts.${first}`;
+
+      case FilterOperatorEnum.NOT:
+        return values.length === 1
+          ? `not.eq.${first}`
+          : `not.in.(${values.join(',')})`;
+
+      case FilterOperatorEnum.NULL: {
+        if (values.length !== 1 || typeof first !== 'boolean') {
+          throw new InvalidFilterOperatorValueError(
+            operator,
+            'NULL requires exactly 1 boolean value (true → IS NULL, false → IS NOT NULL)'
+          );
+        }
+
+        return first ? 'is.null' : 'is.not.null';
+      }
+
+      // BTW is handled by _emitBetweenFilter; falling through would be a bug
+      case FilterOperatorEnum.BTW:
+        throw new InvalidFilterOperatorValueError(
+          operator,
+          'BTW should be dispatched to _emitBetweenFilter — this indicates a bug'
+        );
+    }
   }
 
   /**
