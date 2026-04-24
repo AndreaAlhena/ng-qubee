@@ -1,6 +1,7 @@
 import { EnvironmentProviders, Provider, makeEnvironmentProviders } from '@angular/core';
 
 import { DriverEnum } from './enums/driver.enum';
+import { PaginationModeEnum } from './enums/pagination-mode.enum';
 import { IConfig } from './interfaces/config.interface';
 import { IPaginationConfig } from './interfaces/pagination-config.interface';
 import { IRequestStrategy } from './interfaces/request-strategy.interface';
@@ -32,16 +33,18 @@ import {
  * Resolve the request strategy instance for the given driver
  *
  * @param driver - The pagination driver
+ * @param paginationMode - Wire-level pagination mechanism. Currently only
+ * honoured by the PostgREST strategy; ignored by the other drivers.
  * @returns The corresponding request strategy
  */
-function resolveRequestStrategy(driver: DriverEnum): IRequestStrategy {
+function resolveRequestStrategy(driver: DriverEnum, paginationMode: PaginationModeEnum): IRequestStrategy {
   switch (driver) {
     case DriverEnum.JSON_API:
       return new JsonApiRequestStrategy();
     case DriverEnum.NESTJS:
       return new NestjsRequestStrategy();
     case DriverEnum.POSTGREST:
-      return new PostgrestRequestStrategy();
+      return new PostgrestRequestStrategy(paginationMode);
     case DriverEnum.SPATIE:
       return new SpatieRequestStrategy();
     case DriverEnum.LARAVEL:
@@ -102,12 +105,13 @@ function resolveResponseOptions(driver: DriverEnum, responseConfig: IPaginationC
  */
 export function buildNgQubeeProviders(config: IConfig): Provider[] {
   const driver = config.driver;
+  const paginationMode = config.pagination ?? PaginationModeEnum.QUERY;
   const requestOptions = new QueryBuilderOptions(Object.assign({}, config.request));
   const responseOptions = resolveResponseOptions(driver, Object.assign({}, config.response));
 
   return [
     { provide: NG_QUBEE_DRIVER, useValue: driver },
-    { provide: NG_QUBEE_REQUEST_STRATEGY, useValue: resolveRequestStrategy(driver) },
+    { provide: NG_QUBEE_REQUEST_STRATEGY, useValue: resolveRequestStrategy(driver, paginationMode) },
     { provide: NG_QUBEE_REQUEST_OPTIONS, useValue: requestOptions },
     { provide: NG_QUBEE_RESPONSE_STRATEGY, useValue: resolveResponseStrategy(driver) },
     { provide: NG_QUBEE_RESPONSE_OPTIONS, useValue: responseOptions },
