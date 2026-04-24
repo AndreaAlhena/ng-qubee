@@ -18,6 +18,7 @@ import { PaginationNotSyncedError } from '../errors/pagination-not-synced.error'
 import { QueryBuilderOptions } from '../models/query-builder-options';
 import { LaravelRequestStrategy } from '../strategies/laravel-request.strategy';
 import { NestjsRequestStrategy } from '../strategies/nestjs-request.strategy';
+import { PostgrestRequestStrategy } from '../strategies/postgrest-request.strategy';
 import { SpatieRequestStrategy } from '../strategies/spatie-request.strategy';
 import { NestService } from './nest.service';
 import { NgQubeeService } from './ng-qubee.service';
@@ -1005,5 +1006,114 @@ describe('NgQubeeService auto-reset page — Spatie-only mutations', () => {
     service.setPage(5);
     service.deleteIncludes('profile');
     expect(service.currentPage()).toBe(5);
+  });
+});
+
+describe('NgQubeeService driver validation (PostgREST)', () => {
+  let service: NgQubeeService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [BrowserTestingModule],
+      providers: [
+        {
+          deps: [NestService],
+          provide: NgQubeeService,
+          useFactory: (nestService: NestService) =>
+            new NgQubeeService(nestService, new PostgrestRequestStrategy(), DriverEnum.POSTGREST)
+        }, NestService
+      ]
+    });
+
+    service = TestBed.inject(NgQubeeService);
+  });
+
+  // Supported: filters, sorts, flat select, pagination
+  it('should accept addFilter', () => {
+    expect(() => service.addFilter('status', 'active')).not.toThrow();
+  });
+
+  it('should accept deleteFilters', () => {
+    service.addFilter('status', 'active');
+    expect(() => service.deleteFilters('status')).not.toThrow();
+  });
+
+  it('should accept addSort', () => {
+    expect(() => service.addSort('name', SortEnum.ASC)).not.toThrow();
+  });
+
+  it('should accept deleteSorts', () => {
+    service.addSort('name', SortEnum.ASC);
+    expect(() => service.deleteSorts('name')).not.toThrow();
+  });
+
+  it('should accept addSelect', () => {
+    expect(() => service.addSelect('id', 'email')).not.toThrow();
+  });
+
+  it('should accept deleteSelect', () => {
+    service.addSelect('id', 'email');
+    expect(() => service.deleteSelect('id')).not.toThrow();
+  });
+
+  // Unsupported: fields, includes, operator filters, search
+  it('should throw UnsupportedFieldSelectionError when calling addFields', () => {
+    expect(() => service.addFields('users', ['id']))
+      .toThrowError(UnsupportedFieldSelectionError);
+  });
+
+  it('should throw UnsupportedFieldSelectionError when calling deleteFields', () => {
+    expect(() => service.deleteFields({ users: ['id'] }))
+      .toThrowError(UnsupportedFieldSelectionError);
+  });
+
+  it('should throw UnsupportedFieldSelectionError when calling deleteFieldsByModel', () => {
+    expect(() => service.deleteFieldsByModel('users', 'id'))
+      .toThrowError(UnsupportedFieldSelectionError);
+  });
+
+  it('should throw UnsupportedIncludesError when calling addIncludes', () => {
+    expect(() => service.addIncludes('profile'))
+      .toThrowError(UnsupportedIncludesError);
+  });
+
+  it('should throw UnsupportedIncludesError when calling deleteIncludes', () => {
+    expect(() => service.deleteIncludes('profile'))
+      .toThrowError(UnsupportedIncludesError);
+  });
+
+  it('should throw UnsupportedFilterOperatorError when calling addFilterOperator', () => {
+    expect(() => service.addFilterOperator('age', FilterOperatorEnum.GTE, 18))
+      .toThrowError(UnsupportedFilterOperatorError);
+  });
+
+  it('should throw UnsupportedFilterOperatorError when calling deleteOperatorFilters', () => {
+    expect(() => service.deleteOperatorFilters('age'))
+      .toThrowError(UnsupportedFilterOperatorError);
+  });
+
+  it('should throw UnsupportedSearchError when calling setSearch', () => {
+    expect(() => service.setSearch('term'))
+      .toThrowError(UnsupportedSearchError);
+  });
+
+  it('should throw UnsupportedSearchError when calling deleteSearch', () => {
+    expect(() => service.deleteSearch())
+      .toThrowError(UnsupportedSearchError);
+  });
+
+  // URI generation end-to-end
+  it('should generate a URI with PostgREST format', (done: DoneFn) => {
+    service.setResource('users');
+    service.addFilter('status', 'active');
+    service.addSort('created_at', SortEnum.DESC);
+
+    service.generateUri().subscribe(uri => {
+      expect(uri).toContain('/users?');
+      expect(uri).toContain('status=eq.active');
+      expect(uri).toContain('order=created_at.desc');
+      expect(uri).toContain('limit=15');
+      done();
+    });
   });
 });

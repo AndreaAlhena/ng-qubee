@@ -105,7 +105,7 @@ export class NgQubeeService {
   }
 
   /**
-   * Add a filter with the given value(s) (JSON:API, NestJS, and Spatie)
+   * Add a filter with the given value(s) (JSON:API, NestJS, PostgREST, and Spatie)
    *
    * Produces: `filter[field]=value` (JSON:API / Spatie) or `filter.field=value` (NestJS)
    *
@@ -115,7 +115,7 @@ export class NgQubeeService {
    * @throws {UnsupportedFilterError} If the active driver does not support filters
    */
   public addFilter(field: string, ...values: (string | number | boolean)[]): this {
-    this._assertDriver([DriverEnum.JSON_API, DriverEnum.NESTJS, DriverEnum.SPATIE], new UnsupportedFilterError());
+    this._assertDriver([DriverEnum.JSON_API, DriverEnum.NESTJS, DriverEnum.POSTGREST, DriverEnum.SPATIE], new UnsupportedFilterError());
 
     if (!values.length) {
       return this;
@@ -173,7 +173,7 @@ export class NgQubeeService {
   }
 
   /**
-   * Add flat field selection (NestJS only)
+   * Add flat field selection (NestJS and PostgREST)
    *
    * Produces: `select=col1,col2`
    *
@@ -182,7 +182,7 @@ export class NgQubeeService {
    * @throws {UnsupportedSelectError} If the active driver does not support flat field selection
    */
   public addSelect(...fields: string[]): this {
-    this._assertDriver([DriverEnum.NESTJS], new UnsupportedSelectError());
+    this._assertDriver([DriverEnum.NESTJS, DriverEnum.POSTGREST], new UnsupportedSelectError());
 
     if (!fields.length) {
       return this;
@@ -194,7 +194,7 @@ export class NgQubeeService {
   }
 
   /**
-   * Add a field with a sort criteria (JSON:API, NestJS, and Spatie)
+   * Add a field with a sort criteria (JSON:API, NestJS, PostgREST, and Spatie)
    *
    * @param field - Field to use for sorting
    * @param {SortEnum} order - A value from the SortEnum enumeration
@@ -202,7 +202,7 @@ export class NgQubeeService {
    * @throws {UnsupportedSortError} If the active driver does not support sorts
    */
   public addSort(field: string, order: SortEnum): this {
-    this._assertDriver([DriverEnum.JSON_API, DriverEnum.NESTJS, DriverEnum.SPATIE], new UnsupportedSortError());
+    this._assertDriver([DriverEnum.JSON_API, DriverEnum.NESTJS, DriverEnum.POSTGREST, DriverEnum.SPATIE], new UnsupportedSortError());
 
     this._nestService.addSort({
       field,
@@ -271,14 +271,14 @@ export class NgQubeeService {
   }
 
   /**
-   * Remove given filters from the query builder state (JSON:API, NestJS, and Spatie)
+   * Remove given filters from the query builder state (JSON:API, NestJS, PostgREST, and Spatie)
    *
    * @param {string[]} filters - Filters to remove
    * @returns {this}
    * @throws {UnsupportedFilterError} If the active driver does not support filters
    */
   public deleteFilters(...filters: string[]): this {
-    this._assertDriver([DriverEnum.JSON_API, DriverEnum.NESTJS, DriverEnum.SPATIE], new UnsupportedFilterError());
+    this._assertDriver([DriverEnum.JSON_API, DriverEnum.NESTJS, DriverEnum.POSTGREST, DriverEnum.SPATIE], new UnsupportedFilterError());
 
     if (!filters.length) {
       return this;
@@ -344,14 +344,14 @@ export class NgQubeeService {
   }
 
   /**
-   * Remove flat field selections from the query builder state (NestJS only)
+   * Remove flat field selections from the query builder state (NestJS and PostgREST)
    *
    * @param {string[]} fields - Fields to remove from selection
    * @returns {this}
    * @throws {UnsupportedSelectError} If the active driver does not support flat field selection
    */
   public deleteSelect(...fields: string[]): this {
-    this._assertDriver([DriverEnum.NESTJS], new UnsupportedSelectError());
+    this._assertDriver([DriverEnum.NESTJS, DriverEnum.POSTGREST], new UnsupportedSelectError());
 
     if (!fields.length) {
       return this;
@@ -363,14 +363,14 @@ export class NgQubeeService {
   }
 
   /**
-   * Remove sort rules from the query builder state (JSON:API, NestJS, and Spatie)
+   * Remove sort rules from the query builder state (JSON:API, NestJS, PostgREST, and Spatie)
    *
    * @param sorts - Fields used for sorting to remove
    * @returns {this}
    * @throws {UnsupportedSortError} If the active driver does not support sorts
    */
   public deleteSorts(...sorts: string[]): this {
-    this._assertDriver([DriverEnum.JSON_API, DriverEnum.NESTJS, DriverEnum.SPATIE], new UnsupportedSortError());
+    this._assertDriver([DriverEnum.JSON_API, DriverEnum.NESTJS, DriverEnum.POSTGREST, DriverEnum.SPATIE], new UnsupportedSortError());
     this._nestService.deleteSorts(...sorts);
     this._nestService.page = 1;
 
