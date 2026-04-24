@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 
+import { HeaderBag } from '../interfaces/header-bag.interface';
 import { IPaginatedObject } from '../interfaces/paginated-object.interface';
 import { IResponseStrategy } from '../interfaces/response-strategy.interface';
 import { PaginatedCollection } from '../models/paginated-collection';
@@ -50,12 +51,17 @@ export class PaginationService {
    * Server-emitted `0` (empty collection edge case) and absent fields are
    * treated as "no useful info" and leave `isLastPageKnown: false`.
    *
-   * @param response - The raw API response object
+   * @param response - The raw API response body. For drivers that emit a
+   * bare array (PostgREST), pass the array.
+   * @param headers - Optional HTTP response headers. Required by the
+   * PostgREST driver (reads `Content-Range` for pagination metadata);
+   * body-only drivers ignore it. Accepts Angular's `HttpHeaders`, the
+   * native `Headers` class, or a plain `Record<string, string>`.
    * @returns A typed PaginatedCollection instance
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public paginate<T extends IPaginatedObject>(response: { [key: string]: any }): PaginatedCollection<T> {
-    const collection = this._responseStrategy.paginate<T>(response, this._options);
+  public paginate<T extends IPaginatedObject>(response: { [key: string]: any }, headers?: HeaderBag): PaginatedCollection<T> {
+    const collection = this._responseStrategy.paginate<T>(response, this._options, headers);
 
     this._nestService.page = collection.page;
 

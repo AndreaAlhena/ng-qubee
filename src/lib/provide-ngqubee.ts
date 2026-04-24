@@ -16,6 +16,8 @@ import { LaravelRequestStrategy } from './strategies/laravel-request.strategy';
 import { LaravelResponseStrategy } from './strategies/laravel-response.strategy';
 import { NestjsRequestStrategy } from './strategies/nestjs-request.strategy';
 import { NestjsResponseStrategy } from './strategies/nestjs-response.strategy';
+import { PostgrestRequestStrategy } from './strategies/postgrest-request.strategy';
+import { PostgrestResponseStrategy } from './strategies/postgrest-response.strategy';
 import { SpatieRequestStrategy } from './strategies/spatie-request.strategy';
 import { SpatieResponseStrategy } from './strategies/spatie-response.strategy';
 import {
@@ -38,6 +40,8 @@ function resolveRequestStrategy(driver: DriverEnum): IRequestStrategy {
       return new JsonApiRequestStrategy();
     case DriverEnum.NESTJS:
       return new NestjsRequestStrategy();
+    case DriverEnum.POSTGREST:
+      return new PostgrestRequestStrategy();
     case DriverEnum.SPATIE:
       return new SpatieRequestStrategy();
     case DriverEnum.LARAVEL:
@@ -57,6 +61,8 @@ function resolveResponseStrategy(driver: DriverEnum): IResponseStrategy {
       return new JsonApiResponseStrategy();
     case DriverEnum.NESTJS:
       return new NestjsResponseStrategy();
+    case DriverEnum.POSTGREST:
+      return new PostgrestResponseStrategy();
     case DriverEnum.SPATIE:
       return new SpatieResponseStrategy();
     case DriverEnum.LARAVEL:
