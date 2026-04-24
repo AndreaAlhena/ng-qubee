@@ -54,5 +54,7 @@ export * from './lib/strategies/laravel-request.strategy';
 export * from './lib/strategies/laravel-response.strategy';
 export * from './lib/strategies/nestjs-request.strategy';
 export * from './lib/strategies/nestjs-response.strategy';
+export * from './lib/strategies/postgrest-request.strategy';
+export * from './lib/strategies/postgrest-response.strategy';
 export * from './lib/strategies/spatie-request.strategy';
 export * from './lib/strategies/spatie-response.strategy';
