@@ -32,6 +32,7 @@ export * from './lib/errors/unsupported-sort.error';
 export * from './lib/interfaces/config.interface';
 export * from './lib/interfaces/fields.interface';
 export * from './lib/interfaces/filters.interface';
+export * from './lib/interfaces/header-bag.interface';
 export * from './lib/interfaces/nest-state.interface';
 export * from './lib/interfaces/operator-filter.interface';
 export * from './lib/interfaces/page.interface';
