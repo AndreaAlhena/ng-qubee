@@ -1,4 +1,5 @@
 import { FilterOperatorEnum } from '../enums/filter-operator.enum';
+import { PaginationModeEnum } from '../enums/pagination-mode.enum';
 import { SortEnum } from '../enums/sort.enum';
 import { InvalidFilterOperatorValueError } from '../errors/invalid-filter-operator-value.error';
 import { InvalidLimitError } from '../errors/invalid-limit.error';
@@ -33,9 +34,27 @@ export class PostgrestRequestStrategy implements IRequestStrategy {
   private static readonly _orderKey = 'order';
 
   /**
+   * Active pagination mode
+   *
+   * QUERY (default) → URL emits limit/offset.
+   * RANGE → URL omits them; `buildPaginationHeaders()` returns the
+   * `Range-Unit` / `Range` HTTP headers instead.
+   */
+  private readonly _paginationMode: PaginationModeEnum;
+
+  /**
    * Accumulator for composing the URI string
    */
   private _uri = '';
+
+  /**
+   * @param paginationMode - Wire-level pagination mechanism. Defaults to
+   * `PaginationModeEnum.QUERY`; `provideNgQubee` wires this from
+   * `IConfig.pagination`.
+   */
+  constructor(paginationMode: PaginationModeEnum = PaginationModeEnum.QUERY) {
+    this._paginationMode = paginationMode;
+  }
 
   /**
    * Build a URI string from the given state using the PostgREST format
@@ -56,10 +75,49 @@ export class PostgrestRequestStrategy implements IRequestStrategy {
     this._parseOperatorFilters(state);
     this._parseOrder(state);
     this._parseSelect(state, options);
-    this._parseLimit(state, options);
-    this._parseOffset(state);
+
+    // In RANGE mode, pagination travels via HTTP headers — see buildPaginationHeaders
+    if (this._paginationMode === PaginationModeEnum.QUERY) {
+      this._parseLimit(state, options);
+      this._parseOffset(state);
+    }
+
+    // In RANGE mode with no filters/sorts/select, nothing would have been
+    // appended yet and the URI would come out empty. Emit the bare resource
+    // path so the consumer still gets a valid target URL.
+    if (!this._uri) {
+      this._uri = state.baseUrl ? `${state.baseUrl}/${state.resource}` : `/${state.resource}`;
+    }
 
     return this._uri;
+  }
+
+  /**
+   * Compute `Range-Unit` / `Range` HTTP headers for RANGE pagination mode
+   *
+   * In QUERY mode this returns `null` so `NgQubeeService.paginationHeaders()`
+   * conveys "no headers needed" to the consumer. In RANGE mode the method
+   * converts the 1-indexed `state.page` + `state.limit` into PostgREST's
+   * 0-indexed inclusive range (`from = (page - 1) * limit`,
+   * `to = from + limit - 1`) and returns both header values.
+   *
+   * @param state - The current query builder state
+   * @returns `{ 'Range-Unit': 'items', 'Range': 'from-to' }` or `null`
+   */
+  public buildPaginationHeaders(state: IQueryBuilderState): Record<string, string> | null {
+    if (this._paginationMode !== PaginationModeEnum.RANGE) {
+      return null;
+    }
+
+    const from = (state.page - 1) * state.limit;
+    const to = from + state.limit - 1;
+
+    /* eslint-disable @typescript-eslint/naming-convention */
+    return {
+      'Range-Unit': 'items',
+      'Range': `${from}-${to}`
+    };
+    /* eslint-enable @typescript-eslint/naming-convention */
   }
 
   /**

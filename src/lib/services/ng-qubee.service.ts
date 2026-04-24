@@ -508,6 +508,26 @@ export class NgQubeeService {
   }
 
   /**
+   * HTTP request headers the active driver wants the consumer to apply
+   *
+   * Returns `null` for drivers that pass all pagination metadata on the
+   * URL (Laravel, Spatie, JSON:API, NestJS, and PostgREST in its default
+   * QUERY mode). Returns a map of header name → value when the active
+   * driver uses HTTP headers instead — today, only the PostgREST driver
+   * configured with `PaginationModeEnum.RANGE`, which yields
+   * `{ 'Range-Unit': 'items', 'Range': 'from-to' }`.
+   *
+   * @returns Map of headers to apply to the HTTP request, or `null` when not needed
+   */
+  public paginationHeaders(): Record<string, string> | null {
+    if (typeof this._requestStrategy.buildPaginationHeaders !== 'function') {
+      return null;
+    }
+
+    return this._requestStrategy.buildPaginationHeaders(this._nestService.nest());
+  }
+
+  /**
    * Navigate to the previous page
    *
    * @remarks Never throws. Idempotent at page 1 (floored). Pair with `hasPreviousPage()` for a disable-state binding.

@@ -11,6 +11,7 @@ export * from './lib/services/pagination.service';
 // Enums
 export * from './lib/enums/driver.enum';
 export * from './lib/enums/filter-operator.enum';
+export * from './lib/enums/pagination-mode.enum';
 export * from './lib/enums/sort.enum';
 
 // Error classes

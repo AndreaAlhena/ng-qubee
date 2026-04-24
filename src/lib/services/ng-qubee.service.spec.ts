@@ -18,6 +18,7 @@ import { PaginationNotSyncedError } from '../errors/pagination-not-synced.error'
 import { QueryBuilderOptions } from '../models/query-builder-options';
 import { LaravelRequestStrategy } from '../strategies/laravel-request.strategy';
 import { NestjsRequestStrategy } from '../strategies/nestjs-request.strategy';
+import { PaginationModeEnum } from '../enums/pagination-mode.enum';
 import { PostgrestRequestStrategy } from '../strategies/postgrest-request.strategy';
 import { SpatieRequestStrategy } from '../strategies/spatie-request.strategy';
 import { NestService } from './nest.service';
@@ -1114,5 +1115,73 @@ describe('NgQubeeService driver validation (PostgREST)', () => {
       expect(uri).toContain('limit=15');
       done();
     });
+  });
+
+  it('should return null from paginationHeaders in QUERY mode (default)', () => {
+    expect(service.paginationHeaders()).toBeNull();
+  });
+});
+
+describe('NgQubeeService paginationHeaders (PostgREST, RANGE mode)', () => {
+  let service: NgQubeeService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [BrowserTestingModule],
+      providers: [
+        {
+          deps: [NestService],
+          provide: NgQubeeService,
+          useFactory: (nest: NestService) =>
+            new NgQubeeService(nest, new PostgrestRequestStrategy(PaginationModeEnum.RANGE), DriverEnum.POSTGREST)
+        }, NestService
+      ]
+    });
+
+    service = TestBed.inject(NgQubeeService);
+  });
+
+  it('should return Range-Unit and Range headers', () => {
+    service.setLimit(10);
+    service.setPage(3);
+
+    expect(service.paginationHeaders()).toEqual({
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      'Range-Unit': 'items',
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      'Range': '20-29'
+    });
+  });
+
+  it('should omit limit/offset from the generated URI in RANGE mode', (done: DoneFn) => {
+    service.setResource('users');
+    service.setLimit(10);
+    service.setPage(2);
+
+    service.generateUri().subscribe(uri => {
+      expect(uri).not.toContain('limit=');
+      expect(uri).not.toContain('offset=');
+      done();
+    });
+  });
+});
+
+describe('NgQubeeService paginationHeaders (other drivers return null)', () => {
+  it('should return null for the Spatie driver', () => {
+    TestBed.configureTestingModule({
+      imports: [BrowserTestingModule],
+      providers: [
+        {
+          deps: [NestService],
+          provide: NgQubeeService,
+          useFactory: (nest: NestService) =>
+            new NgQubeeService(nest, new SpatieRequestStrategy(), DriverEnum.SPATIE)
+        }, NestService
+      ]
+    });
+
+    const service = TestBed.inject(NgQubeeService);
+
+    expect(service.paginationHeaders()).toBeNull();
   });
 });

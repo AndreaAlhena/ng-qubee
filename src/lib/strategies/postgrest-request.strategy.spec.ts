@@ -1,4 +1,5 @@
 import { FilterOperatorEnum } from '../enums/filter-operator.enum';
+import { PaginationModeEnum } from '../enums/pagination-mode.enum';
 import { SortEnum } from '../enums/sort.enum';
 import { InvalidFilterOperatorValueError } from '../errors/invalid-filter-operator-value.error';
 import { InvalidLimitError } from '../errors/invalid-limit.error';
@@ -426,6 +427,63 @@ describe('PostgrestRequestStrategy', () => {
 
     it('should not mention the -1 sentinel in the error message', () => {
       expect(() => strategy.validateLimit(0)).not.toThrowError(/-1 to fetch all items/);
+    });
+  });
+
+  // RANGE-header pagination mode
+  describe('pagination mode = RANGE', () => {
+    let rangeStrategy: PostgrestRequestStrategy;
+
+    beforeEach(() => {
+      rangeStrategy = new PostgrestRequestStrategy(PaginationModeEnum.RANGE);
+    });
+
+    it('should omit limit and offset from the URI in RANGE mode', () => {
+      const state = { ...baseState, limit: 10, page: 3 };
+      const uri = rangeStrategy.buildUri(state, options);
+
+      expect(uri).not.toContain('limit=');
+      expect(uri).not.toContain('offset=');
+    });
+
+    it('should return Range-Unit and Range headers for RANGE mode', () => {
+      const state = { ...baseState, limit: 10, page: 3 };
+      const headers = rangeStrategy.buildPaginationHeaders(state);
+
+      // Page 3 with limit 10 → items 20..29 (0-indexed inclusive)
+      expect(headers).toEqual({
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        'Range-Unit': 'items',
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        'Range': '20-29'
+      });
+    });
+
+    it('should compute Range 0-9 for page 1 with limit 10', () => {
+      const state = { ...baseState, limit: 10, page: 1 };
+      const headers = rangeStrategy.buildPaginationHeaders(state);
+
+      expect(headers?.['Range']).toBe('0-9');
+    });
+
+    it('should still include filters, order, and select in RANGE mode', () => {
+      const state = {
+        ...baseState,
+        filters: { status: ['active'] },
+        select: ['id', 'name'],
+        sorts: [{ field: 'created_at', order: SortEnum.DESC }]
+      };
+      const uri = rangeStrategy.buildUri(state, options);
+
+      expect(uri).toContain('status=eq.active');
+      expect(uri).toContain('order=created_at.desc');
+      expect(uri).toContain('select=id,name');
+    });
+
+    it('should return null from buildPaginationHeaders in QUERY mode (default)', () => {
+      const headers = strategy.buildPaginationHeaders(baseState);
+
+      expect(headers).toBeNull();
     });
   });
 });
