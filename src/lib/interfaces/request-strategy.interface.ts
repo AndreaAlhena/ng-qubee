@@ -1,4 +1,5 @@
 import { IQueryBuilderState } from './query-builder-state.interface';
+import { IStrategyCapabilities } from './strategy-capabilities.interface';
 import { QueryBuilderOptions } from '../models/query-builder-options';
 
 /**
@@ -8,6 +9,15 @@ import { QueryBuilderOptions } from '../models/query-builder-options';
  * in the format expected by the corresponding backend.
  */
 export interface IRequestStrategy {
+
+  /**
+   * Capability flags declared by this driver
+   *
+   * Read by `NgQubeeService` to gate feature methods (e.g. `addFilter`)
+   * without hardcoding `DriverEnum` checks. Each strategy returns a
+   * static, immutable capability map.
+   */
+  readonly capabilities: IStrategyCapabilities;
 
   /**
    * Build a URI string from the given query builder state

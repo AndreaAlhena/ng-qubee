@@ -2,11 +2,11 @@ import { FilterOperatorEnum } from '../enums/filter-operator.enum';
 import { PaginationModeEnum } from '../enums/pagination-mode.enum';
 import { SortEnum } from '../enums/sort.enum';
 import { InvalidFilterOperatorValueError } from '../errors/invalid-filter-operator-value.error';
-import { InvalidLimitError } from '../errors/invalid-limit.error';
 import { IOperatorFilter } from '../interfaces/operator-filter.interface';
 import { IQueryBuilderState } from '../interfaces/query-builder-state.interface';
-import { IRequestStrategy } from '../interfaces/request-strategy.interface';
+import { IStrategyCapabilities } from '../interfaces/strategy-capabilities.interface';
 import { QueryBuilderOptions } from '../models/query-builder-options';
+import { AbstractRequestStrategy } from './abstract-request.strategy';
 
 /**
  * Request strategy for the PostgREST driver
@@ -28,7 +28,22 @@ import { QueryBuilderOptions } from '../models/query-builder-options';
  * @see https://postgrest.org/en/stable/api.html
  * @see https://supabase.com/docs/reference/javascript/select
  */
-export class PostgrestRequestStrategy implements IRequestStrategy {
+export class PostgrestRequestStrategy extends AbstractRequestStrategy {
+
+  /**
+   * Filters, operator filters (incl. FTS), sorts, flat select — no
+   * per-model fields, no JSON:API/Spatie-style includes, no global
+   * search (per-column FTS via the operator family covers it)
+   */
+  public readonly capabilities: IStrategyCapabilities = {
+    fields: false,
+    filters: true,
+    includes: false,
+    operatorFilters: true,
+    search: false,
+    select: true,
+    sort: true
+  };
 
   private static readonly _offsetKey = 'offset';
   private static readonly _orderKey = 'order';
@@ -43,53 +58,13 @@ export class PostgrestRequestStrategy implements IRequestStrategy {
   private readonly _paginationMode: PaginationModeEnum;
 
   /**
-   * Accumulator for composing the URI string
-   */
-  private _uri = '';
-
-  /**
    * @param paginationMode - Wire-level pagination mechanism. Defaults to
    * `PaginationModeEnum.QUERY`; `provideNgQubee` wires this from
    * `IConfig.pagination`.
    */
   constructor(paginationMode: PaginationModeEnum = PaginationModeEnum.QUERY) {
+    super();
     this._paginationMode = paginationMode;
-  }
-
-  /**
-   * Build a URI string from the given state using the PostgREST format
-   *
-   * @param state - The current query builder state
-   * @param options - The query parameter key name configuration
-   * @returns The composed URI string
-   * @throws Error if resource is not set
-   */
-  public buildUri(state: IQueryBuilderState, options: QueryBuilderOptions): string {
-    if (!state.resource) {
-      throw new Error('Set the resource property BEFORE adding filters or calling the url() / get() methods');
-    }
-
-    this._uri = '';
-
-    this._parseFilters(state, options);
-    this._parseOperatorFilters(state);
-    this._parseOrder(state);
-    this._parseSelect(state, options);
-
-    // In RANGE mode, pagination travels via HTTP headers — see buildPaginationHeaders
-    if (this._paginationMode === PaginationModeEnum.QUERY) {
-      this._parseLimit(state, options);
-      this._parseOffset(state);
-    }
-
-    // In RANGE mode with no filters/sorts/select, nothing would have been
-    // appended yet and the URI would come out empty. Emit the bare resource
-    // path so the consumer still gets a valid target URL.
-    if (!this._uri) {
-      this._uri = state.baseUrl ? `${state.baseUrl}/${state.resource}` : `/${state.resource}`;
-    }
-
-    return this._uri;
   }
 
   /**
@@ -121,34 +96,41 @@ export class PostgrestRequestStrategy implements IRequestStrategy {
   }
 
   /**
-   * Validate that the given limit is accepted by the PostgREST driver
+   * Emit PostgREST-format query-string segments in canonical order:
+   * filters → operator filters → order → select → (limit + offset in
+   * QUERY mode only — RANGE mode passes pagination via headers instead)
    *
-   * PostgREST does not recognise `-1` as a "fetch all" sentinel (unbounded
-   * result sets are requested by omitting `limit` entirely, which is not
-   * a shape ng-qubee emits), so only positive integers are accepted.
-   *
-   * @param limit - The limit value to validate
-   * @throws {InvalidLimitError} If the value is not a positive integer
+   * @param state - The current query builder state
+   * @param options - The query parameter key name configuration
+   * @returns Ordered query-string fragments
    */
-  public validateLimit(limit: number): void {
-    if (Number.isInteger(limit) && limit >= 1) {
-      return;
+  protected parts(state: IQueryBuilderState, options: QueryBuilderOptions): string[] {
+    const out: string[] = [];
+
+    this._appendFilters(state, out);
+    this._appendOperatorFilters(state, out);
+    this._appendOrder(state, out);
+    this._appendSelect(state, options, out);
+
+    if (this._paginationMode === PaginationModeEnum.QUERY) {
+      this._appendLimit(state, options, out);
+      this._appendOffset(state, out);
     }
 
-    throw new InvalidLimitError(limit);
+    return out;
   }
 
   /**
-   * Parse and append filter parameters in PostgREST format
+   * Append filter parameters in PostgREST format
    *
    * Every filter is operator-prefixed (PostgREST has no implicit equality):
    * a single value yields `col=eq.val`; multiple values collapse into
    * PostgREST's native IN-list syntax `col=in.(v1,v2,v3)`.
    *
    * @param state - The current query builder state
-   * @param options - The query parameter key name configuration
+   * @param out - The accumulator the caller joins into the URI
    */
-  private _parseFilters(state: IQueryBuilderState, _options: QueryBuilderOptions): void {
+  private _appendFilters(state: IQueryBuilderState, out: string[]): void {
     const keys = Object.keys(state.filters);
 
     if (!keys.length) {
@@ -168,22 +150,23 @@ export class PostgrestRequestStrategy implements IRequestStrategy {
         ? `eq.${values[0]}`
         : `in.(${values.join(',')})`;
 
-      this._uri += `${this._prepend(state)}${key}=${rhs}`;
+      out.push(`${key}=${rhs}`);
     });
   }
 
   /**
-   * Parse and append the limit parameter
+   * Append the limit parameter
    *
    * @param state - The current query builder state
    * @param options - The query parameter key name configuration
+   * @param out - The accumulator the caller joins into the URI
    */
-  private _parseLimit(state: IQueryBuilderState, options: QueryBuilderOptions): void {
-    this._uri += `${this._prepend(state)}${options.limit}=${state.limit}`;
+  private _appendLimit(state: IQueryBuilderState, options: QueryBuilderOptions, out: string[]): void {
+    out.push(`${options.limit}=${state.limit}`);
   }
 
   /**
-   * Parse and append the offset parameter, derived from state.page
+   * Append the offset parameter, derived from state.page
    *
    * PostgREST uses offset-based pagination, not page-based. The offset is
    * computed as `(page - 1) * limit`. Omitted when offset would be 0
@@ -191,19 +174,20 @@ export class PostgrestRequestStrategy implements IRequestStrategy {
    * it keeps the URI shorter.
    *
    * @param state - The current query builder state
+   * @param out - The accumulator the caller joins into the URI
    */
-  private _parseOffset(state: IQueryBuilderState): void {
+  private _appendOffset(state: IQueryBuilderState, out: string[]): void {
     const offset = (state.page - 1) * state.limit;
 
     if (offset <= 0) {
       return;
     }
 
-    this._uri += `&${PostgrestRequestStrategy._offsetKey}=${offset}`;
+    out.push(`${PostgrestRequestStrategy._offsetKey}=${offset}`);
   }
 
   /**
-   * Parse and append explicit operator filters
+   * Append explicit operator filters
    *
    * Maps each `FilterOperatorEnum` value to PostgREST's prefix-operator
    * syntax. `BTW` expands to two query params (`gte` + `lte`); `NULL`
@@ -212,34 +196,37 @@ export class PostgrestRequestStrategy implements IRequestStrategy {
    * `not.in.(v1,v2)` for multi-value).
    *
    * @param state - The current query builder state
+   * @param out - The accumulator the caller joins into the URI
    * @throws {InvalidFilterOperatorValueError} If `BTW` does not receive exactly 2 values, or `NULL` does not receive exactly 1 boolean
    */
-  private _parseOperatorFilters(state: IQueryBuilderState): void {
+  private _appendOperatorFilters(state: IQueryBuilderState, out: string[]): void {
     if (!state.operatorFilters.length) {
       return;
     }
 
     state.operatorFilters.forEach(filter => {
-      // BTW is special: expands to two separate query params
+      // BTW expands to two segments: col=gte.min and col=lte.max
       if (filter.operator === FilterOperatorEnum.BTW) {
-        this._emitBetweenFilter(filter);
+        this._appendBetweenFilter(filter, out);
         return;
       }
 
       const rhs = this._formatOperatorRhs(filter);
-      this._uri += `${this._prepend(state)}${filter.field}=${rhs}`;
+      out.push(`${filter.field}=${rhs}`);
     });
   }
 
   /**
-   * Emit a `BTW` operator filter as two PostgREST params
+   * Append a `BTW` operator filter as two PostgREST segments
    *
-   * Produces: `col=gte.min&col=lte.max`. Values must be exactly `[min, max]`.
+   * Produces: `col=gte.min` and `col=lte.max`. Values must be exactly
+   * `[min, max]`.
    *
    * @param filter - The operator filter carrying the BTW bounds
+   * @param out - The accumulator the caller joins into the URI
    * @throws {InvalidFilterOperatorValueError} If values.length !== 2
    */
-  private _emitBetweenFilter(filter: IOperatorFilter): void {
+  private _appendBetweenFilter(filter: IOperatorFilter, out: string[]): void {
     if (filter.values.length !== 2) {
       throw new InvalidFilterOperatorValueError(
         filter.operator,
@@ -249,9 +236,8 @@ export class PostgrestRequestStrategy implements IRequestStrategy {
 
     const [min, max] = filter.values;
 
-    // Both params use _prepend so the `?` vs `&` glue stays consistent
-    this._uri += `${this._prepend({} as IQueryBuilderState)}${filter.field}=gte.${min}`;
-    this._uri += `&${filter.field}=lte.${max}`;
+    out.push(`${filter.field}=gte.${min}`);
+    out.push(`${filter.field}=lte.${max}`);
   }
 
   /**
@@ -300,23 +286,22 @@ export class PostgrestRequestStrategy implements IRequestStrategy {
         return first ? 'is.null' : 'is.not.null';
       }
 
-      // BTW is handled by _emitBetweenFilter; falling through would be a bug
+      // BTW is dispatched by _appendOperatorFilters; falling through would be a bug
       case FilterOperatorEnum.BTW:
         throw new InvalidFilterOperatorValueError(
           operator,
-          'BTW should be dispatched to _emitBetweenFilter — this indicates a bug'
+          'BTW should be dispatched to _appendBetweenFilter — this indicates a bug'
         );
     }
   }
 
   /**
-   * Parse and append the order parameter
-   *
-   * Generates: `order=col1.asc,col2.desc`
+   * Append the order parameter as `order=col1.asc,col2.desc`
    *
    * @param state - The current query builder state
+   * @param out - The accumulator the caller joins into the URI
    */
-  private _parseOrder(state: IQueryBuilderState): void {
+  private _appendOrder(state: IQueryBuilderState, out: string[]): void {
     if (!state.sorts.length) {
       return;
     }
@@ -325,40 +310,24 @@ export class PostgrestRequestStrategy implements IRequestStrategy {
       `${sort.field}.${sort.order === SortEnum.DESC ? 'desc' : 'asc'}`
     );
 
-    this._uri += `${this._prepend(state)}${PostgrestRequestStrategy._orderKey}=${pairs.join(',')}`;
+    out.push(`${PostgrestRequestStrategy._orderKey}=${pairs.join(',')}`);
   }
 
   /**
-   * Parse and append the select parameter (flat column list)
+   * Append the select parameter as `select=col1,col2`
    *
-   * Generates: `select=col1,col2`. PostgREST uses a `select` query param
-   * for column pruning, matching NestJS semantics.
+   * PostgREST uses a `select` query param for column pruning, matching
+   * NestJS semantics.
    *
    * @param state - The current query builder state
    * @param options - The query parameter key name configuration
+   * @param out - The accumulator the caller joins into the URI
    */
-  private _parseSelect(state: IQueryBuilderState, options: QueryBuilderOptions): void {
+  private _appendSelect(state: IQueryBuilderState, options: QueryBuilderOptions, out: string[]): void {
     if (!state.select.length) {
       return;
     }
 
-    this._uri += `${this._prepend(state)}${options.select}=${state.select.join(',')}`;
-  }
-
-  /**
-   * Determine the appropriate URI prefix based on the current accumulator state
-   *
-   * Returns the full base path with `?` for the first parameter,
-   * or `&` for subsequent parameters.
-   *
-   * @param state - The current query builder state
-   * @returns The prefix string to prepend to the next parameter
-   */
-  private _prepend(state: IQueryBuilderState): string {
-    if (this._uri) {
-      return '&';
-    }
-
-    return state.baseUrl ? `${state.baseUrl}/${state.resource}?` : `/${state.resource}?`;
+    out.push(`${options.select}=${state.select.join(',')}`);
   }
 }
