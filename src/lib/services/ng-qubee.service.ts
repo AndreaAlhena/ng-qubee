@@ -20,6 +20,7 @@ import { UnsupportedSortError } from '../errors/unsupported-sort.error';
 // Interfaces
 import { IFields } from '../interfaces/fields.interface';
 import { IRequestStrategy } from '../interfaces/request-strategy.interface';
+import { IStrategyCapabilities } from '../interfaces/strategy-capabilities.interface';
 
 // Models
 import { QueryBuilderOptions } from '../models/query-builder-options';
@@ -72,14 +73,18 @@ export class NgQubeeService {
   }
 
   /**
-   * Assert that the active driver is one of the allowed drivers
+   * Assert that the active strategy declares support for a capability
    *
-   * @param allowed - The allowed drivers
-   * @param error - The error to throw if the driver is not allowed
-   * @throws The provided error if the active driver is not in the allowed list
+   * Reads from `IRequestStrategy.capabilities` rather than the driver
+   * enum so adding a new driver only requires declaring its capability
+   * map — this method does not change.
+   *
+   * @param flag - The capability key to check
+   * @param error - The error to throw if the capability is unsupported
+   * @throws The provided error if the active strategy lacks the capability
    */
-  private _assertDriver(allowed: DriverEnum[], error: Error): void {
-    if (!allowed.includes(this._driver)) {
+  private _assertCapability(flag: keyof IStrategyCapabilities, error: Error): void {
+    if (!this._requestStrategy.capabilities[flag]) {
       throw error;
     }
   }
@@ -93,7 +98,7 @@ export class NgQubeeService {
    * @throws {UnsupportedFieldSelectionError} If the active driver does not support per-model field selection
    */
   public addFields(model: string, fields: string[]): this {
-    this._assertDriver([DriverEnum.JSON_API, DriverEnum.SPATIE], new UnsupportedFieldSelectionError());
+    this._assertCapability('fields', new UnsupportedFieldSelectionError());
 
     if (!fields.length) {
       return this;
@@ -115,7 +120,7 @@ export class NgQubeeService {
    * @throws {UnsupportedFilterError} If the active driver does not support filters
    */
   public addFilter(field: string, ...values: (string | number | boolean)[]): this {
-    this._assertDriver([DriverEnum.JSON_API, DriverEnum.NESTJS, DriverEnum.POSTGREST, DriverEnum.SPATIE], new UnsupportedFilterError());
+    this._assertCapability('filters', new UnsupportedFilterError());
 
     if (!values.length) {
       return this;
@@ -141,7 +146,7 @@ export class NgQubeeService {
    * @throws {UnsupportedFilterOperatorError} If the active driver does not support filter operators
    */
   public addFilterOperator(field: string, operator: FilterOperatorEnum, ...values: (string | number | boolean)[]): this {
-    this._assertDriver([DriverEnum.NESTJS, DriverEnum.POSTGREST], new UnsupportedFilterOperatorError());
+    this._assertCapability('operatorFilters', new UnsupportedFilterOperatorError());
 
     if (!values.length) {
       return this;
@@ -161,7 +166,7 @@ export class NgQubeeService {
    * @throws {UnsupportedIncludesError} If the active driver does not support includes
    */
   public addIncludes(...models: string[]): this {
-    this._assertDriver([DriverEnum.JSON_API, DriverEnum.SPATIE], new UnsupportedIncludesError());
+    this._assertCapability('includes', new UnsupportedIncludesError());
 
     if (!models.length) {
       return this;
@@ -182,7 +187,7 @@ export class NgQubeeService {
    * @throws {UnsupportedSelectError} If the active driver does not support flat field selection
    */
   public addSelect(...fields: string[]): this {
-    this._assertDriver([DriverEnum.NESTJS, DriverEnum.POSTGREST], new UnsupportedSelectError());
+    this._assertCapability('select', new UnsupportedSelectError());
 
     if (!fields.length) {
       return this;
@@ -202,7 +207,7 @@ export class NgQubeeService {
    * @throws {UnsupportedSortError} If the active driver does not support sorts
    */
   public addSort(field: string, order: SortEnum): this {
-    this._assertDriver([DriverEnum.JSON_API, DriverEnum.NESTJS, DriverEnum.POSTGREST, DriverEnum.SPATIE], new UnsupportedSortError());
+    this._assertCapability('sort', new UnsupportedSortError());
 
     this._nestService.addSort({
       field,
@@ -238,7 +243,7 @@ export class NgQubeeService {
    * @throws {UnsupportedFieldSelectionError} If the active driver does not support per-model field selection
    */
   public deleteFields(fields: IFields): this {
-    this._assertDriver([DriverEnum.JSON_API, DriverEnum.SPATIE], new UnsupportedFieldSelectionError());
+    this._assertCapability('fields', new UnsupportedFieldSelectionError());
     this._nestService.deleteFields(fields);
 
     return this;
@@ -257,7 +262,7 @@ export class NgQubeeService {
    * @throws {UnsupportedFieldSelectionError} If the active driver does not support per-model field selection
    */
   public deleteFieldsByModel(model: string, ...fields: string[]): this {
-    this._assertDriver([DriverEnum.JSON_API, DriverEnum.SPATIE], new UnsupportedFieldSelectionError());
+    this._assertCapability('fields', new UnsupportedFieldSelectionError());
 
     if (!fields.length) {
       return this;
@@ -278,7 +283,7 @@ export class NgQubeeService {
    * @throws {UnsupportedFilterError} If the active driver does not support filters
    */
   public deleteFilters(...filters: string[]): this {
-    this._assertDriver([DriverEnum.JSON_API, DriverEnum.NESTJS, DriverEnum.POSTGREST, DriverEnum.SPATIE], new UnsupportedFilterError());
+    this._assertCapability('filters', new UnsupportedFilterError());
 
     if (!filters.length) {
       return this;
@@ -298,7 +303,7 @@ export class NgQubeeService {
    * @throws {UnsupportedIncludesError} If the active driver does not support includes
    */
   public deleteIncludes(...includes: string[]): this {
-    this._assertDriver([DriverEnum.JSON_API, DriverEnum.SPATIE], new UnsupportedIncludesError());
+    this._assertCapability('includes', new UnsupportedIncludesError());
 
     if (!includes.length) {
       return this;
@@ -317,7 +322,7 @@ export class NgQubeeService {
    * @throws {UnsupportedFilterOperatorError} If the active driver does not support filter operators
    */
   public deleteOperatorFilters(...fields: string[]): this {
-    this._assertDriver([DriverEnum.NESTJS, DriverEnum.POSTGREST], new UnsupportedFilterOperatorError());
+    this._assertCapability('operatorFilters', new UnsupportedFilterOperatorError());
 
     if (!fields.length) {
       return this;
@@ -336,7 +341,7 @@ export class NgQubeeService {
    * @throws {UnsupportedSearchError} If the active driver does not support search
    */
   public deleteSearch(): this {
-    this._assertDriver([DriverEnum.NESTJS], new UnsupportedSearchError());
+    this._assertCapability('search', new UnsupportedSearchError());
     this._nestService.deleteSearch();
     this._nestService.page = 1;
 
@@ -351,7 +356,7 @@ export class NgQubeeService {
    * @throws {UnsupportedSelectError} If the active driver does not support flat field selection
    */
   public deleteSelect(...fields: string[]): this {
-    this._assertDriver([DriverEnum.NESTJS, DriverEnum.POSTGREST], new UnsupportedSelectError());
+    this._assertCapability('select', new UnsupportedSelectError());
 
     if (!fields.length) {
       return this;
@@ -370,7 +375,7 @@ export class NgQubeeService {
    * @throws {UnsupportedSortError} If the active driver does not support sorts
    */
   public deleteSorts(...sorts: string[]): this {
-    this._assertDriver([DriverEnum.JSON_API, DriverEnum.NESTJS, DriverEnum.POSTGREST, DriverEnum.SPATIE], new UnsupportedSortError());
+    this._assertCapability('sort', new UnsupportedSortError());
     this._nestService.deleteSorts(...sorts);
     this._nestService.page = 1;
 
@@ -623,7 +628,7 @@ export class NgQubeeService {
    * @throws {UnsupportedSearchError} If the active driver does not support search
    */
   public setSearch(search: string): this {
-    this._assertDriver([DriverEnum.NESTJS], new UnsupportedSearchError());
+    this._assertCapability('search', new UnsupportedSearchError());
     this._nestService.setSearch(search);
     this._nestService.page = 1;
 
