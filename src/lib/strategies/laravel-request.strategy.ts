@@ -1,6 +1,7 @@
 import { InvalidLimitError } from '../errors/invalid-limit.error';
 import { IQueryBuilderState } from '../interfaces/query-builder-state.interface';
 import { IRequestStrategy } from '../interfaces/request-strategy.interface';
+import { IStrategyCapabilities } from '../interfaces/strategy-capabilities.interface';
 import { QueryBuilderOptions } from '../models/query-builder-options';
 
 /**
@@ -12,6 +13,19 @@ import { QueryBuilderOptions } from '../models/query-builder-options';
  * Filters, sorts, fields, includes, search, and select in state are ignored.
  */
 export class LaravelRequestStrategy implements IRequestStrategy {
+
+  /**
+   * Pagination-only driver — no filtering, sorting, or column selection
+   */
+  public readonly capabilities: IStrategyCapabilities = {
+    fields: false,
+    filters: false,
+    includes: false,
+    operatorFilters: false,
+    search: false,
+    select: false,
+    sort: false
+  };
 
   /**
    * Build a pagination-only URI from the given state

@@ -3,6 +3,7 @@ import { InvalidLimitError } from '../errors/invalid-limit.error';
 import { IOperatorFilter } from '../interfaces/operator-filter.interface';
 import { IQueryBuilderState } from '../interfaces/query-builder-state.interface';
 import { IRequestStrategy } from '../interfaces/request-strategy.interface';
+import { IStrategyCapabilities } from '../interfaces/strategy-capabilities.interface';
 import { QueryBuilderOptions } from '../models/query-builder-options';
 
 /**
@@ -19,6 +20,20 @@ import { QueryBuilderOptions } from '../models/query-builder-options';
  * @see https://github.com/ppetzold/nestjs-paginate
  */
 export class NestjsRequestStrategy implements IRequestStrategy {
+
+  /**
+   * Filters, operator filters, sorts, flat select, global search — no
+   * per-model fields, no includes
+   */
+  public readonly capabilities: IStrategyCapabilities = {
+    fields: false,
+    filters: true,
+    includes: false,
+    operatorFilters: true,
+    search: true,
+    select: true,
+    sort: true
+  };
 
   /**
    * Accumulator for composing the URI string

@@ -6,6 +6,7 @@ import { InvalidLimitError } from '../errors/invalid-limit.error';
 import { IOperatorFilter } from '../interfaces/operator-filter.interface';
 import { IQueryBuilderState } from '../interfaces/query-builder-state.interface';
 import { IRequestStrategy } from '../interfaces/request-strategy.interface';
+import { IStrategyCapabilities } from '../interfaces/strategy-capabilities.interface';
 import { QueryBuilderOptions } from '../models/query-builder-options';
 
 /**
@@ -29,6 +30,21 @@ import { QueryBuilderOptions } from '../models/query-builder-options';
  * @see https://supabase.com/docs/reference/javascript/select
  */
 export class PostgrestRequestStrategy implements IRequestStrategy {
+
+  /**
+   * Filters, operator filters (incl. FTS), sorts, flat select — no
+   * per-model fields, no JSON:API/Spatie-style includes, no global
+   * search (per-column FTS via the operator family covers it)
+   */
+  public readonly capabilities: IStrategyCapabilities = {
+    fields: false,
+    filters: true,
+    includes: false,
+    operatorFilters: true,
+    search: false,
+    select: true,
+    sort: true
+  };
 
   private static readonly _offsetKey = 'offset';
   private static readonly _orderKey = 'order';

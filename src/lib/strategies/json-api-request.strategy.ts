@@ -5,6 +5,7 @@ import { InvalidLimitError } from '../errors/invalid-limit.error';
 import { UnselectableModelError } from '../errors/unselectable-model.error';
 import { IQueryBuilderState } from '../interfaces/query-builder-state.interface';
 import { IRequestStrategy } from '../interfaces/request-strategy.interface';
+import { IStrategyCapabilities } from '../interfaces/strategy-capabilities.interface';
 import { QueryBuilderOptions } from '../models/query-builder-options';
 
 /**
@@ -20,6 +21,20 @@ import { QueryBuilderOptions } from '../models/query-builder-options';
  * @see https://jsonapi.org/format/
  */
 export class JsonApiRequestStrategy implements IRequestStrategy {
+
+  /**
+   * Filters, sorts, includes, per-model fields — same shape as Spatie
+   * but with bracket-style pagination
+   */
+  public readonly capabilities: IStrategyCapabilities = {
+    fields: true,
+    filters: true,
+    includes: true,
+    operatorFilters: false,
+    search: false,
+    select: false,
+    sort: true
+  };
 
   /**
    * Accumulator for composing the URI string
