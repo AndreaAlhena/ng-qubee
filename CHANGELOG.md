@@ -30,6 +30,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **`PaginationService.paginate()` and `IResponseStrategy.paginate()` accept an optional trailing `headers?: HeaderBag` parameter** (#50). Backward-compatible: existing callers ignoring the new param keep working unchanged, and the four existing driver strategies (Laravel / Spatie / NestJS / JSON:API) satisfy the extended interface via TypeScript's structural typing without any source changes. PostgREST uses it to read `Content-Range`; body-only drivers ignore it.
 
+### Internal
+- **Driver architecture refactor** (#67) — pure internal cleanup, zero public-API change. Adding the next driver is now ~1 strategy file + 1 entry in the registry + 1 entry in `DriverEnum`; nothing else needs to be touched.
+  - **Capability declarations replace driver allowlists.** New `IStrategyCapabilities` interface and `capabilities` getter on `IRequestStrategy`; each strategy declares its supported features in one object literal. `NgQubeeService._assertDriver([...], err)` becomes `_assertCapability(flag, err)` — the service no longer reads `DriverEnum` for feature gating.
+  - **`AbstractRequestStrategy`** owns the `assertResource` guard, the `?`/`&` URL composition (`baseUri` + `join`), and the default positive-integer `validateLimit`. Concrete strategies migrate from a mutable `this._uri` accumulator to a `protected parts(state, options): string[]` template method, eliminating the copy-pasted `_prepend(state)` helper from all five drivers and the latent re-entrancy footgun.
+  - **`AbstractDotPathResponseStrategy`** absorbs the byte-identical `_resolve` / `_resolveFrom` / `_resolveTo` traversal that JSON:API and NestJS were duplicating; both response strategies collapse to one-line empty extensions (kept for distinct DI identity).
+  - **Driver registry** (`src/lib/drivers/driver-registry.ts`) replaces the three parallel `switch(driver)` blocks in `provide-ngqubee.ts`. `Record<DriverEnum, IDriverDefinition>` gives compile-time exhaustiveness — adding a new `DriverEnum` value fails to compile until its definition lands in the registry.
+
 ## [3.2.0] - 2026-04-21
 
 ### Changed
