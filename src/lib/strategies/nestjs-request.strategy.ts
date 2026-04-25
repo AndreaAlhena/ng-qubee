@@ -2,9 +2,9 @@ import { SortEnum } from '../enums/sort.enum';
 import { InvalidLimitError } from '../errors/invalid-limit.error';
 import { IOperatorFilter } from '../interfaces/operator-filter.interface';
 import { IQueryBuilderState } from '../interfaces/query-builder-state.interface';
-import { IRequestStrategy } from '../interfaces/request-strategy.interface';
 import { IStrategyCapabilities } from '../interfaces/strategy-capabilities.interface';
 import { QueryBuilderOptions } from '../models/query-builder-options';
+import { AbstractRequestStrategy } from './abstract-request.strategy';
 
 /**
  * Request strategy for the NestJS (nestjs-paginate) driver
@@ -19,7 +19,7 @@ import { QueryBuilderOptions } from '../models/query-builder-options';
  *
  * @see https://github.com/ppetzold/nestjs-paginate
  */
-export class NestjsRequestStrategy implements IRequestStrategy {
+export class NestjsRequestStrategy extends AbstractRequestStrategy {
 
   /**
    * Filters, operator filters, sorts, flat select, global search — no
@@ -36,37 +36,6 @@ export class NestjsRequestStrategy implements IRequestStrategy {
   };
 
   /**
-   * Accumulator for composing the URI string
-   */
-  private _uri = '';
-
-  /**
-   * Build a URI string from the given state using the NestJS paginate format
-   *
-   * @param state - The current query builder state
-   * @param options - The query parameter key name configuration
-   * @returns The composed URI string
-   * @throws Error if model is not set
-   */
-  public buildUri(state: IQueryBuilderState, options: QueryBuilderOptions): string {
-    if (!state.resource) {
-      throw new Error('Set the resource property BEFORE adding filters or calling the url() / get() methods');
-    }
-
-    this._uri = '';
-
-    this._parseFilters(state, options);
-    this._parseOperatorFilters(state, options);
-    this._parseSort(state, options);
-    this._parseSelect(state, options);
-    this._parseSearch(state, options);
-    this._parseLimit(state, options);
-    this._parsePage(state, options);
-
-    return this._uri;
-  }
-
-  /**
    * Validate that the given limit is accepted by nestjs-paginate
    *
    * Accepts any integer `>= 1` as a page size, plus `-1` which nestjs-paginate
@@ -75,7 +44,7 @@ export class NestjsRequestStrategy implements IRequestStrategy {
    * @param limit - The limit value to validate
    * @throws {InvalidLimitError} If the value is not an integer, or is 0, or is a negative number other than -1
    */
-  public validateLimit(limit: number): void {
+  public override validateLimit(limit: number): void {
     if (Number.isInteger(limit) && (limit === -1 || limit >= 1)) {
       return;
     }
@@ -84,14 +53,35 @@ export class NestjsRequestStrategy implements IRequestStrategy {
   }
 
   /**
-   * Parse and append simple filter parameters
-   *
-   * Generates: `filter.field=value1,value2` for each filter
+   * Emit NestJS-format query-string segments in canonical order:
+   * filters → operator filters → sortBy → select → search → limit → page
    *
    * @param state - The current query builder state
    * @param options - The query parameter key name configuration
+   * @returns Ordered query-string fragments
    */
-  private _parseFilters(state: IQueryBuilderState, options: QueryBuilderOptions): void {
+  protected parts(state: IQueryBuilderState, options: QueryBuilderOptions): string[] {
+    const out: string[] = [];
+
+    this._appendFilters(state, options, out);
+    this._appendOperatorFilters(state, options, out);
+    this._appendSort(state, options, out);
+    this._appendSelect(state, options, out);
+    this._appendSearch(state, options, out);
+    this._appendLimit(state, options, out);
+    this._appendPage(state, options, out);
+
+    return out;
+  }
+
+  /**
+   * Append simple filter parameters as `filter.field=value1,value2`
+   *
+   * @param state - The current query builder state
+   * @param options - The query parameter key name configuration
+   * @param out - The accumulator the caller joins into the URI
+   */
+  private _appendFilters(state: IQueryBuilderState, options: QueryBuilderOptions, out: string[]): void {
     const keys = Object.keys(state.filters);
 
     if (!keys.length) {
@@ -100,124 +90,98 @@ export class NestjsRequestStrategy implements IRequestStrategy {
 
     keys.forEach(key => {
       const values = state.filters[key].join(',');
-      const param = `${this._prepend(state)}${options.filters}.${key}=${values}`;
-      this._uri += param;
+      out.push(`${options.filters}.${key}=${values}`);
     });
   }
 
   /**
-   * Parse and append the limit parameter
+   * Append the limit parameter
    *
    * @param state - The current query builder state
    * @param options - The query parameter key name configuration
+   * @param out - The accumulator the caller joins into the URI
    */
-  private _parseLimit(state: IQueryBuilderState, options: QueryBuilderOptions): void {
-    const param = `${this._prepend(state)}${options.limit}=${state.limit}`;
-    this._uri += param;
+  private _appendLimit(state: IQueryBuilderState, options: QueryBuilderOptions, out: string[]): void {
+    out.push(`${options.limit}=${state.limit}`);
   }
 
   /**
-   * Parse and append operator filter parameters
+   * Append operator-filter parameters as `filter.field=$op:value`
    *
-   * Groups operator filters by field and generates:
-   * - Single value: `filter.field=$operator:value`
-   * - Multiple values ($in, $btw): `filter.field=$operator:val1,val2`
+   * Groups by field; multi-value operators ($in, $btw) join values with commas.
    *
    * @param state - The current query builder state
    * @param options - The query parameter key name configuration
+   * @param out - The accumulator the caller joins into the URI
    */
-  private _parseOperatorFilters(state: IQueryBuilderState, options: QueryBuilderOptions): void {
+  private _appendOperatorFilters(state: IQueryBuilderState, options: QueryBuilderOptions, out: string[]): void {
     if (!state.operatorFilters.length) {
       return;
     }
 
     state.operatorFilters.forEach((opFilter: IOperatorFilter) => {
       const values = opFilter.values.join(',');
-      const param = `${this._prepend(state)}${options.filters}.${opFilter.field}=${opFilter.operator}:${values}`;
-      this._uri += param;
+      out.push(`${options.filters}.${opFilter.field}=${opFilter.operator}:${values}`);
     });
   }
 
   /**
-   * Parse and append the page parameter
+   * Append the page parameter
    *
    * @param state - The current query builder state
    * @param options - The query parameter key name configuration
+   * @param out - The accumulator the caller joins into the URI
    */
-  private _parsePage(state: IQueryBuilderState, options: QueryBuilderOptions): void {
-    const param = `${this._prepend(state)}${options.page}=${state.page}`;
-    this._uri += param;
+  private _appendPage(state: IQueryBuilderState, options: QueryBuilderOptions, out: string[]): void {
+    out.push(`${options.page}=${state.page}`);
   }
 
   /**
-   * Parse and append the search parameter
-   *
-   * Generates: `search=term`
+   * Append the search parameter as `search=term`
    *
    * @param state - The current query builder state
    * @param options - The query parameter key name configuration
+   * @param out - The accumulator the caller joins into the URI
    */
-  private _parseSearch(state: IQueryBuilderState, options: QueryBuilderOptions): void {
+  private _appendSearch(state: IQueryBuilderState, options: QueryBuilderOptions, out: string[]): void {
     if (!state.search) {
       return;
     }
 
-    const param = `${this._prepend(state)}${options.search}=${state.search}`;
-    this._uri += param;
+    out.push(`${options.search}=${state.search}`);
   }
 
   /**
-   * Parse and append the select parameter
-   *
-   * Generates: `select=col1,col2`
+   * Append the select parameter as `select=col1,col2`
    *
    * @param state - The current query builder state
    * @param options - The query parameter key name configuration
+   * @param out - The accumulator the caller joins into the URI
    */
-  private _parseSelect(state: IQueryBuilderState, options: QueryBuilderOptions): void {
+  private _appendSelect(state: IQueryBuilderState, options: QueryBuilderOptions, out: string[]): void {
     if (!state.select.length) {
       return;
     }
 
-    const param = `${this._prepend(state)}${options.select}=${state.select.join(',')}`;
-    this._uri += param;
+    out.push(`${options.select}=${state.select.join(',')}`);
   }
 
   /**
-   * Parse and append sort parameters
-   *
-   * Generates: `sortBy=field1:DESC,field2:ASC`
+   * Append sort parameter as `sortBy=field1:DESC,field2:ASC`
    *
    * @param state - The current query builder state
    * @param options - The query parameter key name configuration
+   * @param out - The accumulator the caller joins into the URI
    */
-  private _parseSort(state: IQueryBuilderState, options: QueryBuilderOptions): void {
+  private _appendSort(state: IQueryBuilderState, options: QueryBuilderOptions, out: string[]): void {
     if (!state.sorts.length) {
       return;
     }
 
-    const sortPairs = state.sorts.map(sort =>
+    const pairs = state.sorts.map(sort =>
       `${sort.field}:${sort.order === SortEnum.DESC ? 'DESC' : 'ASC'}`
     );
 
-    const param = `${this._prepend(state)}${options.sortBy}=${sortPairs.join(',')}`;
-    this._uri += param;
-  }
-
-  /**
-   * Determine the appropriate URI prefix based on the current accumulator state
-   *
-   * Returns the full base path with `?` for the first parameter,
-   * or `&` for subsequent parameters.
-   *
-   * @param state - The current query builder state
-   * @returns The prefix string to prepend to the next parameter
-   */
-  private _prepend(state: IQueryBuilderState): string {
-    if (this._uri) {
-      return '&';
-    }
-
-    return state.baseUrl ? `${state.baseUrl}/${state.resource}?` : `/${state.resource}?`;
+    out.push(`${options.sortBy}=${pairs.join(',')}`);
   }
 }

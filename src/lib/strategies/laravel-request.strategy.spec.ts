@@ -39,7 +39,7 @@ describe('LaravelRequestStrategy', () => {
     const state = { ...baseState, resource: '' };
 
     expect(() => strategy.buildUri(state, options)).toThrowError(
-      'Set the resource property BEFORE calling the url() / get() methods'
+      'Set the resource property BEFORE adding filters or calling the url() / get() methods'
     );
   });
 

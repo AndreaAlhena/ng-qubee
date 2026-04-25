@@ -1,8 +1,7 @@
-import { InvalidLimitError } from '../errors/invalid-limit.error';
 import { IQueryBuilderState } from '../interfaces/query-builder-state.interface';
-import { IRequestStrategy } from '../interfaces/request-strategy.interface';
 import { IStrategyCapabilities } from '../interfaces/strategy-capabilities.interface';
 import { QueryBuilderOptions } from '../models/query-builder-options';
+import { AbstractRequestStrategy } from './abstract-request.strategy';
 
 /**
  * Request strategy for the Laravel (pagination-only) driver
@@ -12,7 +11,7 @@ import { QueryBuilderOptions } from '../models/query-builder-options';
  *
  * Filters, sorts, fields, includes, search, and select in state are ignored.
  */
-export class LaravelRequestStrategy implements IRequestStrategy {
+export class LaravelRequestStrategy extends AbstractRequestStrategy {
 
   /**
    * Pagination-only driver — no filtering, sorting, or column selection
@@ -28,37 +27,16 @@ export class LaravelRequestStrategy implements IRequestStrategy {
   };
 
   /**
-   * Build a pagination-only URI from the given state
+   * Emit only the pagination params; filters/sorts/etc. are ignored
    *
    * @param state - The current query builder state
    * @param options - The query parameter key name configuration
-   * @returns The composed URI string
-   * @throws Error if resource is not set
+   * @returns The two pagination query-string fragments
    */
-  public buildUri(state: IQueryBuilderState, options: QueryBuilderOptions): string {
-    if (!state.resource) {
-      throw new Error('Set the resource property BEFORE calling the url() / get() methods');
-    }
-
-    const base = state.baseUrl ? `${state.baseUrl}/${state.resource}` : `/${state.resource}`;
-
-    return `${base}?${options.limit}=${state.limit}&${options.page}=${state.page}`;
-  }
-
-  /**
-   * Validate that the given limit is accepted by the Laravel driver
-   *
-   * Laravel pagination does not recognize `-1` as a "fetch all" sentinel,
-   * so only positive integers are accepted.
-   *
-   * @param limit - The limit value to validate
-   * @throws {InvalidLimitError} If the value is not a positive integer
-   */
-  public validateLimit(limit: number): void {
-    if (Number.isInteger(limit) && limit >= 1) {
-      return;
-    }
-
-    throw new InvalidLimitError(limit);
+  protected parts(state: IQueryBuilderState, options: QueryBuilderOptions): string[] {
+    return [
+      `${options.limit}=${state.limit}`,
+      `${options.page}=${state.page}`
+    ];
   }
 }
