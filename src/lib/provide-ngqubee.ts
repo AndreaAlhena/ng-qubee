@@ -1,23 +1,12 @@
 import { EnvironmentProviders, Provider, makeEnvironmentProviders } from '@angular/core';
 
-import { DriverEnum } from './enums/driver.enum';
+import { DRIVERS } from './drivers/driver-registry';
+import { PaginationModeEnum } from './enums/pagination-mode.enum';
 import { IConfig } from './interfaces/config.interface';
-import { IPaginationConfig } from './interfaces/pagination-config.interface';
-import { IRequestStrategy } from './interfaces/request-strategy.interface';
-import { IResponseStrategy } from './interfaces/response-strategy.interface';
 import { QueryBuilderOptions } from './models/query-builder-options';
-import { JsonApiResponseOptions, NestjsResponseOptions, ResponseOptions } from './models/response-options';
 import { NestService } from './services/nest.service';
 import { NgQubeeService } from './services/ng-qubee.service';
 import { PaginationService } from './services/pagination.service';
-import { JsonApiRequestStrategy } from './strategies/json-api-request.strategy';
-import { JsonApiResponseStrategy } from './strategies/json-api-response.strategy';
-import { LaravelRequestStrategy } from './strategies/laravel-request.strategy';
-import { LaravelResponseStrategy } from './strategies/laravel-response.strategy';
-import { NestjsRequestStrategy } from './strategies/nestjs-request.strategy';
-import { NestjsResponseStrategy } from './strategies/nestjs-response.strategy';
-import { SpatieRequestStrategy } from './strategies/spatie-request.strategy';
-import { SpatieResponseStrategy } from './strategies/spatie-response.strategy';
 import {
   NG_QUBEE_DRIVER,
   NG_QUBEE_REQUEST_OPTIONS,
@@ -27,65 +16,13 @@ import {
 } from './tokens/ng-qubee.tokens';
 
 /**
- * Resolve the request strategy instance for the given driver
- *
- * @param driver - The pagination driver
- * @returns The corresponding request strategy
- */
-function resolveRequestStrategy(driver: DriverEnum): IRequestStrategy {
-  switch (driver) {
-    case DriverEnum.JSON_API:
-      return new JsonApiRequestStrategy();
-    case DriverEnum.NESTJS:
-      return new NestjsRequestStrategy();
-    case DriverEnum.SPATIE:
-      return new SpatieRequestStrategy();
-    case DriverEnum.LARAVEL:
-      return new LaravelRequestStrategy();
-  }
-}
-
-/**
- * Resolve the response strategy instance for the given driver
- *
- * @param driver - The pagination driver
- * @returns The corresponding response strategy
- */
-function resolveResponseStrategy(driver: DriverEnum): IResponseStrategy {
-  switch (driver) {
-    case DriverEnum.JSON_API:
-      return new JsonApiResponseStrategy();
-    case DriverEnum.NESTJS:
-      return new NestjsResponseStrategy();
-    case DriverEnum.SPATIE:
-      return new SpatieResponseStrategy();
-    case DriverEnum.LARAVEL:
-      return new LaravelResponseStrategy();
-  }
-}
-
-/**
- * Resolve the driver-specific `ResponseOptions` instance
- *
- * @param driver - The pagination driver
- * @param responseConfig - User-supplied response key overrides
- * @returns A pre-built ResponseOptions (or driver-specific subclass)
- */
-function resolveResponseOptions(driver: DriverEnum, responseConfig: IPaginationConfig): ResponseOptions {
-  if (driver === DriverEnum.JSON_API) {
-    return new JsonApiResponseOptions(responseConfig);
-  }
-
-  if (driver === DriverEnum.NESTJS) {
-    return new NestjsResponseOptions(responseConfig);
-  }
-
-  return new ResponseOptions(responseConfig);
-}
-
-/**
  * Build the core provider list shared by `provideNgQubee()` and
  * `NgQubeeModule.forRoot()`
+ *
+ * Looks up the driver definition from the registry and calls its three
+ * factories — request strategy, response strategy, response options.
+ * Adding a driver means adding one entry to `DRIVERS`; this function
+ * does not change.
  *
  * Exposes the driver, strategies, and options via injection tokens so that
  * consumers can request a component-scoped instance of the services through
@@ -96,14 +33,17 @@ function resolveResponseOptions(driver: DriverEnum, responseConfig: IPaginationC
  */
 export function buildNgQubeeProviders(config: IConfig): Provider[] {
   const driver = config.driver;
+  const paginationMode = config.pagination ?? PaginationModeEnum.QUERY;
+  const definition = DRIVERS[driver];
+
   const requestOptions = new QueryBuilderOptions(Object.assign({}, config.request));
-  const responseOptions = resolveResponseOptions(driver, Object.assign({}, config.response));
+  const responseOptions = definition.createResponseOptions(Object.assign({}, config.response));
 
   return [
     { provide: NG_QUBEE_DRIVER, useValue: driver },
-    { provide: NG_QUBEE_REQUEST_STRATEGY, useValue: resolveRequestStrategy(driver) },
+    { provide: NG_QUBEE_REQUEST_STRATEGY, useValue: definition.createRequestStrategy(paginationMode) },
     { provide: NG_QUBEE_REQUEST_OPTIONS, useValue: requestOptions },
-    { provide: NG_QUBEE_RESPONSE_STRATEGY, useValue: resolveResponseStrategy(driver) },
+    { provide: NG_QUBEE_RESPONSE_STRATEGY, useValue: definition.createResponseStrategy() },
     { provide: NG_QUBEE_RESPONSE_OPTIONS, useValue: responseOptions },
     NestService,
     NgQubeeService,

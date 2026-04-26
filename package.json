@@ -4,7 +4,7 @@
     "name": "Andrea Tantimonaco",
     "url": "https://andreatantimonaco.me"
   },
-  "version": "3.2.0",
+  "version": "3.3.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -24,7 +24,9 @@
     "query",
     "builder",
     "typescript",
-    "signals"
+    "signals",
+    "postgrest",
+    "supabase"
   ],
   "allowedNonPeerDependencies": [
     "qs"

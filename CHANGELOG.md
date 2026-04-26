@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.3.0] - 2026-04-25
+
+### Added
+- **PostgREST / Supabase driver** (`DriverEnum.POSTGREST`) (#50): new driver targeting [PostgREST](https://postgrest.org/) and Supabase.
+  - `PostgrestRequestStrategy`: operator-prefixed filters (`col=eq.val` single, `col=in.(v1,v2,v3)` multi-value), `order=col.asc,col.desc` sorting, flat `select=col1,col2`, offset-based pagination (`limit=N&offset=M` with offset derived from `page`)
+  - `PostgrestResponseStrategy`: parses the total count from the HTTP `Content-Range` response header (opt-in via `Prefer: count=exact`), derives `page`/`perPage`/`lastPage`/`total` with 0-to-1-indexed conversion, tolerates missing/malformed headers gracefully
+  - PostgREST driver supports `addFilter`/`deleteFilters`, `addFilterOperator`/`deleteOperatorFilters`, `addSort`/`deleteSorts`, `addSelect`/`deleteSelect`, `setLimit`/`setPage` + their delete counterparts. `addFields`, `addIncludes`, and `setSearch` throw the matching `Unsupported*Error` (embedded-resource support tracked as #66)
+- **Full `FilterOperatorEnum` mapping on PostgREST** (#50): every existing operator (`EQ`, `GT`, `GTE`, `LT`, `LTE`, `ILIKE`, `IN`, `NOT`, `NULL`, `BTW`, `SW`, `CONTAINS`) is translated to PostgREST's prefix syntax, with correct semantics for the awkward ones:
+  - `NOT` dispatches to `not.eq.val` (single) or `not.in.(v1,v2)` (multi) by arity
+  - `NULL` maps a boolean value to `is.null` / `is.not.null`
+  - `BTW` expands to **two** query params (`col=gte.min&col=lte.max`)
+  - `SW` emits `like.val*`; `CONTAINS` emits `ilike.%val%`
+- **PostgREST full-text search operators** (#50): four new `FilterOperatorEnum` entries — `FTS`, `PLFTS`, `PHFTS`, `WFTS` — map to PostgREST's `to_tsquery`, `plainto_tsquery`, `phraseto_tsquery`, and `websearch_to_tsquery` respectively. Column-scoped; use via `addFilterOperator(column, FilterOperatorEnum.FTS, term)`. Language modifiers (e.g. `fts(english)`) are not supported in this release.
+- **`InvalidFilterOperatorValueError`** (new public error) (#50): thrown by the PostgREST strategy when an operator's value arity or type is unambiguously wrong at call time. `BTW` requires exactly 2 values; `NULL` requires exactly 1 boolean. Other operators leave validation to the server.
+- **`PaginationModeEnum`** (new enum export) (#50): `QUERY` (default) or `RANGE`. Set via `IConfig.pagination`; currently honoured only by the PostgREST driver.
+- **RANGE-header pagination on PostgREST** (#50): when `IConfig.pagination` is `PaginationModeEnum.RANGE`, `generateUri()` omits `limit`/`offset` from the URL and `NgQubeeService.paginationHeaders()` returns `{ 'Range-Unit': 'items', 'Range': 'from-to' }` for the consumer to merge into the HTTP request. Other drivers leave the setting as a no-op.
+- **`NgQubeeService.paginationHeaders()`** (new method) (#50): thin passthrough to the active strategy's optional `buildPaginationHeaders`. Returns `null` for drivers that don't use header-based pagination.
+- **`IRequestStrategy.buildPaginationHeaders?`** (new optional interface method) (#50): drivers that ship pagination metadata via HTTP headers implement it; all four pre-existing strategies omit it and the type is satisfied via TypeScript's structural typing without source changes.
+- **`HeaderBag` type** (new export): union of `{ get(name): string | null }` (Angular `HttpHeaders`, native `Headers`) and `Record<string, string | null | undefined>` (plain object). Plus a `readHeader` helper that normalises access across both shapes.
+
+### Changed
+- **`PaginationService.paginate()` and `IResponseStrategy.paginate()` accept an optional trailing `headers?: HeaderBag` parameter** (#50). Backward-compatible: existing callers ignoring the new param keep working unchanged, and the four existing driver strategies (Laravel / Spatie / NestJS / JSON:API) satisfy the extended interface via TypeScript's structural typing without any source changes. PostgREST uses it to read `Content-Range`; body-only drivers ignore it.
+
+### Documentation
+- **Documentation site launched** (#68) at [https://ng-qubee.andreatantimonaco.me](https://ng-qubee.andreatantimonaco.me). Built with Docusaurus 3, hosted on GitHub Pages with first-class versioning (3.3.0 ships as the initial snapshot; `next` tracks `develop`). Includes:
+  - Curated guides — Getting Started, one page per driver (JSON:API / Laravel / Spatie / NestJS / PostgREST), Fetching data (with reactive `UserClient` example), Query Builder API, Pagination, Per-component instances
+  - Auto-generated API reference via `docusaurus-plugin-typedoc`, scoped to `src/public-api.ts` so it covers exactly what consumers can import
+  - GitHub Actions deployment workflow (`.github/workflows/docs.yml`) — production builds on every push to `master`, path-filtered to skip irrelevant commits
+
+### Internal
+- **Driver architecture refactor** (#67) — pure internal cleanup, zero public-API change. Adding the next driver is now ~1 strategy file + 1 entry in the registry + 1 entry in `DriverEnum`; nothing else needs to be touched.
+  - **Capability declarations replace driver allowlists.** New `IStrategyCapabilities` interface and `capabilities` getter on `IRequestStrategy`; each strategy declares its supported features in one object literal. `NgQubeeService._assertDriver([...], err)` becomes `_assertCapability(flag, err)` — the service no longer reads `DriverEnum` for feature gating.
+  - **`AbstractRequestStrategy`** owns the `assertResource` guard, the `?`/`&` URL composition (`baseUri` + `join`), and the default positive-integer `validateLimit`. Concrete strategies migrate from a mutable `this._uri` accumulator to a `protected parts(state, options): string[]` template method, eliminating the copy-pasted `_prepend(state)` helper from all five drivers and the latent re-entrancy footgun.
+  - **`AbstractDotPathResponseStrategy`** absorbs the byte-identical `_resolve` / `_resolveFrom` / `_resolveTo` traversal that JSON:API and NestJS were duplicating; both response strategies collapse to one-line empty extensions (kept for distinct DI identity).
+  - **Driver registry** (`src/lib/drivers/driver-registry.ts`) replaces the three parallel `switch(driver)` blocks in `provide-ngqubee.ts`. `Record<DriverEnum, IDriverDefinition>` gives compile-time exhaustiveness — adding a new `DriverEnum` value fails to compile until its definition lands in the registry.
+
 ## [3.2.0] - 2026-04-21
 
 ### Changed

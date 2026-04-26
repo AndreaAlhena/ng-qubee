@@ -18,6 +18,8 @@ import { PaginationNotSyncedError } from '../errors/pagination-not-synced.error'
 import { QueryBuilderOptions } from '../models/query-builder-options';
 import { LaravelRequestStrategy } from '../strategies/laravel-request.strategy';
 import { NestjsRequestStrategy } from '../strategies/nestjs-request.strategy';
+import { PaginationModeEnum } from '../enums/pagination-mode.enum';
+import { PostgrestRequestStrategy } from '../strategies/postgrest-request.strategy';
 import { SpatieRequestStrategy } from '../strategies/spatie-request.strategy';
 import { NestService } from './nest.service';
 import { NgQubeeService } from './ng-qubee.service';
@@ -1005,5 +1007,181 @@ describe('NgQubeeService auto-reset page — Spatie-only mutations', () => {
     service.setPage(5);
     service.deleteIncludes('profile');
     expect(service.currentPage()).toBe(5);
+  });
+});
+
+describe('NgQubeeService driver validation (PostgREST)', () => {
+  let service: NgQubeeService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [BrowserTestingModule],
+      providers: [
+        {
+          deps: [NestService],
+          provide: NgQubeeService,
+          useFactory: (nestService: NestService) =>
+            new NgQubeeService(nestService, new PostgrestRequestStrategy(), DriverEnum.POSTGREST)
+        }, NestService
+      ]
+    });
+
+    service = TestBed.inject(NgQubeeService);
+  });
+
+  // Supported: filters, sorts, flat select, pagination
+  it('should accept addFilter', () => {
+    expect(() => service.addFilter('status', 'active')).not.toThrow();
+  });
+
+  it('should accept deleteFilters', () => {
+    service.addFilter('status', 'active');
+    expect(() => service.deleteFilters('status')).not.toThrow();
+  });
+
+  it('should accept addSort', () => {
+    expect(() => service.addSort('name', SortEnum.ASC)).not.toThrow();
+  });
+
+  it('should accept deleteSorts', () => {
+    service.addSort('name', SortEnum.ASC);
+    expect(() => service.deleteSorts('name')).not.toThrow();
+  });
+
+  it('should accept addSelect', () => {
+    expect(() => service.addSelect('id', 'email')).not.toThrow();
+  });
+
+  it('should accept deleteSelect', () => {
+    service.addSelect('id', 'email');
+    expect(() => service.deleteSelect('id')).not.toThrow();
+  });
+
+  // Unsupported: fields, includes, operator filters, search
+  it('should throw UnsupportedFieldSelectionError when calling addFields', () => {
+    expect(() => service.addFields('users', ['id']))
+      .toThrowError(UnsupportedFieldSelectionError);
+  });
+
+  it('should throw UnsupportedFieldSelectionError when calling deleteFields', () => {
+    expect(() => service.deleteFields({ users: ['id'] }))
+      .toThrowError(UnsupportedFieldSelectionError);
+  });
+
+  it('should throw UnsupportedFieldSelectionError when calling deleteFieldsByModel', () => {
+    expect(() => service.deleteFieldsByModel('users', 'id'))
+      .toThrowError(UnsupportedFieldSelectionError);
+  });
+
+  it('should throw UnsupportedIncludesError when calling addIncludes', () => {
+    expect(() => service.addIncludes('profile'))
+      .toThrowError(UnsupportedIncludesError);
+  });
+
+  it('should throw UnsupportedIncludesError when calling deleteIncludes', () => {
+    expect(() => service.deleteIncludes('profile'))
+      .toThrowError(UnsupportedIncludesError);
+  });
+
+  it('should accept addFilterOperator', () => {
+    expect(() => service.addFilterOperator('age', FilterOperatorEnum.GTE, 18)).not.toThrow();
+  });
+
+  it('should accept deleteOperatorFilters', () => {
+    service.addFilterOperator('age', FilterOperatorEnum.GTE, 18);
+    expect(() => service.deleteOperatorFilters('age')).not.toThrow();
+  });
+
+  it('should throw UnsupportedSearchError when calling setSearch', () => {
+    expect(() => service.setSearch('term'))
+      .toThrowError(UnsupportedSearchError);
+  });
+
+  it('should throw UnsupportedSearchError when calling deleteSearch', () => {
+    expect(() => service.deleteSearch())
+      .toThrowError(UnsupportedSearchError);
+  });
+
+  // URI generation end-to-end
+  it('should generate a URI with PostgREST format', (done: DoneFn) => {
+    service.setResource('users');
+    service.addFilter('status', 'active');
+    service.addSort('created_at', SortEnum.DESC);
+
+    service.generateUri().subscribe(uri => {
+      expect(uri).toContain('/users?');
+      expect(uri).toContain('status=eq.active');
+      expect(uri).toContain('order=created_at.desc');
+      expect(uri).toContain('limit=15');
+      done();
+    });
+  });
+
+  it('should return null from paginationHeaders in QUERY mode (default)', () => {
+    expect(service.paginationHeaders()).toBeNull();
+  });
+});
+
+describe('NgQubeeService paginationHeaders (PostgREST, RANGE mode)', () => {
+  let service: NgQubeeService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [BrowserTestingModule],
+      providers: [
+        {
+          deps: [NestService],
+          provide: NgQubeeService,
+          useFactory: (nest: NestService) =>
+            new NgQubeeService(nest, new PostgrestRequestStrategy(PaginationModeEnum.RANGE), DriverEnum.POSTGREST)
+        }, NestService
+      ]
+    });
+
+    service = TestBed.inject(NgQubeeService);
+  });
+
+  it('should return Range-Unit and Range headers', () => {
+    service.setLimit(10);
+    service.setPage(3);
+
+    expect(service.paginationHeaders()).toEqual({
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      'Range-Unit': 'items',
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      'Range': '20-29'
+    });
+  });
+
+  it('should omit limit/offset from the generated URI in RANGE mode', (done: DoneFn) => {
+    service.setResource('users');
+    service.setLimit(10);
+    service.setPage(2);
+
+    service.generateUri().subscribe(uri => {
+      expect(uri).not.toContain('limit=');
+      expect(uri).not.toContain('offset=');
+      done();
+    });
+  });
+});
+
+describe('NgQubeeService paginationHeaders (other drivers return null)', () => {
+  it('should return null for the Spatie driver', () => {
+    TestBed.configureTestingModule({
+      imports: [BrowserTestingModule],
+      providers: [
+        {
+          deps: [NestService],
+          provide: NgQubeeService,
+          useFactory: (nest: NestService) =>
+            new NgQubeeService(nest, new SpatieRequestStrategy(), DriverEnum.SPATIE)
+        }, NestService
+      ]
+    });
+
+    const service = TestBed.inject(NgQubeeService);
+
+    expect(service.paginationHeaders()).toBeNull();
   });
 });
