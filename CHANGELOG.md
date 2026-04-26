@@ -30,6 +30,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **`PaginationService.paginate()` and `IResponseStrategy.paginate()` accept an optional trailing `headers?: HeaderBag` parameter** (#50). Backward-compatible: existing callers ignoring the new param keep working unchanged, and the four existing driver strategies (Laravel / Spatie / NestJS / JSON:API) satisfy the extended interface via TypeScript's structural typing without any source changes. PostgREST uses it to read `Content-Range`; body-only drivers ignore it.
 
+### Documentation
+- **Documentation site launched** (#68) at [https://ng-qubee.andreatantimonaco.me](https://ng-qubee.andreatantimonaco.me). Built with Docusaurus 3, hosted on GitHub Pages with first-class versioning (3.3.0 ships as the initial snapshot; `next` tracks `develop`). Includes:
+  - Curated guides — Getting Started, one page per driver (JSON:API / Laravel / Spatie / NestJS / PostgREST), Fetching data (with reactive `UserClient` example), Query Builder API, Pagination, Per-component instances
+  - Auto-generated API reference via `docusaurus-plugin-typedoc`, scoped to `src/public-api.ts` so it covers exactly what consumers can import
+  - GitHub Actions deployment workflow (`.github/workflows/docs.yml`) — production builds on every push to `master`, path-filtered to skip irrelevant commits
+
 ### Internal
 - **Driver architecture refactor** (#67) — pure internal cleanup, zero public-API change. Adding the next driver is now ~1 strategy file + 1 entry in the registry + 1 entry in `DriverEnum`; nothing else needs to be touched.
   - **Capability declarations replace driver allowlists.** New `IStrategyCapabilities` interface and `capabilities` getter on `IRequestStrategy`; each strategy declares its supported features in one object literal. `NgQubeeService._assertDriver([...], err)` becomes `_assertCapability(flag, err)` — the service no longer reads `DriverEnum` for feature gating.
