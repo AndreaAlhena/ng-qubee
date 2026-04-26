@@ -23,6 +23,7 @@ const sidebars: SidebarsConfig = {
         'drivers/postgrest'
       ]
     },
+    'fetching-data',
     'query-builder',
     'pagination',
     'per-component-instances',
