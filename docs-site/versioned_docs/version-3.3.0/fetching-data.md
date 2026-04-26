@@ -67,14 +67,22 @@ export class UserClient {
   }
 
   /**
-   * Convenience for "next page of whatever the previous query returned"
+   * Fetch the next page of whatever query is currently composed
    *
    * Relies on the auto-sync that PaginationService.paginate() performs on
    * NestService — after the first list() call, state.lastPage is known and
-   * nextPage() is bounds-aware.
+   * nextPage() becomes bounds-aware.
    */
   public next(): Observable<PaginatedCollection<User>> {
     this._qb.nextPage();
+    return this._fetch();
+  }
+
+  /**
+   * Fetch the previous page of whatever query is currently composed
+   */
+  public previous(): Observable<PaginatedCollection<User>> {
+    this._qb.previousPage();
     return this._fetch();
   }
 
@@ -96,18 +104,28 @@ export class UserClient {
 ### What's happening
 
 1. **`setResource(...)`, `addFilter(...)`, etc.** mutate the query state on `NestService`. They return `this` for chaining and don't fire HTTP themselves.
-2. **`generateUri()`** emits the composed URI through the `uri$` observable. We `take(1)` because we only want the URI for *this* call.
+2. **`generateUri()`** synchronously computes a URI from the current state and pushes it onto the long-lived `uri$` `BehaviorSubject`, then returns that subject as an `Observable<string>`. Filter / sort / page mutations done **before** this call are already baked into the emitted URI.
 3. **`HttpClient.get<unknown>(uri)`** does the actual network call. The `unknown` type is intentional — your driver decides how to interpret the body, and that's what `paginate()` does next.
 4. **`paginationService.paginate<User>(body)`** parses the response into a typed `PaginatedCollection<User>` and auto-syncs `page` + `lastPage` back into `NestService` so navigation helpers like `nextPage()` immediately know their bounds.
 
+### Why `take(1)`?
+
+`generateUri()` returns `uri$` — the **same** long-lived `BehaviorSubject` every time, shared across the whole app. Without `take(1)`, a subscription created here would stay alive and re-fire its `switchMap` on **any future** `generateUri()` call anywhere in the app, including unrelated ones (a `ProductClient`, a different feature). That's a recipe for stale data and accidental fetches.
+
+`take(1)` makes each `_fetch()` a one-shot: capture the URI emitted by **this** `generateUri()` push, fire one HTTP request, complete. Subsequent state mutations belong to the **next** call — which builds its own subscription with its own URI snapshot.
+
+If you want a reactive pattern where state changes auto-trigger refetches, that's a different design — subscribe to `uri$` once at component init, switchMap into HTTP, and emit `paginate()` results into a stream the template binds to. The example above is the imperative "fetch this query now" idiom most apps actually want.
+
 ## Wiring it into a component
+
+The component owns the **fetch flow** through `UserClient` and the **template predicates** through `NgQubeeService` directly. Two roles, two injections — clean separation of concerns.
 
 ```typescript title="user-list.component.ts"
 import { Component, OnInit, inject } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { Observable } from 'rxjs';
 
-import { PaginatedCollection } from 'ng-qubee';
+import { NgQubeeService, PaginatedCollection } from 'ng-qubee';
 
 import { User, UserClient } from './user-client.service';
 
@@ -123,13 +141,15 @@ import { User, UserClient } from './user-client.service';
         }
       </ul>
 
-      <button [disabled]="page.page <= 1" (click)="prev()">Prev</button>
-      <span>Page {{ page.page }} of {{ page.lastPage }}</span>
-      <button [disabled]="page.page >= (page.lastPage ?? Infinity)" (click)="next()">Next</button>
+      <button [disabled]="qb.isFirstPage()" (click)="onPrevious()">Prev</button>
+      <span>Page {{ qb.currentPage() }} of {{ page.lastPage }}</span>
+      <button [disabled]="qb.isLastPage()" (click)="onNext()">Next</button>
     }
   `
 })
 export class UserListComponent implements OnInit {
+
+  protected readonly qb = inject(NgQubeeService);
 
   protected users$!: Observable<PaginatedCollection<User>>;
 
@@ -139,19 +159,17 @@ export class UserListComponent implements OnInit {
     this.users$ = this._client.list();
   }
 
-  protected next(): void {
+  protected onNext(): void {
     this.users$ = this._client.next();
   }
 
-  protected prev(): void {
-    // Symmetric helper omitted from UserClient for brevity — same shape as next()
-    this._client['_qb'].previousPage();
-    this.users$ = this._client['_fetch']();
+  protected onPrevious(): void {
+    this.users$ = this._client.previous();
   }
 }
 ```
 
-Wiring `nextPage()` / `previousPage()` directly on `NgQubeeService` from the template — without going through the client service — also works if you bind to the service directly. The template-safe predicates (`hasNextPage()`, `isLastPage()`) make the disable-state declarations even cleaner; see [Pagination](./pagination.md#predicates-template-safe).
+The template uses `qb.isFirstPage()` / `qb.isLastPage()` for the disable bindings instead of comparing `page.page` against `page.lastPage` manually. Those predicates are template-safe — they return conservative defaults before the first response syncs, so the buttons render correctly even on the very first frame. See [Pagination → Predicates](./pagination.md#predicates-template-safe).
 
 ## Variant: PostgREST / Supabase
 
