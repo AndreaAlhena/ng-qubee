@@ -1,6 +1,4 @@
-# Interface: IQueryBuilderConfig
-
-Defined in: [src/lib/interfaces/query-builder-config.interface.ts:7](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/query-builder-config.interface.ts#L7)
+Defined in: [src/lib/interfaces/query-builder-config.interface.ts:7](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/query-builder-config.interface.ts#L7)
 
 Configuration interface for customizing request query parameter key names
 
@@ -13,7 +11,7 @@ used in the generated URI. The defaults depend on the selected driver.
 
 > `optional` **appends?**: `string`
 
-Defined in: [src/lib/interfaces/query-builder-config.interface.ts:9](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/query-builder-config.interface.ts#L9)
+Defined in: [src/lib/interfaces/query-builder-config.interface.ts:9](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/query-builder-config.interface.ts#L9)
 
 Key for the appends parameter (Laravel only, default: 'append')
 
@@ -23,7 +21,7 @@ Key for the appends parameter (Laravel only, default: 'append')
 
 > `optional` **fields?**: `string`
 
-Defined in: [src/lib/interfaces/query-builder-config.interface.ts:11](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/query-builder-config.interface.ts#L11)
+Defined in: [src/lib/interfaces/query-builder-config.interface.ts:11](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/query-builder-config.interface.ts#L11)
 
 Key for the fields parameter (Laravel: 'fields', NestJS: 'select')
 
@@ -33,7 +31,7 @@ Key for the fields parameter (Laravel: 'fields', NestJS: 'select')
 
 > `optional` **filters?**: `string`
 
-Defined in: [src/lib/interfaces/query-builder-config.interface.ts:13](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/query-builder-config.interface.ts#L13)
+Defined in: [src/lib/interfaces/query-builder-config.interface.ts:13](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/query-builder-config.interface.ts#L13)
 
 Key for the filters parameter (default: 'filter')
 
@@ -43,7 +41,7 @@ Key for the filters parameter (default: 'filter')
 
 > `optional` **includes?**: `string`
 
-Defined in: [src/lib/interfaces/query-builder-config.interface.ts:15](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/query-builder-config.interface.ts#L15)
+Defined in: [src/lib/interfaces/query-builder-config.interface.ts:15](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/query-builder-config.interface.ts#L15)
 
 Key for the includes parameter (Laravel only, default: 'include')
 
@@ -53,7 +51,7 @@ Key for the includes parameter (Laravel only, default: 'include')
 
 > `optional` **limit?**: `string`
 
-Defined in: [src/lib/interfaces/query-builder-config.interface.ts:17](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/query-builder-config.interface.ts#L17)
+Defined in: [src/lib/interfaces/query-builder-config.interface.ts:17](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/query-builder-config.interface.ts#L17)
 
 Key for the limit parameter (default: 'limit')
 
@@ -63,7 +61,7 @@ Key for the limit parameter (default: 'limit')
 
 > `optional` **page?**: `string`
 
-Defined in: [src/lib/interfaces/query-builder-config.interface.ts:19](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/query-builder-config.interface.ts#L19)
+Defined in: [src/lib/interfaces/query-builder-config.interface.ts:19](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/query-builder-config.interface.ts#L19)
 
 Key for the page parameter (default: 'page')
 
@@ -73,7 +71,7 @@ Key for the page parameter (default: 'page')
 
 > `optional` **search?**: `string`
 
-Defined in: [src/lib/interfaces/query-builder-config.interface.ts:21](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/query-builder-config.interface.ts#L21)
+Defined in: [src/lib/interfaces/query-builder-config.interface.ts:21](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/query-builder-config.interface.ts#L21)
 
 Key for the search parameter (NestJS only, default: 'search')
 
@@ -83,7 +81,7 @@ Key for the search parameter (NestJS only, default: 'search')
 
 > `optional` **select?**: `string`
 
-Defined in: [src/lib/interfaces/query-builder-config.interface.ts:23](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/query-builder-config.interface.ts#L23)
+Defined in: [src/lib/interfaces/query-builder-config.interface.ts:23](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/query-builder-config.interface.ts#L23)
 
 Key for the select parameter (NestJS only, default: 'select')
 
@@ -93,7 +91,7 @@ Key for the select parameter (NestJS only, default: 'select')
 
 > `optional` **sort?**: `string`
 
-Defined in: [src/lib/interfaces/query-builder-config.interface.ts:25](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/query-builder-config.interface.ts#L25)
+Defined in: [src/lib/interfaces/query-builder-config.interface.ts:25](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/query-builder-config.interface.ts#L25)
 
 Key for the sort parameter (Laravel: 'sort', NestJS: 'sortBy')
 
@@ -103,6 +101,6 @@ Key for the sort parameter (Laravel: 'sort', NestJS: 'sortBy')
 
 > `optional` **sortBy?**: `string`
 
-Defined in: [src/lib/interfaces/query-builder-config.interface.ts:27](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/query-builder-config.interface.ts#L27)
+Defined in: [src/lib/interfaces/query-builder-config.interface.ts:27](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/query-builder-config.interface.ts#L27)
 
 Key for the sortBy parameter (NestJS only, default: 'sortBy')

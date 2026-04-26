@@ -1,6 +1,4 @@
-# Enumeration: FilterOperatorEnum
-
-Defined in: [src/lib/enums/filter-operator.enum.ts:18](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/enums/filter-operator.enum.ts#L18)
+Defined in: [src/lib/enums/filter-operator.enum.ts:18](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/enums/filter-operator.enum.ts#L18)
 
 Enum representing the available filter operators for explicit operator
 filters
@@ -26,7 +24,7 @@ driver that does not recognise them.
 
 > **BTW**: `"$btw"`
 
-Defined in: [src/lib/enums/filter-operator.enum.ts:19](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/enums/filter-operator.enum.ts#L19)
+Defined in: [src/lib/enums/filter-operator.enum.ts:19](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/enums/filter-operator.enum.ts#L19)
 
 ***
 
@@ -34,7 +32,7 @@ Defined in: [src/lib/enums/filter-operator.enum.ts:19](https://github.com/Andrea
 
 > **CONTAINS**: `"$contains"`
 
-Defined in: [src/lib/enums/filter-operator.enum.ts:20](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/enums/filter-operator.enum.ts#L20)
+Defined in: [src/lib/enums/filter-operator.enum.ts:20](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/enums/filter-operator.enum.ts#L20)
 
 ***
 
@@ -42,7 +40,7 @@ Defined in: [src/lib/enums/filter-operator.enum.ts:20](https://github.com/Andrea
 
 > **EQ**: `"$eq"`
 
-Defined in: [src/lib/enums/filter-operator.enum.ts:21](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/enums/filter-operator.enum.ts#L21)
+Defined in: [src/lib/enums/filter-operator.enum.ts:21](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/enums/filter-operator.enum.ts#L21)
 
 ***
 
@@ -50,7 +48,7 @@ Defined in: [src/lib/enums/filter-operator.enum.ts:21](https://github.com/Andrea
 
 > **FTS**: `"$fts"`
 
-Defined in: [src/lib/enums/filter-operator.enum.ts:22](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/enums/filter-operator.enum.ts#L22)
+Defined in: [src/lib/enums/filter-operator.enum.ts:22](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/enums/filter-operator.enum.ts#L22)
 
 ***
 
@@ -58,7 +56,7 @@ Defined in: [src/lib/enums/filter-operator.enum.ts:22](https://github.com/Andrea
 
 > **GT**: `"$gt"`
 
-Defined in: [src/lib/enums/filter-operator.enum.ts:23](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/enums/filter-operator.enum.ts#L23)
+Defined in: [src/lib/enums/filter-operator.enum.ts:23](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/enums/filter-operator.enum.ts#L23)
 
 ***
 
@@ -66,7 +64,7 @@ Defined in: [src/lib/enums/filter-operator.enum.ts:23](https://github.com/Andrea
 
 > **GTE**: `"$gte"`
 
-Defined in: [src/lib/enums/filter-operator.enum.ts:24](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/enums/filter-operator.enum.ts#L24)
+Defined in: [src/lib/enums/filter-operator.enum.ts:24](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/enums/filter-operator.enum.ts#L24)
 
 ***
 
@@ -74,7 +72,7 @@ Defined in: [src/lib/enums/filter-operator.enum.ts:24](https://github.com/Andrea
 
 > **ILIKE**: `"$ilike"`
 
-Defined in: [src/lib/enums/filter-operator.enum.ts:25](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/enums/filter-operator.enum.ts#L25)
+Defined in: [src/lib/enums/filter-operator.enum.ts:25](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/enums/filter-operator.enum.ts#L25)
 
 ***
 
@@ -82,7 +80,7 @@ Defined in: [src/lib/enums/filter-operator.enum.ts:25](https://github.com/Andrea
 
 > **IN**: `"$in"`
 
-Defined in: [src/lib/enums/filter-operator.enum.ts:26](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/enums/filter-operator.enum.ts#L26)
+Defined in: [src/lib/enums/filter-operator.enum.ts:26](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/enums/filter-operator.enum.ts#L26)
 
 ***
 
@@ -90,7 +88,7 @@ Defined in: [src/lib/enums/filter-operator.enum.ts:26](https://github.com/Andrea
 
 > **LT**: `"$lt"`
 
-Defined in: [src/lib/enums/filter-operator.enum.ts:27](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/enums/filter-operator.enum.ts#L27)
+Defined in: [src/lib/enums/filter-operator.enum.ts:27](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/enums/filter-operator.enum.ts#L27)
 
 ***
 
@@ -98,7 +96,7 @@ Defined in: [src/lib/enums/filter-operator.enum.ts:27](https://github.com/Andrea
 
 > **LTE**: `"$lte"`
 
-Defined in: [src/lib/enums/filter-operator.enum.ts:28](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/enums/filter-operator.enum.ts#L28)
+Defined in: [src/lib/enums/filter-operator.enum.ts:28](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/enums/filter-operator.enum.ts#L28)
 
 ***
 
@@ -106,7 +104,7 @@ Defined in: [src/lib/enums/filter-operator.enum.ts:28](https://github.com/Andrea
 
 > **NOT**: `"$not"`
 
-Defined in: [src/lib/enums/filter-operator.enum.ts:29](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/enums/filter-operator.enum.ts#L29)
+Defined in: [src/lib/enums/filter-operator.enum.ts:29](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/enums/filter-operator.enum.ts#L29)
 
 ***
 
@@ -114,7 +112,7 @@ Defined in: [src/lib/enums/filter-operator.enum.ts:29](https://github.com/Andrea
 
 > **NULL**: `"$null"`
 
-Defined in: [src/lib/enums/filter-operator.enum.ts:30](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/enums/filter-operator.enum.ts#L30)
+Defined in: [src/lib/enums/filter-operator.enum.ts:30](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/enums/filter-operator.enum.ts#L30)
 
 ***
 
@@ -122,7 +120,7 @@ Defined in: [src/lib/enums/filter-operator.enum.ts:30](https://github.com/Andrea
 
 > **PHFTS**: `"$phfts"`
 
-Defined in: [src/lib/enums/filter-operator.enum.ts:31](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/enums/filter-operator.enum.ts#L31)
+Defined in: [src/lib/enums/filter-operator.enum.ts:31](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/enums/filter-operator.enum.ts#L31)
 
 ***
 
@@ -130,7 +128,7 @@ Defined in: [src/lib/enums/filter-operator.enum.ts:31](https://github.com/Andrea
 
 > **PLFTS**: `"$plfts"`
 
-Defined in: [src/lib/enums/filter-operator.enum.ts:32](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/enums/filter-operator.enum.ts#L32)
+Defined in: [src/lib/enums/filter-operator.enum.ts:32](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/enums/filter-operator.enum.ts#L32)
 
 ***
 
@@ -138,7 +136,7 @@ Defined in: [src/lib/enums/filter-operator.enum.ts:32](https://github.com/Andrea
 
 > **SW**: `"$sw"`
 
-Defined in: [src/lib/enums/filter-operator.enum.ts:33](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/enums/filter-operator.enum.ts#L33)
+Defined in: [src/lib/enums/filter-operator.enum.ts:33](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/enums/filter-operator.enum.ts#L33)
 
 ***
 
@@ -146,4 +144,4 @@ Defined in: [src/lib/enums/filter-operator.enum.ts:33](https://github.com/Andrea
 
 > **WFTS**: `"$wfts"`
 
-Defined in: [src/lib/enums/filter-operator.enum.ts:34](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/enums/filter-operator.enum.ts#L34)
+Defined in: [src/lib/enums/filter-operator.enum.ts:34](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/enums/filter-operator.enum.ts#L34)

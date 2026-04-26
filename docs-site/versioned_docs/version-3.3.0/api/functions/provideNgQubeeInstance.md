@@ -1,8 +1,6 @@
-# Function: provideNgQubeeInstance()
-
 > **provideNgQubeeInstance**(): `Provider`[]
 
-Defined in: [src/lib/provide-ngqubee.ts:128](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/provide-ngqubee.ts#L128)
+Defined in: [src/lib/provide-ngqubee.ts:128](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/provide-ngqubee.ts#L128)
 
 Providers for a component-scoped NgQubee instance
 

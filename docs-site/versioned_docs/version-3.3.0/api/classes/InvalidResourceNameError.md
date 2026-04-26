@@ -1,6 +1,4 @@
-# Class: InvalidResourceNameError
-
-Defined in: [src/lib/errors/invalid-resource-name.error.ts:6](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/errors/invalid-resource-name.error.ts#L6)
+Defined in: [src/lib/errors/invalid-resource-name.error.ts:6](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/errors/invalid-resource-name.error.ts#L6)
 
 Error thrown when an invalid resource name is provided
 
@@ -16,7 +14,7 @@ Resource name must be a non-empty string.
 
 > **new InvalidResourceNameError**(`resource`): `InvalidResourceNameError`
 
-Defined in: [src/lib/errors/invalid-resource-name.error.ts:7](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/errors/invalid-resource-name.error.ts#L7)
+Defined in: [src/lib/errors/invalid-resource-name.error.ts:7](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/errors/invalid-resource-name.error.ts#L7)
 
 #### Parameters
 

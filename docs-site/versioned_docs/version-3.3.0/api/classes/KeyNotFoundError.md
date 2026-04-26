@@ -1,6 +1,4 @@
-# Class: KeyNotFoundError
-
-Defined in: [src/lib/errors/key-not-found.error.ts:1](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/errors/key-not-found.error.ts#L1)
+Defined in: [src/lib/errors/key-not-found.error.ts:1](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/errors/key-not-found.error.ts#L1)
 
 ## Extends
 
@@ -12,7 +10,7 @@ Defined in: [src/lib/errors/key-not-found.error.ts:1](https://github.com/AndreaA
 
 > **new KeyNotFoundError**(`key`): `KeyNotFoundError`
 
-Defined in: [src/lib/errors/key-not-found.error.ts:2](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/errors/key-not-found.error.ts#L2)
+Defined in: [src/lib/errors/key-not-found.error.ts:2](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/errors/key-not-found.error.ts#L2)
 
 #### Parameters
 

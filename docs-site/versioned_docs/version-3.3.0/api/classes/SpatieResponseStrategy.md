@@ -1,6 +1,4 @@
-# Class: SpatieResponseStrategy
-
-Defined in: [src/lib/strategies/spatie-response.strategy.ts:24](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/strategies/spatie-response.strategy.ts#L24)
+Defined in: [src/lib/strategies/spatie-response.strategy.ts:24](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/strategies/spatie-response.strategy.ts#L24)
 
 Response strategy for the Spatie Query Builder driver
 
@@ -41,7 +39,7 @@ https://spatie.be/docs/laravel-query-builder
 
 > **paginate**\<`T`\>(`response`, `options`): [`PaginatedCollection`](PaginatedCollection.md)\<`T`\>
 
-Defined in: [src/lib/strategies/spatie-response.strategy.ts:34](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/strategies/spatie-response.strategy.ts#L34)
+Defined in: [src/lib/strategies/spatie-response.strategy.ts:34](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/strategies/spatie-response.strategy.ts#L34)
 
 Parse a flat Laravel pagination response into a PaginatedCollection
 

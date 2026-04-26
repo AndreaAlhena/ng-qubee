@@ -1,6 +1,4 @@
-# Class: InvalidFilterOperatorValueError
-
-Defined in: [src/lib/errors/invalid-filter-operator-value.error.ts:18](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/errors/invalid-filter-operator-value.error.ts#L18)
+Defined in: [src/lib/errors/invalid-filter-operator-value.error.ts:18](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/errors/invalid-filter-operator-value.error.ts#L18)
 
 Thrown when a filter operator receives a value array of the wrong shape
 
@@ -26,7 +24,7 @@ problem unambiguously from the call site.
 
 > **new InvalidFilterOperatorValueError**(`operator`, `reason`): `InvalidFilterOperatorValueError`
 
-Defined in: [src/lib/errors/invalid-filter-operator-value.error.ts:24](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/errors/invalid-filter-operator-value.error.ts#L24)
+Defined in: [src/lib/errors/invalid-filter-operator-value.error.ts:24](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/errors/invalid-filter-operator-value.error.ts#L24)
 
 #### Parameters
 

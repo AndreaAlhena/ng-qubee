@@ -1,6 +1,4 @@
-# Class: PaginatedCollection\<T\>
-
-Defined in: [src/lib/models/paginated-collection.ts:5](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/models/paginated-collection.ts#L5)
+Defined in: [src/lib/models/paginated-collection.ts:5](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/models/paginated-collection.ts#L5)
 
 ## Type Parameters
 
@@ -14,7 +12,7 @@ Defined in: [src/lib/models/paginated-collection.ts:5](https://github.com/Andrea
 
 > **new PaginatedCollection**\<`T`\>(`data`, `page`, `from?`, `to?`, `total?`, `perPage?`, `prevPageUrl?`, `nextPageUrl?`, `lastPage?`, `firstPageUrl?`, `lastPageUrl?`): `PaginatedCollection`\<`T`\>
 
-Defined in: [src/lib/models/paginated-collection.ts:6](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/models/paginated-collection.ts#L6)
+Defined in: [src/lib/models/paginated-collection.ts:6](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/models/paginated-collection.ts#L6)
 
 #### Parameters
 
@@ -72,7 +70,7 @@ Defined in: [src/lib/models/paginated-collection.ts:6](https://github.com/Andrea
 
 > **data**: `T`[]
 
-Defined in: [src/lib/models/paginated-collection.ts:7](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/models/paginated-collection.ts#L7)
+Defined in: [src/lib/models/paginated-collection.ts:7](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/models/paginated-collection.ts#L7)
 
 ***
 
@@ -80,7 +78,7 @@ Defined in: [src/lib/models/paginated-collection.ts:7](https://github.com/Andrea
 
 > `readonly` `optional` **firstPageUrl?**: `string`
 
-Defined in: [src/lib/models/paginated-collection.ts:16](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/models/paginated-collection.ts#L16)
+Defined in: [src/lib/models/paginated-collection.ts:16](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/models/paginated-collection.ts#L16)
 
 ***
 
@@ -88,7 +86,7 @@ Defined in: [src/lib/models/paginated-collection.ts:16](https://github.com/Andre
 
 > `readonly` `optional` **from?**: `number`
 
-Defined in: [src/lib/models/paginated-collection.ts:9](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/models/paginated-collection.ts#L9)
+Defined in: [src/lib/models/paginated-collection.ts:9](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/models/paginated-collection.ts#L9)
 
 ***
 
@@ -96,7 +94,7 @@ Defined in: [src/lib/models/paginated-collection.ts:9](https://github.com/Andrea
 
 > `readonly` `optional` **lastPage?**: `number`
 
-Defined in: [src/lib/models/paginated-collection.ts:15](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/models/paginated-collection.ts#L15)
+Defined in: [src/lib/models/paginated-collection.ts:15](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/models/paginated-collection.ts#L15)
 
 ***
 
@@ -104,7 +102,7 @@ Defined in: [src/lib/models/paginated-collection.ts:15](https://github.com/Andre
 
 > `readonly` `optional` **lastPageUrl?**: `string`
 
-Defined in: [src/lib/models/paginated-collection.ts:17](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/models/paginated-collection.ts#L17)
+Defined in: [src/lib/models/paginated-collection.ts:17](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/models/paginated-collection.ts#L17)
 
 ***
 
@@ -112,7 +110,7 @@ Defined in: [src/lib/models/paginated-collection.ts:17](https://github.com/Andre
 
 > `readonly` `optional` **nextPageUrl?**: `string`
 
-Defined in: [src/lib/models/paginated-collection.ts:14](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/models/paginated-collection.ts#L14)
+Defined in: [src/lib/models/paginated-collection.ts:14](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/models/paginated-collection.ts#L14)
 
 ***
 
@@ -120,7 +118,7 @@ Defined in: [src/lib/models/paginated-collection.ts:14](https://github.com/Andre
 
 > `readonly` **page**: `number`
 
-Defined in: [src/lib/models/paginated-collection.ts:8](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/models/paginated-collection.ts#L8)
+Defined in: [src/lib/models/paginated-collection.ts:8](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/models/paginated-collection.ts#L8)
 
 ***
 
@@ -128,7 +126,7 @@ Defined in: [src/lib/models/paginated-collection.ts:8](https://github.com/Andrea
 
 > `readonly` `optional` **perPage?**: `number`
 
-Defined in: [src/lib/models/paginated-collection.ts:12](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/models/paginated-collection.ts#L12)
+Defined in: [src/lib/models/paginated-collection.ts:12](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/models/paginated-collection.ts#L12)
 
 ***
 
@@ -136,7 +134,7 @@ Defined in: [src/lib/models/paginated-collection.ts:12](https://github.com/Andre
 
 > `readonly` `optional` **prevPageUrl?**: `string`
 
-Defined in: [src/lib/models/paginated-collection.ts:13](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/models/paginated-collection.ts#L13)
+Defined in: [src/lib/models/paginated-collection.ts:13](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/models/paginated-collection.ts#L13)
 
 ***
 
@@ -144,7 +142,7 @@ Defined in: [src/lib/models/paginated-collection.ts:13](https://github.com/Andre
 
 > `readonly` `optional` **to?**: `number`
 
-Defined in: [src/lib/models/paginated-collection.ts:10](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/models/paginated-collection.ts#L10)
+Defined in: [src/lib/models/paginated-collection.ts:10](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/models/paginated-collection.ts#L10)
 
 ***
 
@@ -152,7 +150,7 @@ Defined in: [src/lib/models/paginated-collection.ts:10](https://github.com/Andre
 
 > `readonly` `optional` **total?**: `number`
 
-Defined in: [src/lib/models/paginated-collection.ts:11](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/models/paginated-collection.ts#L11)
+Defined in: [src/lib/models/paginated-collection.ts:11](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/models/paginated-collection.ts#L11)
 
 ## Methods
 
@@ -160,7 +158,7 @@ Defined in: [src/lib/models/paginated-collection.ts:11](https://github.com/Andre
 
 > **normalize**(`id?`): `INormalized`
 
-Defined in: [src/lib/models/paginated-collection.ts:35](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/models/paginated-collection.ts#L35)
+Defined in: [src/lib/models/paginated-collection.ts:35](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/models/paginated-collection.ts#L35)
 
 Normalize the collection to a paginated list of ids for state-managed applications.
 

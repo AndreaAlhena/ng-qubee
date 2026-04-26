@@ -1,6 +1,4 @@
-# Class: PostgrestRequestStrategy
-
-Defined in: [src/lib/strategies/postgrest-request.strategy.ts:31](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/strategies/postgrest-request.strategy.ts#L31)
+Defined in: [src/lib/strategies/postgrest-request.strategy.ts:31](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/strategies/postgrest-request.strategy.ts#L31)
 
 Request strategy for the PostgREST driver
 
@@ -33,7 +31,7 @@ honour the existing option keys.
 
 > **new PostgrestRequestStrategy**(`paginationMode?`): `PostgrestRequestStrategy`
 
-Defined in: [src/lib/strategies/postgrest-request.strategy.ts:65](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/strategies/postgrest-request.strategy.ts#L65)
+Defined in: [src/lib/strategies/postgrest-request.strategy.ts:65](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/strategies/postgrest-request.strategy.ts#L65)
 
 #### Parameters
 
@@ -59,7 +57,7 @@ Wire-level pagination mechanism. Defaults to
 
 > `readonly` **capabilities**: `IStrategyCapabilities`
 
-Defined in: [src/lib/strategies/postgrest-request.strategy.ts:38](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/strategies/postgrest-request.strategy.ts#L38)
+Defined in: [src/lib/strategies/postgrest-request.strategy.ts:38](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/strategies/postgrest-request.strategy.ts#L38)
 
 Filters, operator filters (incl. FTS), sorts, flat select — no
 per-model fields, no JSON:API/Spatie-style includes, no global
@@ -75,7 +73,7 @@ search (per-column FTS via the operator family covers it)
 
 > `protected` **assertResource**(`state`): `void`
 
-Defined in: [src/lib/strategies/abstract-request.strategy.ts:89](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/strategies/abstract-request.strategy.ts#L89)
+Defined in: [src/lib/strategies/abstract-request.strategy.ts:89](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/strategies/abstract-request.strategy.ts#L89)
 
 Throw if the resource is not set on the state
 
@@ -108,7 +106,7 @@ Error if `state.resource` is empty
 
 > `protected` **baseUri**(`state`): `string`
 
-Defined in: [src/lib/strategies/abstract-request.strategy.ts:101](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/strategies/abstract-request.strategy.ts#L101)
+Defined in: [src/lib/strategies/abstract-request.strategy.ts:101](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/strategies/abstract-request.strategy.ts#L101)
 
 Compute the base path (no query string)
 
@@ -136,7 +134,7 @@ The base URI without the query separator (e.g. `/users` or `https://api.example.
 
 > **buildPaginationHeaders**(`state`): `Record`\<`string`, `string`\> \| `null`
 
-Defined in: [src/lib/strategies/postgrest-request.strategy.ts:82](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/strategies/postgrest-request.strategy.ts#L82)
+Defined in: [src/lib/strategies/postgrest-request.strategy.ts:82](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/strategies/postgrest-request.strategy.ts#L82)
 
 Compute `Range-Unit` / `Range` HTTP headers for RANGE pagination mode
 
@@ -166,7 +164,7 @@ The current query builder state
 
 > **buildUri**(`state`, `options`): `string`
 
-Defined in: [src/lib/strategies/abstract-request.strategy.ts:42](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/strategies/abstract-request.strategy.ts#L42)
+Defined in: [src/lib/strategies/abstract-request.strategy.ts:42](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/strategies/abstract-request.strategy.ts#L42)
 
 Compose the full request URI from the given state
 
@@ -208,7 +206,7 @@ Error if the resource is not set
 
 > `protected` **join**(`base`, `segments`): `string`
 
-Defined in: [src/lib/strategies/abstract-request.strategy.ts:115](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/strategies/abstract-request.strategy.ts#L115)
+Defined in: [src/lib/strategies/abstract-request.strategy.ts:115](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/strategies/abstract-request.strategy.ts#L115)
 
 Glue the base URI and the per-driver query-string segments
 
@@ -245,7 +243,7 @@ The full URI
 
 > `protected` **parts**(`state`, `options`): `string`[]
 
-Defined in: [src/lib/strategies/postgrest-request.strategy.ts:107](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/strategies/postgrest-request.strategy.ts#L107)
+Defined in: [src/lib/strategies/postgrest-request.strategy.ts:107](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/strategies/postgrest-request.strategy.ts#L107)
 
 Emit PostgREST-format query-string segments in canonical order:
 filters → operator filters → order → select → (limit + offset in
@@ -281,7 +279,7 @@ Ordered query-string fragments
 
 > **validateLimit**(`limit`): `void`
 
-Defined in: [src/lib/strategies/abstract-request.strategy.ts:59](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/strategies/abstract-request.strategy.ts#L59)
+Defined in: [src/lib/strategies/abstract-request.strategy.ts:59](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/strategies/abstract-request.strategy.ts#L59)
 
 Validate that a limit value is acceptable for this driver
 

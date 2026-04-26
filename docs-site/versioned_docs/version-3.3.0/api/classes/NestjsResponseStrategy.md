@@ -1,6 +1,4 @@
-# Class: NestjsResponseStrategy
-
-Defined in: [src/lib/strategies/nestjs-response.strategy.ts:34](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/strategies/nestjs-response.strategy.ts#L34)
+Defined in: [src/lib/strategies/nestjs-response.strategy.ts:34](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/strategies/nestjs-response.strategy.ts#L34)
 
 Response strategy for the NestJS (nestjs-paginate) driver
 
@@ -58,7 +56,7 @@ https://github.com/ppetzold/nestjs-paginate
 
 > **paginate**\<`T`\>(`response`, `options`): [`PaginatedCollection`](PaginatedCollection.md)\<`T`\>
 
-Defined in: [src/lib/strategies/abstract-dot-path-response.strategy.ts:32](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/strategies/abstract-dot-path-response.strategy.ts#L32)
+Defined in: [src/lib/strategies/abstract-dot-path-response.strategy.ts:32](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/strategies/abstract-dot-path-response.strategy.ts#L32)
 
 Parse a nested-envelope pagination response into a PaginatedCollection
 
@@ -98,7 +96,7 @@ A typed PaginatedCollection instance
 
 > `protected` **resolve**(`response`, `path`): `unknown`
 
-Defined in: [src/lib/strategies/abstract-dot-path-response.strategy.ts:73](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/strategies/abstract-dot-path-response.strategy.ts#L73)
+Defined in: [src/lib/strategies/abstract-dot-path-response.strategy.ts:73](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/strategies/abstract-dot-path-response.strategy.ts#L73)
 
 Resolve a value from a response object using a dot-notation path
 
@@ -134,7 +132,7 @@ The resolved value, or undefined if any segment is missing
 
 > `protected` **resolveFrom**(`response`, `options`, `currentPage`, `perPage?`): `number` \| `undefined`
 
-Defined in: [src/lib/strategies/abstract-dot-path-response.strategy.ts:90](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/strategies/abstract-dot-path-response.strategy.ts#L90)
+Defined in: [src/lib/strategies/abstract-dot-path-response.strategy.ts:90](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/strategies/abstract-dot-path-response.strategy.ts#L90)
 
 Resolve the "from" index value
 
@@ -183,7 +181,7 @@ The "from" index, or `undefined` when neither path nor inputs suffice
 
 > `protected` **resolveTo**(`response`, `options`, `currentPage`, `perPage?`, `total?`): `number` \| `undefined`
 
-Defined in: [src/lib/strategies/abstract-dot-path-response.strategy.ts:119](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/strategies/abstract-dot-path-response.strategy.ts#L119)
+Defined in: [src/lib/strategies/abstract-dot-path-response.strategy.ts:119](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/strategies/abstract-dot-path-response.strategy.ts#L119)
 
 Resolve the "to" index value
 

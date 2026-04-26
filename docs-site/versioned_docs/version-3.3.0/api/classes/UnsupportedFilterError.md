@@ -1,6 +1,4 @@
-# Class: UnsupportedFilterError
-
-Defined in: [src/lib/errors/unsupported-filter.error.ts:6](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/errors/unsupported-filter.error.ts#L6)
+Defined in: [src/lib/errors/unsupported-filter.error.ts:6](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/errors/unsupported-filter.error.ts#L6)
 
 Error thrown when filters are attempted with a driver that does not support them
 
@@ -16,7 +14,7 @@ Filters are only supported by the Spatie and NestJS drivers.
 
 > **new UnsupportedFilterError**(): `UnsupportedFilterError`
 
-Defined in: [src/lib/errors/unsupported-filter.error.ts:7](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/errors/unsupported-filter.error.ts#L7)
+Defined in: [src/lib/errors/unsupported-filter.error.ts:7](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/errors/unsupported-filter.error.ts#L7)
 
 #### Returns
 

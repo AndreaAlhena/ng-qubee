@@ -1,6 +1,4 @@
-# Class: UnsupportedFieldSelectionError
-
-Defined in: [src/lib/errors/unsupported-field-selection.error.ts:7](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/errors/unsupported-field-selection.error.ts#L7)
+Defined in: [src/lib/errors/unsupported-field-selection.error.ts:7](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/errors/unsupported-field-selection.error.ts#L7)
 
 Error thrown when per-model field selection is attempted with a driver that does not support it
 
@@ -17,7 +15,7 @@ Use `addSelect()` for NestJS flat field selection.
 
 > **new UnsupportedFieldSelectionError**(): `UnsupportedFieldSelectionError`
 
-Defined in: [src/lib/errors/unsupported-field-selection.error.ts:8](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/errors/unsupported-field-selection.error.ts#L8)
+Defined in: [src/lib/errors/unsupported-field-selection.error.ts:8](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/errors/unsupported-field-selection.error.ts#L8)
 
 #### Returns
 

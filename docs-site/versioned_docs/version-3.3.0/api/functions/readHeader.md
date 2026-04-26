@@ -1,8 +1,6 @@
-# Function: readHeader()
-
 > **readHeader**(`bag`, `name`): `string` \| `null`
 
-Defined in: [src/lib/interfaces/header-bag.interface.ts:21](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/header-bag.interface.ts#L21)
+Defined in: [src/lib/interfaces/header-bag.interface.ts:21](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/header-bag.interface.ts#L21)
 
 Read a header value by name from a `HeaderBag`, regardless of whether the
 bag exposes a `.get()` accessor or plain property access.

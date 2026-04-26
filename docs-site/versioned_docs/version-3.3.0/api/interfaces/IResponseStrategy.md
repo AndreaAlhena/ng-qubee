@@ -1,6 +1,4 @@
-# Interface: IResponseStrategy
-
-Defined in: [src/lib/interfaces/response-strategy.interface.ts:12](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/response-strategy.interface.ts#L12)
+Defined in: [src/lib/interfaces/response-strategy.interface.ts:12](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/response-strategy.interface.ts#L12)
 
 Strategy interface for parsing paginated API responses
 
@@ -13,7 +11,7 @@ from the corresponding backend format into a PaginatedCollection.
 
 > **paginate**\<`T`\>(`response`, `options`, `headers?`): [`PaginatedCollection`](../classes/PaginatedCollection.md)\<`T`\>
 
-Defined in: [src/lib/interfaces/response-strategy.interface.ts:26](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/response-strategy.interface.ts#L26)
+Defined in: [src/lib/interfaces/response-strategy.interface.ts:26](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/response-strategy.interface.ts#L26)
 
 Parse a raw API response into a typed PaginatedCollection
 

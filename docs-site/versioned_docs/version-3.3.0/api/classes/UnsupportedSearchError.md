@@ -1,6 +1,4 @@
-# Class: UnsupportedSearchError
-
-Defined in: [src/lib/errors/unsupported-search.error.ts:6](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/errors/unsupported-search.error.ts#L6)
+Defined in: [src/lib/errors/unsupported-search.error.ts:6](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/errors/unsupported-search.error.ts#L6)
 
 Error thrown when search is attempted with a driver that does not support it
 
@@ -16,7 +14,7 @@ Search is only supported by the NestJS driver.
 
 > **new UnsupportedSearchError**(): `UnsupportedSearchError`
 
-Defined in: [src/lib/errors/unsupported-search.error.ts:7](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/errors/unsupported-search.error.ts#L7)
+Defined in: [src/lib/errors/unsupported-search.error.ts:7](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/errors/unsupported-search.error.ts#L7)
 
 #### Returns
 

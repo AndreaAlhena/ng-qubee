@@ -1,5 +1,3 @@
-# ng-qubee
-
 ## Enumerations
 
 - [DriverEnum](enumerations/DriverEnum.md)

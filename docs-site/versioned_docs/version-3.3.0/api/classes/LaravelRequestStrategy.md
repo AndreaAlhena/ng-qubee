@@ -1,6 +1,4 @@
-# Class: LaravelRequestStrategy
-
-Defined in: [src/lib/strategies/laravel-request.strategy.ts:14](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/strategies/laravel-request.strategy.ts#L14)
+Defined in: [src/lib/strategies/laravel-request.strategy.ts:14](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/strategies/laravel-request.strategy.ts#L14)
 
 Request strategy for the Laravel (pagination-only) driver
 
@@ -33,7 +31,7 @@ Filters, sorts, fields, includes, search, and select in state are ignored.
 
 > `readonly` **capabilities**: `IStrategyCapabilities`
 
-Defined in: [src/lib/strategies/laravel-request.strategy.ts:19](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/strategies/laravel-request.strategy.ts#L19)
+Defined in: [src/lib/strategies/laravel-request.strategy.ts:19](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/strategies/laravel-request.strategy.ts#L19)
 
 Pagination-only driver — no filtering, sorting, or column selection
 
@@ -47,7 +45,7 @@ Pagination-only driver — no filtering, sorting, or column selection
 
 > `protected` **assertResource**(`state`): `void`
 
-Defined in: [src/lib/strategies/abstract-request.strategy.ts:89](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/strategies/abstract-request.strategy.ts#L89)
+Defined in: [src/lib/strategies/abstract-request.strategy.ts:89](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/strategies/abstract-request.strategy.ts#L89)
 
 Throw if the resource is not set on the state
 
@@ -80,7 +78,7 @@ Error if `state.resource` is empty
 
 > `protected` **baseUri**(`state`): `string`
 
-Defined in: [src/lib/strategies/abstract-request.strategy.ts:101](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/strategies/abstract-request.strategy.ts#L101)
+Defined in: [src/lib/strategies/abstract-request.strategy.ts:101](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/strategies/abstract-request.strategy.ts#L101)
 
 Compute the base path (no query string)
 
@@ -108,7 +106,7 @@ The base URI without the query separator (e.g. `/users` or `https://api.example.
 
 > **buildUri**(`state`, `options`): `string`
 
-Defined in: [src/lib/strategies/abstract-request.strategy.ts:42](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/strategies/abstract-request.strategy.ts#L42)
+Defined in: [src/lib/strategies/abstract-request.strategy.ts:42](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/strategies/abstract-request.strategy.ts#L42)
 
 Compose the full request URI from the given state
 
@@ -150,7 +148,7 @@ Error if the resource is not set
 
 > `protected` **join**(`base`, `segments`): `string`
 
-Defined in: [src/lib/strategies/abstract-request.strategy.ts:115](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/strategies/abstract-request.strategy.ts#L115)
+Defined in: [src/lib/strategies/abstract-request.strategy.ts:115](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/strategies/abstract-request.strategy.ts#L115)
 
 Glue the base URI and the per-driver query-string segments
 
@@ -187,7 +185,7 @@ The full URI
 
 > `protected` **parts**(`state`, `options`): `string`[]
 
-Defined in: [src/lib/strategies/laravel-request.strategy.ts:36](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/strategies/laravel-request.strategy.ts#L36)
+Defined in: [src/lib/strategies/laravel-request.strategy.ts:36](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/strategies/laravel-request.strategy.ts#L36)
 
 Emit only the pagination params; filters/sorts/etc. are ignored
 
@@ -221,7 +219,7 @@ The two pagination query-string fragments
 
 > **validateLimit**(`limit`): `void`
 
-Defined in: [src/lib/strategies/abstract-request.strategy.ts:59](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/strategies/abstract-request.strategy.ts#L59)
+Defined in: [src/lib/strategies/abstract-request.strategy.ts:59](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/strategies/abstract-request.strategy.ts#L59)
 
 Validate that a limit value is acceptable for this driver
 

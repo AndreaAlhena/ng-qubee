@@ -1,6 +1,4 @@
-# Interface: IQueryBuilderState
-
-Defined in: [src/lib/interfaces/query-builder-state.interface.ts:12](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/query-builder-state.interface.ts#L12)
+Defined in: [src/lib/interfaces/query-builder-state.interface.ts:12](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/query-builder-state.interface.ts#L12)
 
 Represents the complete query builder state
 
@@ -13,7 +11,7 @@ Each driver reads only the fields it needs from this state.
 
 > **baseUrl**: `string`
 
-Defined in: [src/lib/interfaces/query-builder-state.interface.ts:14](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/query-builder-state.interface.ts#L14)
+Defined in: [src/lib/interfaces/query-builder-state.interface.ts:14](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/query-builder-state.interface.ts#L14)
 
 The base URL to prepend to generated URIs
 
@@ -23,7 +21,7 @@ The base URL to prepend to generated URIs
 
 > **fields**: [`IFields`](IFields.md)
 
-Defined in: [src/lib/interfaces/query-builder-state.interface.ts:16](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/query-builder-state.interface.ts#L16)
+Defined in: [src/lib/interfaces/query-builder-state.interface.ts:16](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/query-builder-state.interface.ts#L16)
 
 Per-model field selection (Spatie only)
 
@@ -33,7 +31,7 @@ Per-model field selection (Spatie only)
 
 > **filters**: [`IFilters`](IFilters.md)
 
-Defined in: [src/lib/interfaces/query-builder-state.interface.ts:18](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/query-builder-state.interface.ts#L18)
+Defined in: [src/lib/interfaces/query-builder-state.interface.ts:18](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/query-builder-state.interface.ts#L18)
 
 Simple key-value filters (Spatie and NestJS)
 
@@ -43,7 +41,7 @@ Simple key-value filters (Spatie and NestJS)
 
 > **includes**: `string`[]
 
-Defined in: [src/lib/interfaces/query-builder-state.interface.ts:20](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/query-builder-state.interface.ts#L20)
+Defined in: [src/lib/interfaces/query-builder-state.interface.ts:20](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/query-builder-state.interface.ts#L20)
 
 Related models to include (Spatie only)
 
@@ -53,7 +51,7 @@ Related models to include (Spatie only)
 
 > **isLastPageKnown**: `boolean`
 
-Defined in: [src/lib/interfaces/query-builder-state.interface.ts:22](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/query-builder-state.interface.ts#L22)
+Defined in: [src/lib/interfaces/query-builder-state.interface.ts:22](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/query-builder-state.interface.ts#L22)
 
 Whether the last paginated response has synced `lastPage` into state
 
@@ -63,7 +61,7 @@ Whether the last paginated response has synced `lastPage` into state
 
 > **lastPage**: `number`
 
-Defined in: [src/lib/interfaces/query-builder-state.interface.ts:24](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/query-builder-state.interface.ts#L24)
+Defined in: [src/lib/interfaces/query-builder-state.interface.ts:24](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/query-builder-state.interface.ts#L24)
 
 Last page number known from the most recent paginated response; only meaningful when `isLastPageKnown` is true
 
@@ -73,7 +71,7 @@ Last page number known from the most recent paginated response; only meaningful 
 
 > **limit**: `number`
 
-Defined in: [src/lib/interfaces/query-builder-state.interface.ts:26](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/query-builder-state.interface.ts#L26)
+Defined in: [src/lib/interfaces/query-builder-state.interface.ts:26](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/query-builder-state.interface.ts#L26)
 
 Number of items per page (all drivers)
 
@@ -83,7 +81,7 @@ Number of items per page (all drivers)
 
 > **operatorFilters**: [`IOperatorFilter`](IOperatorFilter.md)[]
 
-Defined in: [src/lib/interfaces/query-builder-state.interface.ts:28](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/query-builder-state.interface.ts#L28)
+Defined in: [src/lib/interfaces/query-builder-state.interface.ts:28](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/query-builder-state.interface.ts#L28)
 
 Filters with explicit operators (NestJS only)
 
@@ -93,7 +91,7 @@ Filters with explicit operators (NestJS only)
 
 > **page**: `number`
 
-Defined in: [src/lib/interfaces/query-builder-state.interface.ts:30](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/query-builder-state.interface.ts#L30)
+Defined in: [src/lib/interfaces/query-builder-state.interface.ts:30](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/query-builder-state.interface.ts#L30)
 
 Current page number (all drivers)
 
@@ -103,7 +101,7 @@ Current page number (all drivers)
 
 > **resource**: `string`
 
-Defined in: [src/lib/interfaces/query-builder-state.interface.ts:32](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/query-builder-state.interface.ts#L32)
+Defined in: [src/lib/interfaces/query-builder-state.interface.ts:32](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/query-builder-state.interface.ts#L32)
 
 The API resource name for URI generation (all drivers)
 
@@ -113,7 +111,7 @@ The API resource name for URI generation (all drivers)
 
 > **search**: `string`
 
-Defined in: [src/lib/interfaces/query-builder-state.interface.ts:34](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/query-builder-state.interface.ts#L34)
+Defined in: [src/lib/interfaces/query-builder-state.interface.ts:34](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/query-builder-state.interface.ts#L34)
 
 Full-text search term (NestJS only)
 
@@ -123,7 +121,7 @@ Full-text search term (NestJS only)
 
 > **select**: `string`[]
 
-Defined in: [src/lib/interfaces/query-builder-state.interface.ts:36](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/query-builder-state.interface.ts#L36)
+Defined in: [src/lib/interfaces/query-builder-state.interface.ts:36](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/query-builder-state.interface.ts#L36)
 
 Flat field selection (NestJS only)
 
@@ -133,6 +131,6 @@ Flat field selection (NestJS only)
 
 > **sorts**: [`ISort`](ISort.md)[]
 
-Defined in: [src/lib/interfaces/query-builder-state.interface.ts:38](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/query-builder-state.interface.ts#L38)
+Defined in: [src/lib/interfaces/query-builder-state.interface.ts:38](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/query-builder-state.interface.ts#L38)
 
 Sort configurations (Spatie and NestJS)

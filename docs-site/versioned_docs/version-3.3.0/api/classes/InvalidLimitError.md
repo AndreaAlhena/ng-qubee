@@ -1,6 +1,4 @@
-# Class: InvalidLimitError
-
-Defined in: [src/lib/errors/invalid-limit.error.ts:9](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/errors/invalid-limit.error.ts#L9)
+Defined in: [src/lib/errors/invalid-limit.error.ts:9](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/errors/invalid-limit.error.ts#L9)
 
 Thrown when a limit value does not satisfy the active driver's constraints
 
@@ -19,7 +17,7 @@ the caller understands which values are permitted.
 
 > **new InvalidLimitError**(`limit`, `allowFetchAll?`): `InvalidLimitError`
 
-Defined in: [src/lib/errors/invalid-limit.error.ts:15](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/errors/invalid-limit.error.ts#L15)
+Defined in: [src/lib/errors/invalid-limit.error.ts:15](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/errors/invalid-limit.error.ts#L15)
 
 #### Parameters
 

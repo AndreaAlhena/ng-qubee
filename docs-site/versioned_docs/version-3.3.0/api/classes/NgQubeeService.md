@@ -1,6 +1,4 @@
-# Class: NgQubeeService
-
-Defined in: [src/lib/services/ng-qubee.service.ts:35](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L35)
+Defined in: [src/lib/services/ng-qubee.service.ts:35](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L35)
 
 ## Constructors
 
@@ -8,7 +6,7 @@ Defined in: [src/lib/services/ng-qubee.service.ts:35](https://github.com/AndreaA
 
 > **new NgQubeeService**(`_nestService`, `requestStrategy`, `driver`, `options?`): `NgQubeeService`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:64](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L64)
+Defined in: [src/lib/services/ng-qubee.service.ts:64](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L64)
 
 #### Parameters
 
@@ -38,7 +36,7 @@ Defined in: [src/lib/services/ng-qubee.service.ts:64](https://github.com/AndreaA
 
 > **uri$**: `Observable`\<`string`\>
 
-Defined in: [src/lib/services/ng-qubee.service.ts:60](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L60)
+Defined in: [src/lib/services/ng-qubee.service.ts:60](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L60)
 
 Observable that emits non-empty generated URIs
 
@@ -48,7 +46,7 @@ Observable that emits non-empty generated URIs
 
 > **addFields**(`model`, `fields`): `this`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:100](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L100)
+Defined in: [src/lib/services/ng-qubee.service.ts:100](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L100)
 
 Add fields to the select statement for the given model (JSON:API and Spatie only)
 
@@ -80,7 +78,7 @@ If the active driver does not support per-model field selection
 
 > **addFilter**(`field`, ...`values`): `this`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:122](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L122)
+Defined in: [src/lib/services/ng-qubee.service.ts:122](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L122)
 
 Add a filter with the given value(s) (JSON:API, NestJS, PostgREST, and Spatie)
 
@@ -114,7 +112,7 @@ If the active driver does not support filters
 
 > **addFilterOperator**(`field`, `operator`, ...`values`): `this`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:148](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L148)
+Defined in: [src/lib/services/ng-qubee.service.ts:148](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L148)
 
 Add a filter with an explicit operator (NestJS and PostgREST)
 
@@ -154,7 +152,7 @@ If the active driver does not support filter operators
 
 > **addIncludes**(...`models`): `this`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:168](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L168)
+Defined in: [src/lib/services/ng-qubee.service.ts:168](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L168)
 
 Add related entities to include in the request (JSON:API and Spatie only)
 
@@ -180,7 +178,7 @@ If the active driver does not support includes
 
 > **addSelect**(...`fields`): `this`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:189](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L189)
+Defined in: [src/lib/services/ng-qubee.service.ts:189](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L189)
 
 Add flat field selection (NestJS and PostgREST)
 
@@ -208,7 +206,7 @@ If the active driver does not support flat field selection
 
 > **addSort**(`field`, `order`): `this`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:209](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L209)
+Defined in: [src/lib/services/ng-qubee.service.ts:209](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L209)
 
 Add a field with a sort criteria (JSON:API, NestJS, PostgREST, and Spatie)
 
@@ -240,7 +238,7 @@ If the active driver does not support sorts
 
 > **currentPage**(): `number`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:227](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L227)
+Defined in: [src/lib/services/ng-qubee.service.ts:227](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L227)
 
 Get the current page number
 
@@ -260,7 +258,7 @@ Always safe to call. Thin accessor over the internal state's `page` field.
 
 > **deleteFields**(`fields`): `this`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:245](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L245)
+Defined in: [src/lib/services/ng-qubee.service.ts:245](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L245)
 
 Delete selected fields for the given models in the current query builder state (JSON:API and Spatie only)
 
@@ -293,7 +291,7 @@ If the active driver does not support per-model field selection
 
 > **deleteFieldsByModel**(`model`, ...`fields`): `this`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:264](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L264)
+Defined in: [src/lib/services/ng-qubee.service.ts:264](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L264)
 
 Delete selected fields for the given model in the current query builder state (JSON:API and Spatie only)
 
@@ -329,7 +327,7 @@ If the active driver does not support per-model field selection
 
 > **deleteFilters**(...`filters`): `this`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:285](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L285)
+Defined in: [src/lib/services/ng-qubee.service.ts:285](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L285)
 
 Remove given filters from the query builder state (JSON:API, NestJS, PostgREST, and Spatie)
 
@@ -355,7 +353,7 @@ If the active driver does not support filters
 
 > **deleteIncludes**(...`includes`): `this`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:305](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L305)
+Defined in: [src/lib/services/ng-qubee.service.ts:305](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L305)
 
 Remove selected related models from the query builder state (JSON:API and Spatie only)
 
@@ -381,7 +379,7 @@ If the active driver does not support includes
 
 > **deleteOperatorFilters**(...`fields`): `this`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:324](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L324)
+Defined in: [src/lib/services/ng-qubee.service.ts:324](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L324)
 
 Remove operator filters by field name (NestJS and PostgREST)
 
@@ -407,7 +405,7 @@ If the active driver does not support filter operators
 
 > **deleteSearch**(): `this`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:343](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L343)
+Defined in: [src/lib/services/ng-qubee.service.ts:343](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L343)
 
 Remove search term from the query builder state (NestJS only)
 
@@ -425,7 +423,7 @@ If the active driver does not support search
 
 > **deleteSelect**(...`fields`): `this`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:358](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L358)
+Defined in: [src/lib/services/ng-qubee.service.ts:358](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L358)
 
 Remove flat field selections from the query builder state (NestJS and PostgREST)
 
@@ -451,7 +449,7 @@ If the active driver does not support flat field selection
 
 > **deleteSorts**(...`sorts`): `this`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:377](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L377)
+Defined in: [src/lib/services/ng-qubee.service.ts:377](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L377)
 
 Remove sort rules from the query builder state (JSON:API, NestJS, PostgREST, and Spatie)
 
@@ -477,7 +475,7 @@ If the active driver does not support sorts
 
 > **firstPage**(): `this`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:391](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L391)
+Defined in: [src/lib/services/ng-qubee.service.ts:391](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L391)
 
 Navigate to the first page (page 1)
 
@@ -495,7 +493,7 @@ Never throws. Idempotent when already on page 1.
 
 > **generateUri**(): `Observable`\<`string`\>
 
-Defined in: [src/lib/services/ng-qubee.service.ts:402](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L402)
+Defined in: [src/lib/services/ng-qubee.service.ts:402](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L402)
 
 Generate a URI accordingly to the given data and active driver
 
@@ -511,7 +509,7 @@ An observable that emits the generated URI
 
 > **goToPage**(`n`): `this`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:422](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L422)
+Defined in: [src/lib/services/ng-qubee.service.ts:422](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L422)
 
 Navigate directly to the specified page
 
@@ -541,7 +539,7 @@ If `n` is not a positive integer, or if `n > state.lastPage` when `state.isLastP
 
 > **hasNextPage**(): `boolean`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:440](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L440)
+Defined in: [src/lib/services/ng-qubee.service.ts:440](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L440)
 
 Check whether a next page exists
 
@@ -561,7 +559,7 @@ Template-safe. Returns `true` when pagination bounds are unknown (conservative d
 
 > **hasPreviousPage**(): `boolean`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:452](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L452)
+Defined in: [src/lib/services/ng-qubee.service.ts:452](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L452)
 
 Check whether a previous page exists
 
@@ -581,7 +579,7 @@ Always safe. Does not require a synced paginated response.
 
 > **isFirstPage**(): `boolean`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:462](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L462)
+Defined in: [src/lib/services/ng-qubee.service.ts:462](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L462)
 
 Check whether the current page is the first page
 
@@ -601,7 +599,7 @@ Always safe. Does not require a synced paginated response.
 
 > **isLastPage**(): `boolean`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:472](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L472)
+Defined in: [src/lib/services/ng-qubee.service.ts:472](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L472)
 
 Check whether the current page is the last page
 
@@ -621,7 +619,7 @@ Template-safe. Returns `false` when pagination bounds are unknown (no paginated 
 
 > **lastPage**(): `this`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:485](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L485)
+Defined in: [src/lib/services/ng-qubee.service.ts:485](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L485)
 
 Navigate to the last page known from the most recent paginated response
 
@@ -643,7 +641,7 @@ If `state.isLastPageKnown` is false (no paginated response has been synced yet)
 
 > **nextPage**(): `this`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:503](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L503)
+Defined in: [src/lib/services/ng-qubee.service.ts:503](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L503)
 
 Navigate to the next page
 
@@ -661,7 +659,7 @@ Never throws. Idempotent at the known last page (no-op). Pair with `hasNextPage(
 
 > **paginationHeaders**(): `Record`\<`string`, `string`\> \| `null`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:527](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L527)
+Defined in: [src/lib/services/ng-qubee.service.ts:527](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L527)
 
 HTTP request headers the active driver wants the consumer to apply
 
@@ -684,7 +682,7 @@ Map of headers to apply to the HTTP request, or `null` when not needed
 
 > **previousPage**(): `this`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:541](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L541)
+Defined in: [src/lib/services/ng-qubee.service.ts:541](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L541)
 
 Navigate to the previous page
 
@@ -702,7 +700,7 @@ Never throws. Idempotent at page 1 (floored). Pair with `hasPreviousPage()` for 
 
 > **reset**(): `this`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:558](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L558)
+Defined in: [src/lib/services/ng-qubee.service.ts:558](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L558)
 
 Clear the current state and reset the Query Builder to a fresh, clean condition
 
@@ -716,7 +714,7 @@ Clear the current state and reset the Query Builder to a fresh, clean condition
 
 > **setBaseUrl**(`baseUrl`): `this`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:570](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L570)
+Defined in: [src/lib/services/ng-qubee.service.ts:570](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L570)
 
 Set the base URL to use for composing the address
 
@@ -738,7 +736,7 @@ The base URL
 
 > **setLimit**(`limit`): `this`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:588](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L588)
+Defined in: [src/lib/services/ng-qubee.service.ts:588](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L588)
 
 Set the items per page number
 
@@ -769,7 +767,7 @@ If the value is not accepted by the active driver
 
 > **setPage**(`page`): `this`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:602](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L602)
+Defined in: [src/lib/services/ng-qubee.service.ts:602](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L602)
 
 Set the page that the backend will use to paginate the result set
 
@@ -791,7 +789,7 @@ Page number
 
 > **setResource**(`resource`): `this`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:614](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L614)
+Defined in: [src/lib/services/ng-qubee.service.ts:614](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L614)
 
 Set the API resource to run the query against
 
@@ -813,7 +811,7 @@ Resource name (e.g. 'users' produces /users)
 
 > **setSearch**(`search`): `this`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:630](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L630)
+Defined in: [src/lib/services/ng-qubee.service.ts:630](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L630)
 
 Set the search term for full-text search (NestJS only)
 
@@ -841,7 +839,7 @@ If the active driver does not support search
 
 > **totalPages**(): `number`
 
-Defined in: [src/lib/services/ng-qubee.service.ts:645](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/ng-qubee.service.ts#L645)
+Defined in: [src/lib/services/ng-qubee.service.ts:645](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/ng-qubee.service.ts#L645)
 
 Get the total number of pages reported by the most recent paginated response
 

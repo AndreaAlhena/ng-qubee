@@ -1,6 +1,4 @@
-# Interface: IConfig
-
-Defined in: [src/lib/interfaces/config.interface.ts:21](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/config.interface.ts#L21)
+Defined in: [src/lib/interfaces/config.interface.ts:21](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/config.interface.ts#L21)
 
 Main configuration interface for ng-qubee
 
@@ -23,7 +21,7 @@ const config: IConfig = {
 
 > **driver**: [`DriverEnum`](../enumerations/DriverEnum.md)
 
-Defined in: [src/lib/interfaces/config.interface.ts:23](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/config.interface.ts#L23)
+Defined in: [src/lib/interfaces/config.interface.ts:23](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/config.interface.ts#L23)
 
 The pagination driver to use
 
@@ -33,7 +31,7 @@ The pagination driver to use
 
 > `optional` **pagination?**: [`PaginationModeEnum`](../enumerations/PaginationModeEnum.md)
 
-Defined in: [src/lib/interfaces/config.interface.ts:29](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/config.interface.ts#L29)
+Defined in: [src/lib/interfaces/config.interface.ts:29](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/config.interface.ts#L29)
 
 Wire-level pagination mechanism. Defaults to `PaginationModeEnum.QUERY`
 when omitted. Currently honoured only by the PostgREST driver; other
@@ -45,7 +43,7 @@ drivers ignore it.
 
 > `optional` **request?**: [`IQueryBuilderConfig`](IQueryBuilderConfig.md)
 
-Defined in: [src/lib/interfaces/config.interface.ts:31](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/config.interface.ts#L31)
+Defined in: [src/lib/interfaces/config.interface.ts:31](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/config.interface.ts#L31)
 
 Custom key names for request query parameters
 
@@ -55,6 +53,6 @@ Custom key names for request query parameters
 
 > `optional` **response?**: [`IPaginationConfig`](IPaginationConfig.md)
 
-Defined in: [src/lib/interfaces/config.interface.ts:33](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/config.interface.ts#L33)
+Defined in: [src/lib/interfaces/config.interface.ts:33](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/config.interface.ts#L33)
 
 Custom key names for response field mapping

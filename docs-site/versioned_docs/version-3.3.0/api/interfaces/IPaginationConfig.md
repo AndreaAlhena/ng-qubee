@@ -1,6 +1,4 @@
-# Interface: IPaginationConfig
-
-Defined in: [src/lib/interfaces/pagination-config.interface.ts:10](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/pagination-config.interface.ts#L10)
+Defined in: [src/lib/interfaces/pagination-config.interface.ts:10](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/pagination-config.interface.ts#L10)
 
 Configuration interface for customizing response field key names
 
@@ -16,7 +14,7 @@ For the NestJS driver, dot-notation paths are used to access nested values
 
 > `optional` **currentPage?**: `string`
 
-Defined in: [src/lib/interfaces/pagination-config.interface.ts:12](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/pagination-config.interface.ts#L12)
+Defined in: [src/lib/interfaces/pagination-config.interface.ts:12](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/pagination-config.interface.ts#L12)
 
 Key for the current page number (Laravel: 'current_page', NestJS: 'meta.currentPage')
 
@@ -26,7 +24,7 @@ Key for the current page number (Laravel: 'current_page', NestJS: 'meta.currentP
 
 > `optional` **data?**: `string`
 
-Defined in: [src/lib/interfaces/pagination-config.interface.ts:14](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/pagination-config.interface.ts#L14)
+Defined in: [src/lib/interfaces/pagination-config.interface.ts:14](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/pagination-config.interface.ts#L14)
 
 Key for the data array (default: 'data')
 
@@ -36,7 +34,7 @@ Key for the data array (default: 'data')
 
 > `optional` **firstPageUrl?**: `string`
 
-Defined in: [src/lib/interfaces/pagination-config.interface.ts:16](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/pagination-config.interface.ts#L16)
+Defined in: [src/lib/interfaces/pagination-config.interface.ts:16](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/pagination-config.interface.ts#L16)
 
 Key for the first page URL (Laravel: 'first_page_url', NestJS: 'links.first')
 
@@ -46,7 +44,7 @@ Key for the first page URL (Laravel: 'first_page_url', NestJS: 'links.first')
 
 > `optional` **from?**: `string`
 
-Defined in: [src/lib/interfaces/pagination-config.interface.ts:18](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/pagination-config.interface.ts#L18)
+Defined in: [src/lib/interfaces/pagination-config.interface.ts:18](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/pagination-config.interface.ts#L18)
 
 Key for the "from" item index (Laravel: 'from', NestJS: computed)
 
@@ -56,7 +54,7 @@ Key for the "from" item index (Laravel: 'from', NestJS: computed)
 
 > `optional` **lastPage?**: `string`
 
-Defined in: [src/lib/interfaces/pagination-config.interface.ts:20](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/pagination-config.interface.ts#L20)
+Defined in: [src/lib/interfaces/pagination-config.interface.ts:20](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/pagination-config.interface.ts#L20)
 
 Key for the last page number (Laravel: 'last_page', NestJS: 'meta.totalPages')
 
@@ -66,7 +64,7 @@ Key for the last page number (Laravel: 'last_page', NestJS: 'meta.totalPages')
 
 > `optional` **lastPageUrl?**: `string`
 
-Defined in: [src/lib/interfaces/pagination-config.interface.ts:22](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/pagination-config.interface.ts#L22)
+Defined in: [src/lib/interfaces/pagination-config.interface.ts:22](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/pagination-config.interface.ts#L22)
 
 Key for the last page URL (Laravel: 'last_page_url', NestJS: 'links.last')
 
@@ -76,7 +74,7 @@ Key for the last page URL (Laravel: 'last_page_url', NestJS: 'links.last')
 
 > `optional` **nextPageUrl?**: `string`
 
-Defined in: [src/lib/interfaces/pagination-config.interface.ts:24](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/pagination-config.interface.ts#L24)
+Defined in: [src/lib/interfaces/pagination-config.interface.ts:24](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/pagination-config.interface.ts#L24)
 
 Key for the next page URL (Laravel: 'next_page_url', NestJS: 'links.next')
 
@@ -86,7 +84,7 @@ Key for the next page URL (Laravel: 'next_page_url', NestJS: 'links.next')
 
 > `optional` **path?**: `string`
 
-Defined in: [src/lib/interfaces/pagination-config.interface.ts:26](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/pagination-config.interface.ts#L26)
+Defined in: [src/lib/interfaces/pagination-config.interface.ts:26](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/pagination-config.interface.ts#L26)
 
 Key for the base path (Laravel only, default: 'path')
 
@@ -96,7 +94,7 @@ Key for the base path (Laravel only, default: 'path')
 
 > `optional` **perPage?**: `string`
 
-Defined in: [src/lib/interfaces/pagination-config.interface.ts:28](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/pagination-config.interface.ts#L28)
+Defined in: [src/lib/interfaces/pagination-config.interface.ts:28](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/pagination-config.interface.ts#L28)
 
 Key for items per page (Laravel: 'per_page', NestJS: 'meta.itemsPerPage')
 
@@ -106,7 +104,7 @@ Key for items per page (Laravel: 'per_page', NestJS: 'meta.itemsPerPage')
 
 > `optional` **prevPageUrl?**: `string`
 
-Defined in: [src/lib/interfaces/pagination-config.interface.ts:30](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/pagination-config.interface.ts#L30)
+Defined in: [src/lib/interfaces/pagination-config.interface.ts:30](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/pagination-config.interface.ts#L30)
 
 Key for the previous page URL (Laravel: 'prev_page_url', NestJS: 'links.previous')
 
@@ -116,7 +114,7 @@ Key for the previous page URL (Laravel: 'prev_page_url', NestJS: 'links.previous
 
 > `optional` **to?**: `string`
 
-Defined in: [src/lib/interfaces/pagination-config.interface.ts:32](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/pagination-config.interface.ts#L32)
+Defined in: [src/lib/interfaces/pagination-config.interface.ts:32](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/pagination-config.interface.ts#L32)
 
 Key for the "to" item index (Laravel: 'to', NestJS: computed)
 
@@ -126,6 +124,6 @@ Key for the "to" item index (Laravel: 'to', NestJS: computed)
 
 > `optional` **total?**: `string`
 
-Defined in: [src/lib/interfaces/pagination-config.interface.ts:34](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/pagination-config.interface.ts#L34)
+Defined in: [src/lib/interfaces/pagination-config.interface.ts:34](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/pagination-config.interface.ts#L34)
 
 Key for the total item count (Laravel: 'total', NestJS: 'meta.totalItems')

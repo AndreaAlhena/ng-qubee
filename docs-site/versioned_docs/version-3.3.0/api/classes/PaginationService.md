@@ -1,6 +1,4 @@
-# Class: PaginationService
-
-Defined in: [src/lib/services/pagination.service.ts:12](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/pagination.service.ts#L12)
+Defined in: [src/lib/services/pagination.service.ts:12](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/pagination.service.ts#L12)
 
 ## Constructors
 
@@ -8,7 +6,7 @@ Defined in: [src/lib/services/pagination.service.ts:12](https://github.com/Andre
 
 > **new PaginationService**(`nestService`, `responseStrategy`, `options?`): `PaginationService`
 
-Defined in: [src/lib/services/pagination.service.ts:31](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/pagination.service.ts#L31)
+Defined in: [src/lib/services/pagination.service.ts:31](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/pagination.service.ts#L31)
 
 #### Parameters
 
@@ -34,7 +32,7 @@ Defined in: [src/lib/services/pagination.service.ts:31](https://github.com/Andre
 
 > **paginate**\<`T`\>(`response`, `headers?`): [`PaginatedCollection`](PaginatedCollection.md)\<`T`\>
 
-Defined in: [src/lib/services/pagination.service.ts:63](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/services/pagination.service.ts#L63)
+Defined in: [src/lib/services/pagination.service.ts:63](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/services/pagination.service.ts#L63)
 
 Transform a raw API response into a typed PaginatedCollection
 

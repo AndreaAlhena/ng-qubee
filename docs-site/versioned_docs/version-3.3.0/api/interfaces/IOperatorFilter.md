@@ -1,6 +1,4 @@
-# Interface: IOperatorFilter
-
-Defined in: [src/lib/interfaces/operator-filter.interface.ts:19](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/operator-filter.interface.ts#L19)
+Defined in: [src/lib/interfaces/operator-filter.interface.ts:19](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/operator-filter.interface.ts#L19)
 
 Represents a filter with an explicit operator for the NestJS driver
 
@@ -24,7 +22,7 @@ const filter: IOperatorFilter = {
 
 > **field**: `string`
 
-Defined in: [src/lib/interfaces/operator-filter.interface.ts:21](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/operator-filter.interface.ts#L21)
+Defined in: [src/lib/interfaces/operator-filter.interface.ts:21](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/operator-filter.interface.ts#L21)
 
 The field name to filter on
 
@@ -34,7 +32,7 @@ The field name to filter on
 
 > **operator**: [`FilterOperatorEnum`](../enumerations/FilterOperatorEnum.md)
 
-Defined in: [src/lib/interfaces/operator-filter.interface.ts:23](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/operator-filter.interface.ts#L23)
+Defined in: [src/lib/interfaces/operator-filter.interface.ts:23](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/operator-filter.interface.ts#L23)
 
 The filter operator to apply
 
@@ -44,6 +42,6 @@ The filter operator to apply
 
 > **values**: (`string` \| `number` \| `boolean`)[]
 
-Defined in: [src/lib/interfaces/operator-filter.interface.ts:25](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/operator-filter.interface.ts#L25)
+Defined in: [src/lib/interfaces/operator-filter.interface.ts:25](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/operator-filter.interface.ts#L25)
 
 The value(s) for the filter

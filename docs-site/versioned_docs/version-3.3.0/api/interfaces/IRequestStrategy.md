@@ -1,6 +1,4 @@
-# Interface: IRequestStrategy
-
-Defined in: [src/lib/interfaces/request-strategy.interface.ts:11](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/request-strategy.interface.ts#L11)
+Defined in: [src/lib/interfaces/request-strategy.interface.ts:11](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/request-strategy.interface.ts#L11)
 
 Strategy interface for building request URIs
 
@@ -13,7 +11,7 @@ in the format expected by the corresponding backend.
 
 > `readonly` **capabilities**: `IStrategyCapabilities`
 
-Defined in: [src/lib/interfaces/request-strategy.interface.ts:20](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/request-strategy.interface.ts#L20)
+Defined in: [src/lib/interfaces/request-strategy.interface.ts:20](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/request-strategy.interface.ts#L20)
 
 Capability flags declared by this driver
 
@@ -27,7 +25,7 @@ static, immutable capability map.
 
 > `optional` **buildPaginationHeaders**(`state`): `Record`\<`string`, `string`\> \| `null`
 
-Defined in: [src/lib/interfaces/request-strategy.interface.ts:47](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/request-strategy.interface.ts#L47)
+Defined in: [src/lib/interfaces/request-strategy.interface.ts:47](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/request-strategy.interface.ts#L47)
 
 Compute HTTP request headers carrying pagination metadata
 
@@ -61,7 +59,7 @@ A map of header name → value, or `null` when not applicable
 
 > **buildUri**(`state`, `options`): `string`
 
-Defined in: [src/lib/interfaces/request-strategy.interface.ts:29](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/request-strategy.interface.ts#L29)
+Defined in: [src/lib/interfaces/request-strategy.interface.ts:29](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/request-strategy.interface.ts#L29)
 
 Build a URI string from the given query builder state
 
@@ -91,7 +89,7 @@ The composed URI string
 
 > **validateLimit**(`limit`): `void`
 
-Defined in: [src/lib/interfaces/request-strategy.interface.ts:59](https://github.com/AndreaAlhena/ng-qubee/blob/dca5f28601740c09e0f530d078a305173a7b6535/src/lib/interfaces/request-strategy.interface.ts#L59)
+Defined in: [src/lib/interfaces/request-strategy.interface.ts:59](https://github.com/AndreaAlhena/ng-qubee/blob/81c0aafd71cb5e20f2b5ebdcc6ea8335bac695b3/src/lib/interfaces/request-strategy.interface.ts#L59)
 
 Assert that the given limit value is valid for this driver
 
