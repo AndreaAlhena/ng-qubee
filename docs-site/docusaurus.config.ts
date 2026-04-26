@@ -141,7 +141,7 @@ const config: Config = {
         {
           title: 'Author',
           items: [
-            { label: 'Andrea Tantimonaco', href: 'https://andreatantimonaco.me' }
+            { label: 'Andrea Tantimonaco', href: 'https://www.linkedin.com/in/andrea-tantimonaco/' }
           ]
         }
       ],
