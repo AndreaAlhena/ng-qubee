@@ -86,7 +86,7 @@ The exact URI shape depends on the driver. See the [Drivers](./drivers/json-api.
 
 ## Pick a driver
 
-Five drivers ship out of the box:
+Six drivers ship out of the box:
 
 | Driver | Best for |
 |---|---|
@@ -95,6 +95,7 @@ Five drivers ship out of the box:
 | [**Spatie**](./drivers/spatie.md) | [Spatie Query Builder](https://spatie.be/docs/laravel-query-builder) for Laravel |
 | [**NestJS**](./drivers/nestjs.md) | [`nestjs-paginate`](https://github.com/ppetzold/nestjs-paginate) |
 | [**PostgREST**](./drivers/postgrest.md) | [PostgREST](https://postgrest.org/) and [Supabase](https://supabase.com/) |
+| [**Strapi**](./drivers/strapi.md) | [Strapi](https://strapi.io/) v4 / v5 headless CMS |
 
 ## Next steps
 

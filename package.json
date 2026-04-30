@@ -13,20 +13,27 @@
   "bugs": {
     "url": "https://github.com/AndreaAlhena/ng-qubee/issues"
   },
-  "homepage": "https://github.com/AndreaAlhena/ng-qubee#readme",
+  "homepage": "https://ng-qubee.andreatantimonaco.me",
   "keywords": [
     "angular",
-    "query-builder",
     "api",
-    "pagination",
-    "rxjs",
-    "filter",
-    "query",
     "builder",
-    "typescript",
-    "signals",
+    "filter",
+    "headless-cms",
+    "json-api",
+    "laravel",
+    "nestjs",
+    "nestjs-paginate",
+    "pagination",
     "postgrest",
-    "supabase"
+    "query",
+    "query-builder",
+    "rxjs",
+    "signals",
+    "spatie",
+    "strapi",
+    "supabase",
+    "typescript"
   ],
   "allowedNonPeerDependencies": [
     "qs"

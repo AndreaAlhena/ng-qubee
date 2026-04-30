@@ -60,3 +60,5 @@ export * from './lib/strategies/postgrest-request.strategy';
 export * from './lib/strategies/postgrest-response.strategy';
 export * from './lib/strategies/spatie-request.strategy';
 export * from './lib/strategies/spatie-response.strategy';
+export * from './lib/strategies/strapi-request.strategy';
+export * from './lib/strategies/strapi-response.strategy';
