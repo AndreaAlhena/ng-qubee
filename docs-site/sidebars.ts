@@ -20,7 +20,8 @@ const sidebars: SidebarsConfig = {
         'drivers/laravel',
         'drivers/spatie',
         'drivers/nestjs',
-        'drivers/postgrest'
+        'drivers/postgrest',
+        'drivers/strapi'
       ]
     },
     'fetching-data',

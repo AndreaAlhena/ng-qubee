@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.4.0] - 2026-04-30
+
+### Added
+- **Strapi driver** (`DriverEnum.STRAPI`) (#51): new driver targeting [Strapi](https://strapi.io/) v4/v5 headless CMS.
+  - `StrapiRequestStrategy`: deep-bracket filters (`filters[field][$eq]=value` single, `filters[field][$in][N]=value` multi-value), array-style sorts (`sort[N]=field:dir`), flat field selection (`fields[N]=col`), `populate[N]=relation` for related resources, page-based pagination (`pagination[page]=N&pagination[pageSize]=N`)
+  - `StrapiResponseStrategy`: parses the `meta.pagination.{page,pageSize,pageCount,total}` envelope, computes `from`/`to` from page × pageSize × total
+  - Strapi driver supports `addFilter`/`deleteFilters`, `addFilterOperator`/`deleteOperatorFilters`, `addSort`/`deleteSorts`, `addSelect`/`deleteSelect`, `addIncludes`/`deleteIncludes` (mapped to `populate`), `setLimit`/`setPage` + their delete counterparts. `addFields` and `setSearch` throw the matching `Unsupported*Error` (Strapi has no per-model fields and no global search; use `$contains`/`$containsi` operator filters for partial matches)
+- **Strapi `FilterOperatorEnum` mapping** (#51): `EQ`/`GT`/`GTE`/`LT`/`LTE`/`CONTAINS`/`IN` map directly; `ILIKE`→`$containsi`, `SW`→`$startsWith`, `BTW`→`$between` (arity-checked, expands to a 2-element array), `NOT`→`$ne` (single) / `$notIn` (multi), `NULL`→`$null=true` / `$notNull=true` (boolean dispatch). PostgREST-only `FTS`/`PHFTS`/`PLFTS`/`WFTS` throw `UnsupportedFilterOperatorError`.
+- **`StrapiResponseOptions`** (new public class) (#51): pre-configured dot-path mapping for the Strapi response envelope; consumers can override individual paths via `IPaginationConfig`.
+
+### Changed
+- **README condensed**: per-driver tutorials, the full Query Builder API reference, pagination guides, and TypeScript usage examples have moved to the documentation site at [ng-qubee.andreatantimonaco.me](https://ng-qubee.andreatantimonaco.me). The README now keeps a quick install + driver matrix + minimal example and points readers at the docs site for everything else.
+- **`package.json` `homepage`** now points to [ng-qubee.andreatantimonaco.me](https://ng-qubee.andreatantimonaco.me) (was `github.com/.../#readme`).
+- **`package.json` `keywords`** alphabetised and expanded with `headless-cms`, `json-api`, `laravel`, `nestjs`, `nestjs-paginate`, `spatie`, `strapi` to improve npm discoverability across the supported drivers.
+
 ## [3.3.0] - 2026-04-25
 
 ### Added
