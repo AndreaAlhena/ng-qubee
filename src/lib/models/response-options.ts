@@ -93,3 +93,30 @@ export class NestjsResponseOptions extends ResponseOptions {
         });
     }
 }
+
+/**
+ * Pre-configured ResponseOptions for the Strapi driver
+ *
+ * Uses dot-notation paths to access the nested `meta.pagination.*` envelope
+ * Strapi v4/v5 emits. Strapi does not include navigation links by default,
+ * so the URL paths point at locations that will resolve to `undefined`
+ * unless the consumer overrides them.
+ */
+export class StrapiResponseOptions extends ResponseOptions {
+    constructor(options: IPaginationConfig) {
+        super({
+            currentPage: options.currentPage || 'meta.pagination.page',
+            data: options.data || 'data',
+            firstPageUrl: options.firstPageUrl || 'links.first',
+            from: options.from || 'meta.pagination.from',
+            lastPage: options.lastPage || 'meta.pagination.pageCount',
+            lastPageUrl: options.lastPageUrl || 'links.last',
+            nextPageUrl: options.nextPageUrl || 'links.next',
+            path: options.path || 'path',
+            perPage: options.perPage || 'meta.pagination.pageSize',
+            prevPageUrl: options.prevPageUrl || 'links.prev',
+            to: options.to || 'meta.pagination.to',
+            total: options.total || 'meta.pagination.total'
+        });
+    }
+}
