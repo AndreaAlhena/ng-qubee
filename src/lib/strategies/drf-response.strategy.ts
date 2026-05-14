@@ -160,13 +160,11 @@ export class DrfResponseStrategy implements IResponseStrategy {
    * @returns The 1-indexed `to` index, or undefined when inputs insufficient
    */
   private _deriveTo(currentPage: number, perPage?: number, total?: number): number | undefined {
-    if (!perPage) {
+    if (perPage === undefined || total === undefined) {
       return undefined;
     }
 
-    const upperBound = currentPage * perPage;
-
-    return total === undefined ? upperBound : Math.min(upperBound, total);
+    return Math.min(currentPage * perPage, total);
   }
 
   /**
