@@ -1,12 +1,10 @@
-import { IPaginatedObject } from '../interfaces/paginated-object.interface';
-import { IResponseStrategy } from '../interfaces/response-strategy.interface';
-import { PaginatedCollection } from '../models/paginated-collection';
-import { ResponseOptions } from '../models/response-options';
+import { AbstractFlatResponseStrategy } from './abstract-flat-response.strategy';
 
 /**
  * Response strategy for the Spatie Query Builder driver
  *
- * Parses flat Laravel pagination responses:
+ * Parses flat Laravel-style pagination responses (Spatie's Query Builder
+ * is built on Laravel's pagination):
  * ```json
  * {
  *   "data": [...],
@@ -19,31 +17,11 @@ import { ResponseOptions } from '../models/response-options';
  * }
  * ```
  *
+ * The traversal algorithm (flat `response[options.X]` lookups) is
+ * inherited from `AbstractFlatResponseStrategy`; this class exists so
+ * `DriverEnum.SPATIE` resolves to a distinct identity at the DI layer
+ * even though the parsing logic is shared with the plain Laravel driver.
+ *
  * @see https://spatie.be/docs/laravel-query-builder
  */
-export class SpatieResponseStrategy implements IResponseStrategy {
-
-  /**
-   * Parse a flat Laravel pagination response into a PaginatedCollection
-   *
-   * @param response - The raw API response object
-   * @param options - The response key name configuration
-   * @returns A typed PaginatedCollection instance
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public paginate<T extends IPaginatedObject>(response: Record<string, any>, options: ResponseOptions): PaginatedCollection<T> {
-    return new PaginatedCollection(
-      response[options.data],
-      response[options.currentPage],
-      response[options.from],
-      response[options.to],
-      response[options.total],
-      response[options.perPage],
-      response[options.prevPageUrl],
-      response[options.nextPageUrl],
-      response[options.lastPage],
-      response[options.firstPageUrl],
-      response[options.lastPageUrl]
-    );
-  }
-}
+export class SpatieResponseStrategy extends AbstractFlatResponseStrategy {}

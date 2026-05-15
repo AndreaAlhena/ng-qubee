@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **DRF `FilterOperatorEnum` mapping** (#47): `EQ` emits no suffix (django-filter's default `exact`); `GT`/`GTE`/`LT`/`LTE`/`CONTAINS` map to identically-named lookups; `ILIKE`→`__icontains`, `SW`→`__startswith`, `IN`→`__in` (comma-joined), `BTW`→`__range=min,max` (arity-checked, requires exactly 2 values), `NULL`→`__isnull=true|false` (boolean dispatch). The generic `NOT` and PostgREST-only `FTS`/`PHFTS`/`PLFTS`/`WFTS` have no django-filter equivalent and throw `UnsupportedFilterOperatorError`.
 - **`DrfResponseOptions`** (new public class) (#47): pre-configured key mapping for the DRF response envelope (`data → 'results'`, `total → 'count'`, `nextPageUrl → 'next'`, `prevPageUrl → 'previous'`). `currentPage`/`perPage`/`lastPage`/`from`/`to` default to empty paths because the strategy derives them from URL inspection rather than body fields; consumers can still override any path via `IPaginationConfig`.
 
+### Internal
+- **`AbstractFlatResponseStrategy`** (#71) absorbs the byte-identical `paginate()` body that `LaravelResponseStrategy` and `SpatieResponseStrategy` were duplicating. Both response strategies collapse to one-line empty extensions, mirroring the pattern established by `AbstractDotPathResponseStrategy` for JSON:API / NestJS / Strapi in #67. Empty extensions are retained so the DI tokens resolve to distinct identities and future per-driver overrides have a place to land. Zero behavior change; existing specs unchanged.
+
 ## [3.4.0] - 2026-04-30
 
 ### Added
