@@ -13,8 +13,8 @@ NgQubee is a query builder for Angular. Compose your API requests without re-inv
 
 - Reactive — URIs emitted as RxJS observables, state held in Angular Signals
 - Pagination ready — typed `PaginatedCollection`, fluent navigation (`nextPage`, `lastPage`, `goToPage`)
-- Test-driven — 495+ specs
-- **Multi-driver support**: JSON:API, Laravel (pagination-only), Spatie Query Builder, NestJS (`nestjs-paginate`), PostgREST / Supabase, and Strapi
+- Test-driven — 550+ specs
+- **Multi-driver support**: Django REST Framework, JSON:API, Laravel (pagination-only), Spatie Query Builder, NestJS (`nestjs-paginate`), PostgREST / Supabase, and Strapi
 
 ## 📚 Documentation
 
@@ -39,6 +39,7 @@ A driver **must** be specified in the configuration:
 
 | Driver | Backend | Wire format snapshot |
 |---|---|---|
+| **DRF** | [Django REST Framework](https://www.django-rest-framework.org/) + [django-filter](https://django-filter.readthedocs.io/) | `field=value`, `field__gte=N`, `ordering=-field`, `page=N&page_size=M` |
 | **JSON:API** | Any [JSON:API](https://jsonapi.org/format/)-compliant backend | `filter[field]=value`, `sort=-field`, `page[number]=N&page[size]=N` |
 | **Laravel** | Plain Laravel pagination | `limit=N&page=N` (pagination only) |
 | **Spatie** | [Spatie Laravel Query Builder](https://spatie.be/docs/laravel-query-builder) | `filter[field]=value`, `sort=-field` |
