@@ -45,6 +45,36 @@ export class ResponseOptions {
 }
 
 /**
+ * Pre-configured ResponseOptions for the Django REST Framework (DRF) driver
+ *
+ * DRF's `PageNumberPagination` envelope is `{ count, next, previous,
+ * results }`, with no body field naming the current page, per-page, or
+ * last-page. The strategy parses those from the `next` / `previous`
+ * URLs, so the corresponding key paths default to empty strings; the
+ * strategy ignores `options.currentPage`, `options.perPage`,
+ * `options.lastPage`, `options.from`, `options.to`, `options.path`,
+ * `options.firstPageUrl`, and `options.lastPageUrl`.
+ */
+export class DrfResponseOptions extends ResponseOptions {
+    constructor(options: IPaginationConfig) {
+        super({
+            currentPage: options.currentPage || '',
+            data: options.data || 'results',
+            firstPageUrl: options.firstPageUrl || '',
+            from: options.from || '',
+            lastPage: options.lastPage || '',
+            lastPageUrl: options.lastPageUrl || '',
+            nextPageUrl: options.nextPageUrl || 'next',
+            path: options.path || '',
+            perPage: options.perPage || '',
+            prevPageUrl: options.prevPageUrl || 'previous',
+            to: options.to || '',
+            total: options.total || 'count'
+        });
+    }
+}
+
+/**
  * Pre-configured ResponseOptions for the JSON:API driver
  *
  * Uses dot-notation paths to access nested values in the JSON:API response format.

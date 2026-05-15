@@ -3,7 +3,9 @@ import { PaginationModeEnum } from '../enums/pagination-mode.enum';
 import { IPaginationConfig } from '../interfaces/pagination-config.interface';
 import { IRequestStrategy } from '../interfaces/request-strategy.interface';
 import { IResponseStrategy } from '../interfaces/response-strategy.interface';
-import { JsonApiResponseOptions, NestjsResponseOptions, ResponseOptions, StrapiResponseOptions } from '../models/response-options';
+import { DrfResponseOptions, JsonApiResponseOptions, NestjsResponseOptions, ResponseOptions, StrapiResponseOptions } from '../models/response-options';
+import { DrfRequestStrategy } from '../strategies/drf-request.strategy';
+import { DrfResponseStrategy } from '../strategies/drf-response.strategy';
 import { JsonApiRequestStrategy } from '../strategies/json-api-request.strategy';
 import { JsonApiResponseStrategy } from '../strategies/json-api-response.strategy';
 import { LaravelRequestStrategy } from '../strategies/laravel-request.strategy';
@@ -68,6 +70,12 @@ export interface IDriverDefinition {
  * `switch` blocks.
  */
 export const DRIVERS: Record<DriverEnum, IDriverDefinition> = {
+  [DriverEnum.DRF]: {
+    createRequestStrategy: () => new DrfRequestStrategy(),
+    createResponseStrategy: () => new DrfResponseStrategy(),
+    createResponseOptions: (config) => new DrfResponseOptions(config)
+  },
+
   [DriverEnum.JSON_API]: {
     createRequestStrategy: () => new JsonApiRequestStrategy(),
     createResponseStrategy: () => new JsonApiResponseStrategy(),
