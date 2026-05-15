@@ -1,7 +1,4 @@
-import { IPaginatedObject } from '../interfaces/paginated-object.interface';
-import { IResponseStrategy } from '../interfaces/response-strategy.interface';
-import { PaginatedCollection } from '../models/paginated-collection';
-import { ResponseOptions } from '../models/response-options';
+import { AbstractFlatResponseStrategy } from './abstract-flat-response.strategy';
 
 /**
  * Response strategy for the Laravel (pagination-only) driver
@@ -15,33 +12,17 @@ import { ResponseOptions } from '../models/response-options';
  *   "per_page": 15,
  *   "from": 1,
  *   "to": 15,
- *   ...
+ *   "next_page_url": "...",
+ *   "prev_page_url": "...",
+ *   "first_page_url": "...",
+ *   "last_page": 7,
+ *   "last_page_url": "..."
  * }
  * ```
+ *
+ * The traversal algorithm (flat `response[options.X]` lookups) is
+ * inherited from `AbstractFlatResponseStrategy`; this class exists so
+ * `DriverEnum.LARAVEL` resolves to a distinct identity at the DI layer
+ * even though the parsing logic is shared with Spatie.
  */
-export class LaravelResponseStrategy implements IResponseStrategy {
-
-  /**
-   * Parse a flat Laravel pagination response into a PaginatedCollection
-   *
-   * @param response - The raw API response object
-   * @param options - The response key name configuration
-   * @returns A typed PaginatedCollection instance
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public paginate<T extends IPaginatedObject>(response: Record<string, any>, options: ResponseOptions): PaginatedCollection<T> {
-    return new PaginatedCollection(
-      response[options.data],
-      response[options.currentPage],
-      response[options.from],
-      response[options.to],
-      response[options.total],
-      response[options.perPage],
-      response[options.prevPageUrl],
-      response[options.nextPageUrl],
-      response[options.lastPage],
-      response[options.firstPageUrl],
-      response[options.lastPageUrl]
-    );
-  }
-}
+export class LaravelResponseStrategy extends AbstractFlatResponseStrategy {}
