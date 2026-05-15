@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Internal
+- **`AbstractFlatResponseStrategy`** (#71) absorbs the byte-identical `paginate()` body that `LaravelResponseStrategy` and `SpatieResponseStrategy` were duplicating. Both response strategies collapse to one-line empty extensions, mirroring the pattern established by `AbstractDotPathResponseStrategy` for JSON:API / NestJS / Strapi in #67. Empty extensions are retained so the DI tokens resolve to distinct identities and future per-driver overrides have a place to land. Zero behavior change; existing specs unchanged.
+
 ## [3.4.0] - 2026-04-30
 
 ### Added
