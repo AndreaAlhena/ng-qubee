@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.5.0] - 2026-05-15
+
 ### Added
 - **Django REST Framework driver** (`DriverEnum.DRF`) (#47): new driver targeting [Django REST Framework](https://www.django-rest-framework.org/) with [django-filter](https://django-filter.readthedocs.io/).
   - `DrfRequestStrategy`: flat key=value filters with django-filter's double-underscore lookup convention (`field__gte=N`, `field__icontains=value`, `field__in=v1,v2,v3`), `ordering=-field1,field2` for sorts (`-` prefix = DESC), `search=term` (DRF's `SearchFilter`), page-based pagination (`page=N&page_size=M`). Multi-value simple filters collapse to `field__in=...`.
@@ -14,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - DRF driver supports `addFilter`/`deleteFilters`, `addFilterOperator`/`deleteOperatorFilters`, `addSort`/`deleteSorts`, `setSearch`/`deleteSearch`, `setLimit`/`setPage` + their delete counterparts. `addFields`, `addIncludes`, and `addSelect` throw the matching `Unsupported*Error` (DRF has no first-class per-model fields, no relation includes, and no flat column-list select — `django-restql` adds these but is not core DRF).
 - **DRF `FilterOperatorEnum` mapping** (#47): `EQ` emits no suffix (django-filter's default `exact`); `GT`/`GTE`/`LT`/`LTE`/`CONTAINS` map to identically-named lookups; `ILIKE`→`__icontains`, `SW`→`__startswith`, `IN`→`__in` (comma-joined), `BTW`→`__range=min,max` (arity-checked, requires exactly 2 values), `NULL`→`__isnull=true|false` (boolean dispatch). The generic `NOT` and PostgREST-only `FTS`/`PHFTS`/`PLFTS`/`WFTS` have no django-filter equivalent and throw `UnsupportedFilterOperatorError`.
 - **`DrfResponseOptions`** (new public class) (#47): pre-configured key mapping for the DRF response envelope (`data → 'results'`, `total → 'count'`, `nextPageUrl → 'next'`, `prevPageUrl → 'previous'`). `currentPage`/`perPage`/`lastPage`/`from`/`to` default to empty paths because the strategy derives them from URL inspection rather than body fields; consumers can still override any path via `IPaginationConfig`.
+
+### Changed
+- **`package.json` `keywords`** expanded with `django` and `drf` to surface the new driver on npm. List remains alphabetised.
 
 ### Internal
 - **`AbstractFlatResponseStrategy`** (#71) absorbs the byte-identical `paginate()` body that `LaravelResponseStrategy` and `SpatieResponseStrategy` were duplicating. Both response strategies collapse to one-line empty extensions, mirroring the pattern established by `AbstractDotPathResponseStrategy` for JSON:API / NestJS / Strapi in #67. Empty extensions are retained so the DI tokens resolve to distinct identities and future per-driver overrides have a place to land. Zero behavior change; existing specs unchanged.
