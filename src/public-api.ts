@@ -62,6 +62,8 @@ export * from './lib/strategies/nestjsx-crud-request.strategy';
 export * from './lib/strategies/nestjsx-crud-response.strategy';
 export * from './lib/strategies/postgrest-request.strategy';
 export * from './lib/strategies/postgrest-response.strategy';
+export * from './lib/strategies/sieve-request.strategy';
+export * from './lib/strategies/sieve-response.strategy';
 export * from './lib/strategies/spatie-request.strategy';
 export * from './lib/strategies/spatie-response.strategy';
 export * from './lib/strategies/spring-request.strategy';
