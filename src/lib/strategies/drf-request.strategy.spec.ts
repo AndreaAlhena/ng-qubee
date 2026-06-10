@@ -14,6 +14,7 @@ describe('DrfRequestStrategy', () => {
 
   const baseState: IQueryBuilderState = {
     baseUrl: '',
+    embedded: {},
     fields: {},
     filters: {},
     includes: [],
@@ -338,6 +339,7 @@ describe('DrfRequestStrategy', () => {
     it('should build a complete DRF query URI', () => {
       const state: IQueryBuilderState = {
         baseUrl: 'https://api.example.com',
+        embedded: {},
         fields: {},
         filters: { status: ['published'] },
         includes: [],
