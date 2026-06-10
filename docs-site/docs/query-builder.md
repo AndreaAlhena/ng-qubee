@@ -123,6 +123,25 @@ qb.deleteIncludes('profile');
 
 Does **not** trigger auto-reset (related-resource shape, not record set).
 
+## Embedded resources — PostgREST
+
+### `addEmbedded(relation, ...columns)` / `deleteEmbedded(...relations)`
+
+PostgREST's idiomatic join mechanism: related-table columns are spliced into the single `select=` query parameter, alongside any flat columns from `addSelect`.
+
+```typescript
+qb.addEmbedded('author', 'id', 'name')   // author(id,name)
+  .addEmbedded('comments')               // comments(*) — no columns = all columns
+  .addSelect('title');
+// → select=title,author(id,name),comments(*)
+
+qb.deleteEmbedded('comments');           // removes the whole relation entry
+```
+
+With embedded relations but no `addSelect`, the flat part defaults to `*` so the base row's columns stay in the projection. Repeated calls for the same relation merge-dedup the columns. Every other driver throws `UnsupportedEmbeddedError` — drivers with a standalone relation parameter expose it through `addIncludes` instead.
+
+Does **not** trigger auto-reset (column shape change, not record set).
+
 ## Search — NestJS / DRF
 
 ### `setSearch(term)` / `deleteSearch()`
