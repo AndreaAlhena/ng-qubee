@@ -11,6 +11,7 @@ describe('JsonApiRequestStrategy', () => {
 
   const baseState: IQueryBuilderState = {
     baseUrl: '',
+    embedded: {},
     fields: {},
     filters: {},
     includes: [],
@@ -241,6 +242,7 @@ describe('JsonApiRequestStrategy', () => {
     it('should build a complete JSON:API query URI', () => {
       const state: IQueryBuilderState = {
         baseUrl: 'https://api.example.com',
+        embedded: {},
         fields: { articles: ['title', 'body'] },
         filters: { status: ['published'] },
         includes: [],
