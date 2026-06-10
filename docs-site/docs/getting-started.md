@@ -10,7 +10,7 @@ title: Getting Started
 - Easily retrieve URIs from a service
 - Pagination ready, with auto-sync from response to query state
 - Reactive — URIs emit through an RxJS Observable
-- Test-driven, 550+ specs covering every driver path
+- Test-driven, 650+ specs covering every driver path
 - **Multi-driver:** Django REST Framework, JSON:API, Laravel (pagination-only), Spatie Query Builder, NestJS (nestjs-paginate), @nestjsx/crud, PostgREST / Supabase, Sieve (.NET), Spring Data REST, Strapi
 
 ## Requirements
