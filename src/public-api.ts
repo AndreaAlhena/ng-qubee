@@ -50,6 +50,8 @@ export * from './lib/interfaces/sort.interface';
 export * from './lib/tokens/ng-qubee.tokens';
 
 // Strategies
+export * from './lib/strategies/drf-request.strategy';
+export * from './lib/strategies/drf-response.strategy';
 export * from './lib/strategies/json-api-request.strategy';
 export * from './lib/strategies/json-api-response.strategy';
 export * from './lib/strategies/laravel-request.strategy';
