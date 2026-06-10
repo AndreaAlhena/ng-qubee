@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **@nestjsx/crud driver** (`DriverEnum.NESTJSX_CRUD`) (#44): new driver targeting [@nestjsx/crud](https://github.com/nestjsx/crud) for NestJS.
+  - `NestjsxCrudRequestStrategy`: pipe-delimited repeatable filters (`filter=field||$eq||value` single, `filter=field||$in||v1,v2` multi-value), repeatable `sort=field,ASC` sorts (uppercase direction), flat `fields=col1,col2` selection, repeatable `join=relation` for related resources, page-based pagination (`page=N&limit=N`).
+  - `NestjsxCrudResponseStrategy`: parses the flat `{ data, count, total, page, pageCount }` getMany envelope; computes `from`/`to` from page × count. `count` is the on-page entity count, so derived indices can underestimate on a partial last page (documented).
+  - @nestjsx/crud driver supports `addFilter`/`deleteFilters`, `addFilterOperator`/`deleteOperatorFilters`, `addSort`/`deleteSorts`, `addSelect`/`deleteSelect` (mapped to `fields`), `addIncludes`/`deleteIncludes` (mapped to `join`), `setLimit`/`setPage` + their delete counterparts. `addFields` and `setSearch` throw the matching `Unsupported*Error` (no per-model field selection; the `s={...}` search parameter is JSON-shaped, not a plain term).
+- **@nestjsx/crud `FilterOperatorEnum` mapping** (#44): `EQ`/`GT`/`GTE`/`LT`/`LTE`/`IN` map identically; `CONTAINS`→`$cont`, `ILIKE`→`$contL`, `SW`→`$starts`, `BTW`→`$between` (arity-checked, emits `min,max`), `NOT`→`$ne` (single) / `$notin` (multi), `NULL`→`$isnull`/`$notnull` (boolean dispatch, no value segment). PostgREST-only `FTS`/`PHFTS`/`PLFTS`/`WFTS` throw `UnsupportedFilterOperatorError`.
+- **`NestjsxCrudResponseOptions`** (new class) (#44): pre-configured key mapping for the getMany envelope (`currentPage → 'page'`, `lastPage → 'pageCount'`, `perPage → 'count'`, `total → 'total'`); all paths overridable via `IPaginationConfig`.
+
+### Changed
+- **`package.json` `keywords`** expanded with `crud` and `nestjsx-crud` to surface the new driver on npm. List remains alphabetised.
+
 ### Fixed
 - **DRF strategies exported from the public API** (#72): `DrfRequestStrategy` and `DrfResponseStrategy` were missing from `public-api.ts` — every other driver's strategy pair was exported. Consumers can now import both directly from `ng-qubee`.
 

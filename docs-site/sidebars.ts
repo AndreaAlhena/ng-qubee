@@ -22,7 +22,8 @@ const sidebars: SidebarsConfig = {
         'drivers/nestjs',
         'drivers/postgrest',
         'drivers/strapi',
-        'drivers/drf'
+        'drivers/drf',
+        'drivers/nestjsx-crud'
       ]
     },
     'fetching-data',

@@ -5,13 +5,13 @@ title: Getting Started
 
 # Getting Started
 
-`ng-qubee` is a query builder for Angular. It composes API request URIs (filters, sorts, pagination, column selection) and parses paginated responses, with a pluggable driver system that targets seven backends today and is built to grow.
+`ng-qubee` is a query builder for Angular. It composes API request URIs (filters, sorts, pagination, column selection) and parses paginated responses, with a pluggable driver system that targets eight backends today and is built to grow.
 
 - Easily retrieve URIs from a service
 - Pagination ready, with auto-sync from response to query state
 - Reactive — URIs emit through an RxJS Observable
 - Test-driven, 550+ specs covering every driver path
-- **Multi-driver:** Django REST Framework, JSON:API, Laravel (pagination-only), Spatie Query Builder, NestJS (nestjs-paginate), PostgREST / Supabase, Strapi
+- **Multi-driver:** Django REST Framework, JSON:API, Laravel (pagination-only), Spatie Query Builder, NestJS (nestjs-paginate), @nestjsx/crud, PostgREST / Supabase, Strapi
 
 ## Requirements
 
@@ -86,7 +86,7 @@ The exact URI shape depends on the driver. See the [Drivers](./drivers/json-api.
 
 ## Pick a driver
 
-Seven drivers ship out of the box:
+Eight drivers ship out of the box:
 
 | Driver | Best for |
 |---|---|
@@ -97,6 +97,7 @@ Seven drivers ship out of the box:
 | [**PostgREST**](./drivers/postgrest.md) | [PostgREST](https://postgrest.org/) and [Supabase](https://supabase.com/) |
 | [**Strapi**](./drivers/strapi.md) | [Strapi](https://strapi.io/) v4 / v5 headless CMS |
 | [**DRF**](./drivers/drf.md) | [Django REST Framework](https://www.django-rest-framework.org/) + [django-filter](https://django-filter.readthedocs.io/) |
+| [**@nestjsx/crud**](./drivers/nestjsx-crud.md) | [@nestjsx/crud](https://github.com/nestjsx/crud) CRUD framework for NestJS |
 
 ## Next steps
 

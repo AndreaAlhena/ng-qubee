@@ -125,6 +125,36 @@ export class NestjsResponseOptions extends ResponseOptions {
 }
 
 /**
+ * Pre-configured ResponseOptions for the @nestjsx/crud driver
+ *
+ * The `getMany` envelope is flat: `{ data, count, total, page,
+ * pageCount }`. `perPage` defaults to the `count` field — the number of
+ * entities on the **current** page, which equals the requested limit on
+ * every page except a partial last one. The envelope carries no
+ * `from`/`to` indices and no navigation links, so those paths default to
+ * empty strings (the strategy derives `from`/`to` and leaves the URLs
+ * `undefined`); consumers can override any path via `IPaginationConfig`.
+ */
+export class NestjsxCrudResponseOptions extends ResponseOptions {
+    constructor(options: IPaginationConfig) {
+        super({
+            currentPage: options.currentPage || 'page',
+            data: options.data || 'data',
+            firstPageUrl: options.firstPageUrl || '',
+            from: options.from || '',
+            lastPage: options.lastPage || 'pageCount',
+            lastPageUrl: options.lastPageUrl || '',
+            nextPageUrl: options.nextPageUrl || '',
+            path: options.path || '',
+            perPage: options.perPage || 'count',
+            prevPageUrl: options.prevPageUrl || '',
+            to: options.to || '',
+            total: options.total || 'total'
+        });
+    }
+}
+
+/**
  * Pre-configured ResponseOptions for the Strapi driver
  *
  * Uses dot-notation paths to access the nested `meta.pagination.*` envelope
