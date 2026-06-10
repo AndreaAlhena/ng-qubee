@@ -17,6 +17,7 @@
   "keywords": [
     "angular",
     "api",
+    "aspnetcore",
     "builder",
     "crud",
     "django",
@@ -34,6 +35,7 @@
     "query",
     "query-builder",
     "rxjs",
+    "sieve",
     "signals",
     "spatie",
     "spring",
