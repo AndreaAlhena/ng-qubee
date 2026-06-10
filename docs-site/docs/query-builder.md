@@ -53,13 +53,13 @@ qb.addFilter('id', 1, 2, 3);                // multi-value
 qb.deleteFilters('status');                  // remove
 ```
 
-Spatie / JSON:API: `filter[status]=active`. NestJS: `filter.status=active`. PostgREST: `status=eq.active` (single) or `status=in.(1,2,3)` (multi). Strapi: `filters[status][$eq]=active`. DRF: `status=active` (single) or `status__in=1,2,3` (multi).
+Spatie / JSON:API: `filter[status]=active`. NestJS: `filter.status=active`. PostgREST: `status=eq.active` (single) or `status=in.(1,2,3)` (multi). Strapi: `filters[status][$eq]=active`. DRF: `status=active` (single) or `status__in=1,2,3` (multi). @nestjsx/crud: `filter=status||$eq||active` (single) or `filter=status||$in||1,2,3` (multi).
 
 Triggers auto-reset.
 
 ### `addFilterOperator(field, operator, ...values)` / `deleteOperatorFilters(...fields)`
 
-Filters with explicit comparison operators. Supported by NestJS, PostgREST, Strapi, and DRF.
+Filters with explicit comparison operators. Supported by NestJS, @nestjsx/crud, PostgREST, Strapi, and DRF.
 
 ```typescript
 import { FilterOperatorEnum } from 'ng-qubee';
@@ -68,7 +68,7 @@ qb.addFilterOperator('age', FilterOperatorEnum.GTE, 18);
 qb.addFilterOperator('id', FilterOperatorEnum.IN, 1, 2, 3);
 ```
 
-The full operator list: `EQ`, `NOT`, `NULL`, `IN`, `GT`, `GTE`, `LT`, `LTE`, `BTW`, `ILIKE`, `SW`, `CONTAINS`. PostgREST adds `FTS`, `PLFTS`, `PHFTS`, `WFTS`. Per-driver support varies — DRF rejects `NOT` (no generic negation in django-filter) and the `FTS` family (PostgREST-only); Strapi rejects only the `FTS` family. See each driver's page for detailed mappings: [NestJS](./drivers/nestjs.md#operator-filters), [PostgREST](./drivers/postgrest.md#operator-filters), [Strapi](./drivers/strapi.md#operator-filters), [DRF](./drivers/drf.md#operator-filters).
+The full operator list: `EQ`, `NOT`, `NULL`, `IN`, `GT`, `GTE`, `LT`, `LTE`, `BTW`, `ILIKE`, `SW`, `CONTAINS`. PostgREST adds `FTS`, `PLFTS`, `PHFTS`, `WFTS`. Per-driver support varies — DRF rejects `NOT` (no generic negation in django-filter) and the `FTS` family (PostgREST-only); Strapi and @nestjsx/crud reject only the `FTS` family. See each driver's page for detailed mappings: [NestJS](./drivers/nestjs.md#operator-filters), [@nestjsx/crud](./drivers/nestjsx-crud.md#operator-filters), [PostgREST](./drivers/postgrest.md#operator-filters), [Strapi](./drivers/strapi.md#operator-filters), [DRF](./drivers/drf.md#operator-filters).
 
 Triggers auto-reset.
 
@@ -84,13 +84,13 @@ qb.addSort('name', SortEnum.ASC);
 qb.deleteSorts('created_at');
 ```
 
-Spatie / JSON:API: `sort=-created_at,name`. NestJS: `sortBy=created_at:DESC,name:ASC`. PostgREST: `order=created_at.desc,name.asc`. Strapi: `sort[0]=created_at:desc&sort[1]=name:asc`. DRF: `ordering=-created_at,name`.
+Spatie / JSON:API: `sort=-created_at,name`. NestJS: `sortBy=created_at:DESC,name:ASC`. PostgREST: `order=created_at.desc,name.asc`. Strapi: `sort[0]=created_at:desc&sort[1]=name:asc`. DRF: `ordering=-created_at,name`. @nestjsx/crud: `sort=created_at,DESC&sort=name,ASC`.
 
 Triggers auto-reset.
 
 ## Column selection
 
-### `addSelect(...fields)` / `deleteSelect(...fields)` — NestJS / PostgREST / Strapi
+### `addSelect(...fields)` / `deleteSelect(...fields)` — NestJS / @nestjsx/crud / PostgREST / Strapi
 
 Flat column list:
 
@@ -112,7 +112,7 @@ qb.deleteFieldsByModel('users', 'email');
 
 Does **not** trigger auto-reset.
 
-## Includes — JSON:API / Spatie / Strapi
+## Includes — JSON:API / Spatie / Strapi / @nestjsx/crud
 
 ### `addIncludes(...models)` / `deleteIncludes(...models)`
 
