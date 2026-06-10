@@ -13,6 +13,7 @@ describe('StrapiRequestStrategy', () => {
 
   const baseState: IQueryBuilderState = {
     baseUrl: '',
+    embedded: {},
     fields: {},
     filters: {},
     includes: [],
@@ -285,6 +286,7 @@ describe('StrapiRequestStrategy', () => {
   describe('capabilities', () => {
     it('declares the Strapi feature matrix', () => {
       expect(strategy.capabilities).toEqual({
+        embedded: false,
         fields: false,
         filters: true,
         includes: true,

@@ -49,6 +49,7 @@ qb.setResource('users')
 | `addSelect` / `deleteSelect` | ✗ | No standard projection parameter (Spring's `projection` is excerpt-based, not a column list) |
 | `addFields` / `deleteFields` / `deleteFieldsByModel` | ✗ | No per-model field selection |
 | `addIncludes` / `deleteIncludes` | ✗ | Associations are navigated via HAL links, not query params |
+| `addEmbedded` / `deleteEmbedded` | ✗ | PostgREST-only — throws `UnsupportedEmbeddedError` |
 | `setSearch` / `deleteSearch` | ✗ | No standard search parameter |
 
 ## Response shape (HAL)

@@ -93,6 +93,7 @@ qb.addFilterOperator('rating', FilterOperatorEnum.GTE, 4);
 | `addSort` / `deleteSorts` | ✓ | Array notation `sort[N]=field:dir` |
 | `addSelect` / `deleteSelect` | ✓ | Emitted as `fields[N]=col` (Strapi reuses the `fields` key for flat projection) |
 | `addIncludes` / `deleteIncludes` | ✓ | Emitted as `populate[N]=relation` |
+| `addEmbedded` / `deleteEmbedded` | ✗ | PostgREST-only — throws `UnsupportedEmbeddedError` |
 | `setLimit` / `setPage` | ✓ | `pageSize` mirrors `limit`; page-based mode only |
 | `addFields` / `deleteFields` / `deleteFieldsByModel` | ✗ | Strapi has no per-model field selection on the main query path |
 | `setSearch` / `deleteSearch` | ✗ | Use `addFilterOperator(col, FilterOperatorEnum.CONTAINS, term)` (or `ILIKE` for case-insensitive) |

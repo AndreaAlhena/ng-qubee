@@ -24,6 +24,7 @@ export * from './lib/errors/invalid-resource-name.error';
 export * from './lib/errors/key-not-found.error';
 export * from './lib/errors/pagination-not-synced.error';
 export * from './lib/errors/unselectable-model.error';
+export * from './lib/errors/unsupported-embedded.error';
 export * from './lib/errors/unsupported-field-selection.error';
 export * from './lib/errors/unsupported-filter.error';
 export * from './lib/errors/unsupported-filter-operator.error';
@@ -50,6 +51,9 @@ export * from './lib/interfaces/sort.interface';
 
 // Injection tokens
 export * from './lib/tokens/ng-qubee.tokens';
+
+// Types
+export * from './lib/types/embedded.type';
 
 // Strategies
 export * from './lib/strategies/drf-request.strategy';

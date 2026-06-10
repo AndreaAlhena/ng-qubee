@@ -86,6 +86,7 @@ Other operators leave shape validation to the server.
 | `addSelect` / `deleteSelect` | ✗ | Sieve has no column-projection parameter |
 | `addFields` / `deleteFields` / `deleteFieldsByModel` | ✗ | No per-model field selection |
 | `addIncludes` / `deleteIncludes` | ✗ | No relation-loading parameter |
+| `addEmbedded` / `deleteEmbedded` | ✗ | PostgREST-only — throws `UnsupportedEmbeddedError` |
 | `setSearch` / `deleteSearch` | ✗ | No global search — use `CONTAINS` / `ILIKE` operator filters for partial matches |
 
 ## Response shape

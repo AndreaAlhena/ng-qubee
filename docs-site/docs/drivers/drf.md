@@ -93,6 +93,7 @@ qb.addFilterOperator('status', FilterOperatorEnum.NULL, false);
 | `setLimit` / `setPage` | ✓ | `page_size` mirrors `limit` |
 | `addFields` / `deleteFields` / `deleteFieldsByModel` | ✗ | DRF has no first-class per-model fields (`django-restql` exists but is not core) |
 | `addIncludes` / `deleteIncludes` | ✗ | DRF has no first-class relation includes |
+| `addEmbedded` / `deleteEmbedded` | ✗ | PostgREST-only — throws `UnsupportedEmbeddedError` |
 | `addSelect` / `deleteSelect` | ✗ | DRF has no flat column-list select |
 
 ## Response shape

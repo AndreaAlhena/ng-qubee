@@ -10,6 +10,7 @@ describe('SpringRequestStrategy', () => {
 
   const baseState: IQueryBuilderState = {
     baseUrl: '',
+    embedded: {},
     fields: {},
     filters: {},
     includes: [],
@@ -46,6 +47,7 @@ describe('SpringRequestStrategy', () => {
   describe('capabilities', () => {
     it('should declare sort-only capabilities', () => {
       expect(strategy.capabilities).toEqual({
+        embedded: false,
         fields: false,
         filters: false,
         includes: false,

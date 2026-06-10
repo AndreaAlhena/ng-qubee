@@ -11,6 +11,7 @@ describe('SpatieRequestStrategy', () => {
 
   const baseState: IQueryBuilderState = {
     baseUrl: '',
+    embedded: {},
     fields: {},
     filters: {},
     includes: [],
@@ -233,6 +234,7 @@ describe('SpatieRequestStrategy', () => {
     it('should build a complete Spatie query URI', () => {
       const state: IQueryBuilderState = {
         baseUrl: 'https://api.example.com',
+        embedded: {},
         fields: { users: ['id', 'email'] },
         filters: { status: ['active'] },
         includes: [],

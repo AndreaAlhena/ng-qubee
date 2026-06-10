@@ -17,6 +17,7 @@ export class LaravelRequestStrategy extends AbstractRequestStrategy {
    * Pagination-only driver — no filtering, sorting, or column selection
    */
   public readonly capabilities: IStrategyCapabilities = {
+    embedded: false,
     fields: false,
     filters: false,
     includes: false,

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **PostgREST embedded resources** (#66): new fluent methods `addEmbedded(relation, ...columns)` / `deleteEmbedded(...relations)` on `NgQubeeService`, exposing PostgREST's idiomatic join mechanism (`select=col,rel(col1,col2)`).
+  - Embedded fragments are **spliced into the single `select=` query parameter** alongside flat columns from `addSelect` — never emitted as a second `select`. With embedded relations but no flat select, the flat part defaults to `*` so the base row's columns stay in the projection (`select=*,author(*)`).
+  - `addEmbedded('author')` with no columns emits `author(*)`; repeated calls for the same relation merge-dedup the columns; `deleteEmbedded` removes the whole relation entry; `reset()` clears the map. Neither method resets the page (column shape change, not record-set change).
+  - `IQueryBuilderState` gains an `embedded` field (new public `Embedded` type, `{ [relation: string]: string[] }`), and `IStrategyCapabilities` gains an `embedded` flag — `true` only on the PostgREST strategy. All other drivers throw the new public `UnsupportedEmbeddedError`.
+  - Out of scope (per issue): nested embedding (`author(posts(*))`), filtering on embedded columns, ordering by embedded columns.
+
 ### Fixed
 - **Options classes exported from the public API** (#73): `QueryBuilderOptions`, `ResponseOptions`, and the driver-specific `ResponseOptions` subclasses (`DrfResponseOptions`, `JsonApiResponseOptions`, `NestjsResponseOptions`, `NestjsxCrudResponseOptions`, `SieveResponseOptions`, `SpringResponseOptions`, `StrapiResponseOptions`) were documented as public but never exported from `public-api.ts`. The exported `NG_QUBEE_REQUEST_OPTIONS` / `NG_QUBEE_RESPONSE_OPTIONS` tokens can now be typed by consumers without deep imports.
 

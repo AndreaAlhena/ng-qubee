@@ -45,7 +45,7 @@ A driver **must** be specified in the configuration:
 | **Spatie** | [Spatie Laravel Query Builder](https://spatie.be/docs/laravel-query-builder) | `filter[field]=value`, `sort=-field` |
 | **NestJS** | [`nestjs-paginate`](https://github.com/ppetzold/nestjs-paginate) | `filter.field=$op:value`, `sortBy=field:DESC` |
 | **@nestjsx/crud** | [@nestjsx/crud](https://github.com/nestjsx/crud) for NestJS | `filter=field\|\|$eq\|\|value`, `sort=field,ASC`, `join=relation`, `page=N&limit=N` |
-| **PostgREST** | [PostgREST](https://postgrest.org/) / [Supabase](https://supabase.com/) | `col=eq.value`, `order=col.asc`, `limit=N&offset=M` |
+| **PostgREST** | [PostgREST](https://postgrest.org/) / [Supabase](https://supabase.com/) | `col=eq.value`, `order=col.asc`, `select=col,rel(*)`, `limit=N&offset=M` |
 | **Sieve** | [Sieve](https://github.com/Biarity/Sieve) for ASP.NET Core | `filters=Field==Value,Other>=N`, `sorts=-field`, `page=N&pageSize=N` |
 | **Spring** | [Spring Data REST](https://spring.io/projects/spring-data-rest) (HAL) | `sort=field,asc` (repeatable), `page=N&size=N` (0-indexed page) |
 | **Strapi** | [Strapi](https://strapi.io/) v4 / v5 headless CMS | `filters[field][$eq]=value`, `sort[0]=field:asc`, `pagination[page]=N&pagination[pageSize]=N` |

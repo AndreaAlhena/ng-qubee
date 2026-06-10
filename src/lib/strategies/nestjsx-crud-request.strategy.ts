@@ -39,6 +39,7 @@ export class NestjsxCrudRequestStrategy extends AbstractRequestStrategy {
    * parameter is JSON-shaped, not a plain term)
    */
   public readonly capabilities: IStrategyCapabilities = {
+    embedded: false,
     fields: false,
     filters: true,
     includes: true,

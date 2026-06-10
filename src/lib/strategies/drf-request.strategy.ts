@@ -49,6 +49,7 @@ export class DrfRequestStrategy extends AbstractRequestStrategy {
    * select (django-restql adds it but is not core DRF)
    */
   public readonly capabilities: IStrategyCapabilities = {
+    embedded: false,
     fields: false,
     filters: true,
     includes: false,

@@ -26,6 +26,7 @@ bootstrapApplication(AppComponent, {
 | Operator filters | full `FilterOperatorEnum` mapping — see below |
 | Sort | `order=col1.asc,col2.desc` |
 | Flat select | `select=col1,col2` |
+| Embedded resources | `select=col1,rel(col1,col2)` — spliced into the same `select` param |
 | Pagination | `limit=15&offset=0` (offset omitted on page 1) |
 
 ## Operator filters
@@ -74,6 +75,28 @@ qb.addFilterOperator('description', FilterOperatorEnum.WFTS, 'a -b');   // descr
 | `WFTS` | `websearch_to_tsquery` | Google-like syntax (`-term`, `"phrase"`) |
 
 Language modifiers (`fts(english).term`) are not supported in this release.
+
+## Embedded resources
+
+PostgREST pulls related-table columns inline through the `select` query parameter — its idiomatic join mechanism, used heavily by Supabase. The driver exposes it via `addEmbedded(relation, ...columns)`:
+
+```typescript
+qb.addEmbedded('author', 'id', 'name')   // author(id,name)
+  .addEmbedded('comments')               // comments(*) — no columns = all columns
+  .addSelect('title');
+
+// → /articles?select=title,author(id,name),comments(*)&limit=15
+```
+
+The embedded fragments are **spliced into the single `select=` parameter** alongside flat columns from `addSelect` — never emitted as a second `select`. When you add embedded relations without any `addSelect` call, the flat part defaults to `*` so the base row's columns stay in the projection:
+
+```typescript
+qb.addEmbedded('author');   // → select=*,author(*)
+```
+
+Calling `addEmbedded` repeatedly with the same relation merge-dedups the columns. `deleteEmbedded('author')` removes the whole relation entry. Neither resets the page (column shape change, not record-set change). On every other driver both methods throw `UnsupportedEmbeddedError`.
+
+Out of scope for now: nested embedding (`author(posts(*))`), filtering on embedded columns (`author.country=eq.US`), and ordering by embedded columns.
 
 ## Reading totals from `Content-Range`
 
@@ -126,7 +149,8 @@ this._http.get<User[]>(uri, {
 | `addFilterOperator` / `deleteOperatorFilters` | ✓ | All 16 operators including `FTS`/`PLFTS`/`PHFTS`/`WFTS` |
 | `addSort` / `deleteSorts` | ✓ | Emits `order=col.asc,col.desc` |
 | `addSelect` / `deleteSelect` | ✓ | Flat column selection |
+| `addEmbedded` / `deleteEmbedded` | ✓ | Embedded resources spliced into `select` — see above |
 | `setLimit` / `setPage` | ✓ | `offset` derived from `page` (QUERY) or `Range` header (RANGE) |
 | `addFields` / `deleteFields` / `deleteFieldsByModel` | ✗ | Use `addSelect` for column projection |
-| `addIncludes` / `deleteIncludes` | ✗ | Embedded resources via `select=col,rel(*)` tracked as #66 |
+| `addIncludes` / `deleteIncludes` | ✗ | Use `addEmbedded` — PostgREST has no standalone `include` param |
 | `setSearch` / `deleteSearch` | ✗ | Use `addFilterOperator(col, FilterOperatorEnum.FTS, term)` instead |
