@@ -7,9 +7,11 @@ import { IFilters } from '../interfaces/filters.interface';
 import { IOperatorFilter } from '../interfaces/operator-filter.interface';
 import { IQueryBuilderState } from '../interfaces/query-builder-state.interface';
 import { ISort } from '../interfaces/sort.interface';
+import { Embedded } from '../types/embedded.type';
 
 const INITIAL_STATE: IQueryBuilderState = {
   baseUrl: '',
+  embedded: {},
   fields: {},
   filters: {},
   includes: [],
@@ -140,6 +142,40 @@ export class NestService {
     if (!resource || typeof resource !== 'string' || resource.trim().length === 0) {
       throw new InvalidResourceNameError(resource);
     }
+  }
+
+  /**
+   * Add embedded-resource selections to the request (PostgREST only)
+   * Automatically prevents duplicate columns for each relation
+   *
+   * An empty column array means "all columns" (`relation(*)`); merging an
+   * empty array into a relation that already has explicit columns keeps
+   * the explicit columns.
+   *
+   * @param {Embedded} embedded - Object mapping relation names to arrays of columns to project
+   * @return {void}
+   * @example
+   * service.addEmbedded({ author: ['id', 'name'] });
+   * service.addEmbedded({ comments: [] });
+   */
+  public addEmbedded(embedded: Embedded): void {
+    this._nest.update(nest => {
+      const mergedEmbedded = { ...nest.embedded };
+
+      Object.keys(embedded).forEach(relation => {
+        const existingColumns = mergedEmbedded[relation] || [];
+        const newColumns = embedded[relation];
+
+        // Use Set to prevent duplicates
+        const uniqueColumns = Array.from(new Set([...existingColumns, ...newColumns]));
+        mergedEmbedded[relation] = uniqueColumns;
+      });
+
+      return {
+        ...nest,
+        embedded: mergedEmbedded
+      };
+    });
   }
 
   /**
@@ -295,6 +331,29 @@ export class NestService {
     this._nest.update(nest => ({
       ...nest,
       sorts: [...nest.sorts, sort]
+    }));
+  }
+
+  /**
+   * Remove embedded-resource relations from the state (PostgREST only)
+   *
+   * Removes the whole relation entry, columns included.
+   *
+   * @param {...string[]} relations - Relation names to remove
+   * @return {void}
+   * @example
+   * service.deleteEmbedded('author');
+   * service.deleteEmbedded('comments', 'tags');
+   */
+  public deleteEmbedded(...relations: string[]): void {
+    // Deep clone the embedded object to prevent mutations
+    const e = this._clone(this._nest().embedded);
+
+    relations.forEach(relation => delete e[relation]);
+
+    this._nest.update(nest => ({
+      ...nest,
+      embedded: e
     }));
   }
 
