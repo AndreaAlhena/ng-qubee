@@ -3,7 +3,7 @@ import { PaginationModeEnum } from '../enums/pagination-mode.enum';
 import { IPaginationConfig } from '../interfaces/pagination-config.interface';
 import { IRequestStrategy } from '../interfaces/request-strategy.interface';
 import { IResponseStrategy } from '../interfaces/response-strategy.interface';
-import { DrfResponseOptions, JsonApiResponseOptions, NestjsResponseOptions, ResponseOptions, StrapiResponseOptions } from '../models/response-options';
+import { DrfResponseOptions, JsonApiResponseOptions, NestjsResponseOptions, NestjsxCrudResponseOptions, ResponseOptions, StrapiResponseOptions } from '../models/response-options';
 import { DrfRequestStrategy } from '../strategies/drf-request.strategy';
 import { DrfResponseStrategy } from '../strategies/drf-response.strategy';
 import { JsonApiRequestStrategy } from '../strategies/json-api-request.strategy';
@@ -12,6 +12,8 @@ import { LaravelRequestStrategy } from '../strategies/laravel-request.strategy';
 import { LaravelResponseStrategy } from '../strategies/laravel-response.strategy';
 import { NestjsRequestStrategy } from '../strategies/nestjs-request.strategy';
 import { NestjsResponseStrategy } from '../strategies/nestjs-response.strategy';
+import { NestjsxCrudRequestStrategy } from '../strategies/nestjsx-crud-request.strategy';
+import { NestjsxCrudResponseStrategy } from '../strategies/nestjsx-crud-response.strategy';
 import { PostgrestRequestStrategy } from '../strategies/postgrest-request.strategy';
 import { PostgrestResponseStrategy } from '../strategies/postgrest-response.strategy';
 import { SpatieRequestStrategy } from '../strategies/spatie-request.strategy';
@@ -92,6 +94,12 @@ export const DRIVERS: Record<DriverEnum, IDriverDefinition> = {
     createRequestStrategy: () => new NestjsRequestStrategy(),
     createResponseStrategy: () => new NestjsResponseStrategy(),
     createResponseOptions: (config) => new NestjsResponseOptions(config)
+  },
+
+  [DriverEnum.NESTJSX_CRUD]: {
+    createRequestStrategy: () => new NestjsxCrudRequestStrategy(),
+    createResponseStrategy: () => new NestjsxCrudResponseStrategy(),
+    createResponseOptions: (config) => new NestjsxCrudResponseOptions(config)
   },
 
   [DriverEnum.POSTGREST]: {
