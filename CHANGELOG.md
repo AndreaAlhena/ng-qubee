@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **DRF strategies exported from the public API** (#72): `DrfRequestStrategy` and `DrfResponseStrategy` were missing from `public-api.ts` — every other driver's strategy pair was exported. Consumers can now import both directly from `ng-qubee`.
+
 ## [3.5.0] - 2026-05-15
 
 ### Added
