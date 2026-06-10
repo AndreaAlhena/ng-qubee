@@ -39,7 +39,7 @@ Pagination position.
 qb.setLimit(25).setPage(2);   // 25 items, page 2
 ```
 
-`setLimit` triggers auto-reset of `page`. `setPage` of course does not. NestJS additionally accepts `setLimit(-1)` as the [fetch-all sentinel](./drivers/nestjs.md#fetch-all).
+`setLimit` triggers auto-reset of `page`. `setPage` of course does not. NestJS additionally accepts `setLimit(-1)` as the [fetch-all sentinel](./drivers/nestjs.md#fetch-all). Spring emits `page` [0-indexed on the wire](./drivers/spring.md) — your state stays 1-indexed.
 
 ## Filters
 
@@ -84,7 +84,7 @@ qb.addSort('name', SortEnum.ASC);
 qb.deleteSorts('created_at');
 ```
 
-Spatie / JSON:API: `sort=-created_at,name`. NestJS: `sortBy=created_at:DESC,name:ASC`. PostgREST: `order=created_at.desc,name.asc`. Strapi: `sort[0]=created_at:desc&sort[1]=name:asc`. DRF: `ordering=-created_at,name`. @nestjsx/crud: `sort=created_at,DESC&sort=name,ASC`.
+Spatie / JSON:API: `sort=-created_at,name`. NestJS: `sortBy=created_at:DESC,name:ASC`. PostgREST: `order=created_at.desc,name.asc`. Strapi: `sort[0]=created_at:desc&sort[1]=name:asc`. DRF: `ordering=-created_at,name`. @nestjsx/crud: `sort=created_at,DESC&sort=name,ASC`. Spring: `sort=created_at,desc&sort=name,asc`.
 
 Triggers auto-reset.
 
