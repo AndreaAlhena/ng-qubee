@@ -83,6 +83,7 @@ Other operators leave shape validation to the server.
 | `addSort` / `deleteSorts` | ✓ | Repeatable `sort=field,ASC` params, uppercase direction |
 | `addSelect` / `deleteSelect` | ✓ | Emitted as `fields=col1,col2` (flat column projection) |
 | `addIncludes` / `deleteIncludes` | ✓ | Emitted as repeatable `join=relation` params |
+| `addEmbedded` / `deleteEmbedded` | ✗ | PostgREST-only — throws `UnsupportedEmbeddedError` |
 | `setLimit` / `setPage` | ✓ | `page` + `limit`, page-based mode |
 | `addFields` / `deleteFields` / `deleteFieldsByModel` | ✗ | @nestjsx/crud has no per-model field selection (per-relation projection via `join=rel\|\|f1,f2` is out of scope) |
 | `setSearch` / `deleteSearch` | ✗ | The `s={...}` parameter is JSON-shaped, not a plain term — use operator filters instead |
