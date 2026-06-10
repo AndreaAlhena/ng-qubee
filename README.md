@@ -13,7 +13,7 @@ NgQubee is a query builder for Angular. Compose your API requests without re-inv
 
 - Reactive — URIs emitted as RxJS observables, state held in Angular Signals
 - Pagination ready — typed `PaginatedCollection`, fluent navigation (`nextPage`, `lastPage`, `goToPage`)
-- Test-driven — 550+ specs
+- Test-driven — 650+ specs
 - **Multi-driver support**: Django REST Framework, JSON:API, Laravel (pagination-only), Spatie Query Builder, NestJS (`nestjs-paginate`), @nestjsx/crud, PostgREST / Supabase, Sieve (.NET), Spring Data REST, and Strapi
 
 ## 📚 Documentation
