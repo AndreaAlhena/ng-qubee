@@ -13,6 +13,7 @@ describe('PostgrestRequestStrategy', () => {
 
   const baseState: IQueryBuilderState = {
     baseUrl: '',
+    embedded: {},
     fields: {},
     filters: {},
     includes: [],
@@ -347,6 +348,55 @@ describe('PostgrestRequestStrategy', () => {
     });
 
     it('should skip select when empty', () => {
+      const uri = strategy.buildUri(baseState, options);
+
+      expect(uri).not.toContain('select=');
+    });
+  });
+
+  describe('embedded resources', () => {
+    it('should splice an embedded relation with columns into the select param', () => {
+      const state = {
+        ...baseState,
+        embedded: { author: ['id', 'name'] },
+        select: ['title']
+      };
+      const uri = strategy.buildUri(state, options);
+
+      expect(uri).toContain('select=title,author(id,name)');
+    });
+
+    it('should emit relation(*) for an embedded relation without columns', () => {
+      const state = {
+        ...baseState,
+        embedded: { comments: [] },
+        select: ['title']
+      };
+      const uri = strategy.buildUri(state, options);
+
+      expect(uri).toContain('select=title,comments(*)');
+    });
+
+    it('should default the flat part to * when only embedded relations are set', () => {
+      const state = { ...baseState, embedded: { author: ['id', 'name'] } };
+      const uri = strategy.buildUri(state, options);
+
+      expect(uri).toContain('select=*,author(id,name)');
+    });
+
+    it('should emit one select param holding multiple embedded relations', () => {
+      const state = {
+        ...baseState,
+        embedded: { author: ['id', 'name'], comments: ['body'] },
+        select: ['title']
+      };
+      const uri = strategy.buildUri(state, options);
+
+      expect(uri).toContain('select=title,author(id,name),comments(body)');
+      expect(uri.match(/select=/g)).toHaveSize(1);
+    });
+
+    it('should not emit select when neither flat columns nor embedded relations are set', () => {
       const uri = strategy.buildUri(baseState, options);
 
       expect(uri).not.toContain('select=');
