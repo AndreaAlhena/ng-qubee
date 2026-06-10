@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.6.0] - 2026-06-10
+
 ### Added
 - **@nestjsx/crud driver** (`DriverEnum.NESTJSX_CRUD`) (#44): new driver targeting [@nestjsx/crud](https://github.com/nestjsx/crud) for NestJS.
   - `NestjsxCrudRequestStrategy`: pipe-delimited repeatable filters (`filter=field||$eq||value` single, `filter=field||$in||v1,v2` multi-value), repeatable `sort=field,ASC` sorts (uppercase direction), flat `fields=col1,col2` selection, repeatable `join=relation` for related resources, page-based pagination (`page=N&limit=N`).
