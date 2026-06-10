@@ -21,8 +21,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - First **sort-only** driver: `addSort`/`deleteSorts` and `setLimit`/`setPage` are supported; `addFilter`, `addFilterOperator`, `addSelect`, `addFields`, `addIncludes`, and `setSearch` all throw the matching `Unsupported*Error` (Spring Data REST defines no standard wire convention for these — they are custom query methods / Specifications server-side).
 - **`SpringResponseOptions`** (new class) (#45): pre-configured dot-path mapping for the HAL envelope (`currentPage → 'page.number'`, `total → 'page.totalElements'`, `lastPage → 'page.totalPages'`, `perPage → 'page.size'`, `data → '_embedded'`, links → `_links.*.href`); all paths overridable via `IPaginationConfig`.
 
+- **Sieve driver** (`DriverEnum.SIEVE`) (#46): new driver targeting [Sieve](https://github.com/Biarity/Sieve) for ASP.NET Core.
+  - `SieveRequestStrategy`: single `filters=` parameter holding comma-joined (AND) `Field{op}Value` expression terms — simple single-value filters fold to `==`, multi-value filters fold to a value-level pipe OR (`status==active|pending`); `sorts=field,-other` CSV with `-` prefix for DESC; page-based pagination (`page=N&pageSize=N`).
+  - `SieveResponseStrategy`: Sieve defines no response envelope (it returns an `IQueryable` the developer wraps), so the strategy ships sensible defaults for the common hand-rolled `PagedResult<T>` shape `{ data, page, pageSize, total, totalPages }`, with every key path configurable via `IConfig.response` (dot notation supported).
+  - Sieve driver supports `addFilter`/`deleteFilters`, `addFilterOperator`/`deleteOperatorFilters`, `addSort`/`deleteSorts`, `setLimit`/`setPage` + their delete counterparts. `addFields`, `addIncludes`, `addSelect`, and `setSearch` throw the matching `Unsupported*Error` (Sieve has no projection, relation-loading, or global-search parameters; use `CONTAINS`/`ILIKE` operator filters for partial matches).
+- **Sieve `FilterOperatorEnum` mapping** (#46): `EQ`→`==`, `GT`/`GTE`/`LT`/`LTE`→`>`/`>=`/`<`/`<=`, `CONTAINS`→`@=`, `ILIKE`→`@=*`, `SW`→`_=`, `IN`→`==` with value-level pipe OR, `BTW`→two AND-ed terms `field>=min,field<=max` (arity-checked), `NOT`→one `!=` term per value (AND-ed), `NULL`→`==null`/`!=null` (boolean dispatch). PostgREST-only `FTS`/`PHFTS`/`PLFTS`/`WFTS` throw `UnsupportedFilterOperatorError`.
+- **`SieveResponseOptions`** (new class) (#46): pre-configured key mapping for the default `PagedResult<T>` shape (`currentPage → 'page'`, `perPage → 'pageSize'`, `lastPage → 'totalPages'`, `total → 'total'`); all paths overridable via `IPaginationConfig`.
+
 ### Changed
-- **`package.json` `keywords`** expanded with `crud`, `nestjsx-crud` (#44) and `hal`, `spring`, `spring-data-rest` (#45) to surface the new drivers on npm. List remains alphabetised.
+- **`package.json` `keywords`** expanded with `crud`, `nestjsx-crud` (#44), `hal`, `spring`, `spring-data-rest` (#45), and `aspnetcore`, `sieve` (#46) to surface the new drivers on npm. List remains alphabetised.
 
 ### Fixed
 - **DRF strategies exported from the public API** (#72): `DrfRequestStrategy` and `DrfResponseStrategy` were missing from `public-api.ts` — every other driver's strategy pair was exported. Consumers can now import both directly from `ng-qubee`.
