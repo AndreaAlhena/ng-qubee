@@ -24,7 +24,8 @@ const sidebars: SidebarsConfig = {
         'drivers/strapi',
         'drivers/drf',
         'drivers/nestjsx-crud',
-        'drivers/spring'
+        'drivers/spring',
+        'drivers/sieve'
       ]
     },
     'fetching-data',
