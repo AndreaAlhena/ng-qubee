@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Options classes exported from the public API** (#73): `QueryBuilderOptions`, `ResponseOptions`, and the driver-specific `ResponseOptions` subclasses (`DrfResponseOptions`, `JsonApiResponseOptions`, `NestjsResponseOptions`, `NestjsxCrudResponseOptions`, `SieveResponseOptions`, `SpringResponseOptions`, `StrapiResponseOptions`) were documented as public but never exported from `public-api.ts`. The exported `NG_QUBEE_REQUEST_OPTIONS` / `NG_QUBEE_RESPONSE_OPTIONS` tokens can now be typed by consumers without deep imports.
+
 ## [3.6.0] - 2026-06-10
 
 ### Added
