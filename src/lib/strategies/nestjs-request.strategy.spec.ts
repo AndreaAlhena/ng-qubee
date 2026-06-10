@@ -11,6 +11,7 @@ describe('NestjsRequestStrategy', () => {
 
   const baseState: IQueryBuilderState = {
     baseUrl: '',
+    embedded: {},
     fields: {},
     filters: {},
     includes: [],
@@ -313,6 +314,7 @@ describe('NestjsRequestStrategy', () => {
     it('should build a complete NestJS query URI', () => {
       const state: IQueryBuilderState = {
         baseUrl: 'https://api.example.com',
+        embedded: {},
         fields: {},
         filters: { status: ['active'] },
         includes: [],
