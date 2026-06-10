@@ -5,6 +5,7 @@ import { DriverEnum } from '../enums/driver.enum';
 import { FilterOperatorEnum } from '../enums/filter-operator.enum';
 import { SortEnum } from '../enums/sort.enum';
 import { UnselectableModelError } from '../errors/unselectable-model.error';
+import { UnsupportedEmbeddedError } from '../errors/unsupported-embedded.error';
 import { UnsupportedFieldSelectionError } from '../errors/unsupported-field-selection.error';
 import { UnsupportedFilterError } from '../errors/unsupported-filter.error';
 import { UnsupportedFilterOperatorError } from '../errors/unsupported-filter-operator.error';
@@ -390,6 +391,16 @@ describe('NgQubeeService driver validation (Spatie)', () => {
 
   it('should delegate setLimit validation to the active strategy (rejects -1 for Spatie)', () => {
     expect(() => service.setLimit(-1)).toThrowError(InvalidLimitError);
+  });
+
+  it('should throw UnsupportedEmbeddedError when calling addEmbedded', () => {
+    expect(() => service.addEmbedded('author', 'id'))
+      .toThrowError(UnsupportedEmbeddedError);
+  });
+
+  it('should throw UnsupportedEmbeddedError when calling deleteEmbedded', () => {
+    expect(() => service.deleteEmbedded('author'))
+      .toThrowError(UnsupportedEmbeddedError);
   });
 });
 
@@ -1057,6 +1068,15 @@ describe('NgQubeeService driver validation (PostgREST)', () => {
     expect(() => service.deleteSelect('id')).not.toThrow();
   });
 
+  it('should accept addEmbedded', () => {
+    expect(() => service.addEmbedded('author', 'id', 'name')).not.toThrow();
+  });
+
+  it('should accept deleteEmbedded', () => {
+    service.addEmbedded('author', 'id', 'name');
+    expect(() => service.deleteEmbedded('author')).not.toThrow();
+  });
+
   // Unsupported: fields, includes, operator filters, search
   it('should throw UnsupportedFieldSelectionError when calling addFields', () => {
     expect(() => service.addFields('users', ['id']))
@@ -1113,6 +1133,46 @@ describe('NgQubeeService driver validation (PostgREST)', () => {
       expect(uri).toContain('status=eq.active');
       expect(uri).toContain('order=created_at.desc');
       expect(uri).toContain('limit=15');
+      done();
+    });
+  });
+
+  it('should splice embedded relations into the select param end-to-end', (done: DoneFn) => {
+    service.setResource('articles');
+    service
+      .addEmbedded('author', 'id', 'name')
+      .addEmbedded('comments')
+      .addSelect('title');
+
+    service.generateUri().subscribe(uri => {
+      expect(uri).toContain('select=title,author(id,name),comments(*)');
+      done();
+    });
+  });
+
+  it('should merge-dedup columns when addEmbedded is called repeatedly for the same relation', (done: DoneFn) => {
+    service.setResource('articles');
+    service
+      .addEmbedded('author', 'id')
+      .addEmbedded('author', 'id', 'name')
+      .addSelect('title');
+
+    service.generateUri().subscribe(uri => {
+      expect(uri).toContain('select=title,author(id,name)');
+      done();
+    });
+  });
+
+  it('should drop a relation from the URI after deleteEmbedded', (done: DoneFn) => {
+    service.setResource('articles');
+    service
+      .addEmbedded('author', 'id', 'name')
+      .addSelect('title')
+      .deleteEmbedded('author');
+
+    service.generateUri().subscribe(uri => {
+      expect(uri).toContain('select=title');
+      expect(uri).not.toContain('author');
       done();
     });
   });
