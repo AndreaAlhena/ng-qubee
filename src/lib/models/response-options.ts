@@ -155,6 +155,37 @@ export class NestjsxCrudResponseOptions extends ResponseOptions {
 }
 
 /**
+ * Pre-configured ResponseOptions for the Sieve (.NET) driver
+ *
+ * Sieve defines no response envelope (it returns an `IQueryable` the
+ * developer wraps), so these defaults target the common hand-rolled
+ * `PagedResult<T>` shape: `{ data, page, pageSize, total, totalPages }`.
+ * Every path is overridable via `IPaginationConfig` — dot notation is
+ * supported, so nested wrappers (`meta.page`, `pagination.total`) map
+ * without subclassing. `from`/`to` default to empty paths and are
+ * derived; the navigation-URL slots resolve to `undefined` unless paths
+ * are provided.
+ */
+export class SieveResponseOptions extends ResponseOptions {
+    constructor(options: IPaginationConfig) {
+        super({
+            currentPage: options.currentPage || 'page',
+            data: options.data || 'data',
+            firstPageUrl: options.firstPageUrl || '',
+            from: options.from || '',
+            lastPage: options.lastPage || 'totalPages',
+            lastPageUrl: options.lastPageUrl || '',
+            nextPageUrl: options.nextPageUrl || '',
+            path: options.path || '',
+            perPage: options.perPage || 'pageSize',
+            prevPageUrl: options.prevPageUrl || '',
+            to: options.to || '',
+            total: options.total || 'total'
+        });
+    }
+}
+
+/**
  * Pre-configured ResponseOptions for the Spring Data REST driver
  *
  * Uses dot-notation paths into the HAL envelope: pagination metadata
