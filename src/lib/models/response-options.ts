@@ -155,6 +155,37 @@ export class NestjsxCrudResponseOptions extends ResponseOptions {
 }
 
 /**
+ * Pre-configured ResponseOptions for the Spring Data REST driver
+ *
+ * Uses dot-notation paths into the HAL envelope: pagination metadata
+ * lives under `page.*` and navigation links under `_links.*.href`.
+ * `currentPage` points at the **0-indexed** `page.number`; the strategy
+ * adds 1 when reading it. `data` defaults to plain `_embedded` because
+ * the collection key underneath is the resource rel name (e.g.
+ * `_embedded.users`) and cannot be known statically — the strategy picks
+ * the first array inside; pin an exact path via `IPaginationConfig` when
+ * needed. `from`/`to` default to empty paths and are derived.
+ */
+export class SpringResponseOptions extends ResponseOptions {
+    constructor(options: IPaginationConfig) {
+        super({
+            currentPage: options.currentPage || 'page.number',
+            data: options.data || '_embedded',
+            firstPageUrl: options.firstPageUrl || '_links.first.href',
+            from: options.from || '',
+            lastPage: options.lastPage || 'page.totalPages',
+            lastPageUrl: options.lastPageUrl || '_links.last.href',
+            nextPageUrl: options.nextPageUrl || '_links.next.href',
+            path: options.path || '',
+            perPage: options.perPage || 'page.size',
+            prevPageUrl: options.prevPageUrl || '_links.prev.href',
+            to: options.to || '',
+            total: options.total || 'page.totalElements'
+        });
+    }
+}
+
+/**
  * Pre-configured ResponseOptions for the Strapi driver
  *
  * Uses dot-notation paths to access the nested `meta.pagination.*` envelope

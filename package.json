@@ -22,6 +22,7 @@
     "django",
     "drf",
     "filter",
+    "hal",
     "headless-cms",
     "json-api",
     "laravel",
@@ -35,6 +36,8 @@
     "rxjs",
     "signals",
     "spatie",
+    "spring",
+    "spring-data-rest",
     "strapi",
     "supabase",
     "typescript"

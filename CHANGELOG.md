@@ -15,8 +15,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **@nestjsx/crud `FilterOperatorEnum` mapping** (#44): `EQ`/`GT`/`GTE`/`LT`/`LTE`/`IN` map identically; `CONTAINS`→`$cont`, `ILIKE`→`$contL`, `SW`→`$starts`, `BTW`→`$between` (arity-checked, emits `min,max`), `NOT`→`$ne` (single) / `$notin` (multi), `NULL`→`$isnull`/`$notnull` (boolean dispatch, no value segment). PostgREST-only `FTS`/`PHFTS`/`PLFTS`/`WFTS` throw `UnsupportedFilterOperatorError`.
 - **`NestjsxCrudResponseOptions`** (new class) (#44): pre-configured key mapping for the getMany envelope (`currentPage → 'page'`, `lastPage → 'pageCount'`, `perPage → 'count'`, `total → 'total'`); all paths overridable via `IPaginationConfig`.
 
+- **Spring Data REST driver** (`DriverEnum.SPRING`) (#45): new driver targeting [Spring Data REST](https://spring.io/projects/spring-data-rest) — the standard pagination/sorting convention in the Java/Spring Boot ecosystem.
+  - `SpringRequestStrategy`: repeatable `sort=field,asc` params (one occurrence per rule, lowercase direction), pagination as `page=N&size=N` with **0-indexed `page` on the wire** — library state stays 1-indexed and the strategy subtracts 1 at emission time.
+  - `SpringResponseStrategy`: parses the HAL envelope — `page.{size,totalElements,totalPages,number}` (converting the 0-indexed `number` back to a 1-indexed page), navigation URLs from `_links.*.href`, and the data array from `_embedded`. The collection key under `_embedded` is the resource rel name and cannot be known statically, so the strategy picks the first array inside `_embedded` by default; pin an exact path via `IConfig.response` (`data: '_embedded.users'`). Missing `_embedded` (empty result set) yields an empty array.
+  - First **sort-only** driver: `addSort`/`deleteSorts` and `setLimit`/`setPage` are supported; `addFilter`, `addFilterOperator`, `addSelect`, `addFields`, `addIncludes`, and `setSearch` all throw the matching `Unsupported*Error` (Spring Data REST defines no standard wire convention for these — they are custom query methods / Specifications server-side).
+- **`SpringResponseOptions`** (new class) (#45): pre-configured dot-path mapping for the HAL envelope (`currentPage → 'page.number'`, `total → 'page.totalElements'`, `lastPage → 'page.totalPages'`, `perPage → 'page.size'`, `data → '_embedded'`, links → `_links.*.href`); all paths overridable via `IPaginationConfig`.
+
 ### Changed
-- **`package.json` `keywords`** expanded with `crud` and `nestjsx-crud` to surface the new driver on npm. List remains alphabetised.
+- **`package.json` `keywords`** expanded with `crud`, `nestjsx-crud` (#44) and `hal`, `spring`, `spring-data-rest` (#45) to surface the new drivers on npm. List remains alphabetised.
 
 ### Fixed
 - **DRF strategies exported from the public API** (#72): `DrfRequestStrategy` and `DrfResponseStrategy` were missing from `public-api.ts` — every other driver's strategy pair was exported. Consumers can now import both directly from `ng-qubee`.
