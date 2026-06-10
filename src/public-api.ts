@@ -3,6 +3,8 @@
  */
 
 export * from './lib/models/paginated-collection';
+export * from './lib/models/query-builder-options';
+export * from './lib/models/response-options';
 export * from './lib/ng-qubee.module';
 export * from './lib/provide-ngqubee';
 export * from './lib/services/ng-qubee.service';
