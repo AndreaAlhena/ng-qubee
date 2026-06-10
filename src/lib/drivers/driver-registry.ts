@@ -3,7 +3,7 @@ import { PaginationModeEnum } from '../enums/pagination-mode.enum';
 import { IPaginationConfig } from '../interfaces/pagination-config.interface';
 import { IRequestStrategy } from '../interfaces/request-strategy.interface';
 import { IResponseStrategy } from '../interfaces/response-strategy.interface';
-import { DrfResponseOptions, JsonApiResponseOptions, NestjsResponseOptions, NestjsxCrudResponseOptions, ResponseOptions, SpringResponseOptions, StrapiResponseOptions } from '../models/response-options';
+import { DrfResponseOptions, JsonApiResponseOptions, NestjsResponseOptions, NestjsxCrudResponseOptions, ResponseOptions, SieveResponseOptions, SpringResponseOptions, StrapiResponseOptions } from '../models/response-options';
 import { DrfRequestStrategy } from '../strategies/drf-request.strategy';
 import { DrfResponseStrategy } from '../strategies/drf-response.strategy';
 import { JsonApiRequestStrategy } from '../strategies/json-api-request.strategy';
@@ -16,6 +16,8 @@ import { NestjsxCrudRequestStrategy } from '../strategies/nestjsx-crud-request.s
 import { NestjsxCrudResponseStrategy } from '../strategies/nestjsx-crud-response.strategy';
 import { PostgrestRequestStrategy } from '../strategies/postgrest-request.strategy';
 import { PostgrestResponseStrategy } from '../strategies/postgrest-response.strategy';
+import { SieveRequestStrategy } from '../strategies/sieve-request.strategy';
+import { SieveResponseStrategy } from '../strategies/sieve-response.strategy';
 import { SpatieRequestStrategy } from '../strategies/spatie-request.strategy';
 import { SpatieResponseStrategy } from '../strategies/spatie-response.strategy';
 import { SpringRequestStrategy } from '../strategies/spring-request.strategy';
@@ -108,6 +110,12 @@ export const DRIVERS: Record<DriverEnum, IDriverDefinition> = {
     createRequestStrategy: (mode) => new PostgrestRequestStrategy(mode),
     createResponseStrategy: () => new PostgrestResponseStrategy(),
     createResponseOptions: (config) => new ResponseOptions(config)
+  },
+
+  [DriverEnum.SIEVE]: {
+    createRequestStrategy: () => new SieveRequestStrategy(),
+    createResponseStrategy: () => new SieveResponseStrategy(),
+    createResponseOptions: (config) => new SieveResponseOptions(config)
   },
 
   [DriverEnum.SPATIE]: {
