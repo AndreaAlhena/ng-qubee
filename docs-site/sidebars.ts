@@ -28,7 +28,8 @@ const sidebars: SidebarsConfig = {
         'drivers/sieve',
         'drivers/odata',
         'drivers/directus',
-        'drivers/json-server'
+        'drivers/json-server',
+        'drivers/api-platform'
       ]
     },
     'fetching-data',

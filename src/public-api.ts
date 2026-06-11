@@ -56,6 +56,8 @@ export * from './lib/tokens/ng-qubee.tokens';
 export * from './lib/types/embedded.type';
 
 // Strategies
+export * from './lib/strategies/api-platform-request.strategy';
+export * from './lib/strategies/api-platform-response.strategy';
 export * from './lib/strategies/directus-request.strategy';
 export * from './lib/strategies/directus-response.strategy';
 export * from './lib/strategies/drf-request.strategy';
