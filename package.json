@@ -17,6 +17,7 @@
   "keywords": [
     "angular",
     "api",
+    "api-platform",
     "aspnetcore",
     "builder",
     "crud",
@@ -26,6 +27,7 @@
     "filter",
     "hal",
     "headless-cms",
+    "hydra",
     "json-api",
     "json-server",
     "laravel",
@@ -47,6 +49,7 @@
     "spring-data-rest",
     "strapi",
     "supabase",
+    "symfony",
     "typescript"
   ],
   "allowedNonPeerDependencies": [
