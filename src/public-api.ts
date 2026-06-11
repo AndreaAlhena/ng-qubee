@@ -62,6 +62,8 @@ export * from './lib/strategies/drf-request.strategy';
 export * from './lib/strategies/drf-response.strategy';
 export * from './lib/strategies/json-api-request.strategy';
 export * from './lib/strategies/json-api-response.strategy';
+export * from './lib/strategies/json-server-request.strategy';
+export * from './lib/strategies/json-server-response.strategy';
 export * from './lib/strategies/laravel-request.strategy';
 export * from './lib/strategies/laravel-response.strategy';
 export * from './lib/strategies/nestjs-request.strategy';
