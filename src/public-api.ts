@@ -76,6 +76,8 @@ export * from './lib/strategies/nestjsx-crud-request.strategy';
 export * from './lib/strategies/nestjsx-crud-response.strategy';
 export * from './lib/strategies/odata-request.strategy';
 export * from './lib/strategies/odata-response.strategy';
+export * from './lib/strategies/payload-request.strategy';
+export * from './lib/strategies/payload-response.strategy';
 export * from './lib/strategies/pocketbase-request.strategy';
 export * from './lib/strategies/pocketbase-response.strategy';
 export * from './lib/strategies/postgrest-request.strategy';
