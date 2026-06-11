@@ -26,7 +26,8 @@ const sidebars: SidebarsConfig = {
         'drivers/nestjsx-crud',
         'drivers/spring',
         'drivers/sieve',
-        'drivers/odata'
+        'drivers/odata',
+        'drivers/directus'
       ]
     },
     'fetching-data',
