@@ -155,6 +155,36 @@ export class NestjsxCrudResponseOptions extends ResponseOptions {
 }
 
 /**
+ * Pre-configured ResponseOptions for the OData v4 driver
+ *
+ * The OData collection envelope is `{ "@odata.count", "@odata.nextLink",
+ * "value" }` — flat keys that contain **literal dots**, so the strategy
+ * reads them with flat bracket access (never dot-path traversal). No body
+ * field names the current page, per-page, or last-page; the strategy
+ * derives those from the `@odata.nextLink` URL's `$skip` / `$top`
+ * params, so the corresponding key paths default to empty strings and
+ * are ignored.
+ */
+export class OdataResponseOptions extends ResponseOptions {
+    constructor(options: IPaginationConfig) {
+        super({
+            currentPage: options.currentPage || '',
+            data: options.data || 'value',
+            firstPageUrl: options.firstPageUrl || '',
+            from: options.from || '',
+            lastPage: options.lastPage || '',
+            lastPageUrl: options.lastPageUrl || '',
+            nextPageUrl: options.nextPageUrl || '@odata.nextLink',
+            path: options.path || '',
+            perPage: options.perPage || '',
+            prevPageUrl: options.prevPageUrl || '',
+            to: options.to || '',
+            total: options.total || '@odata.count'
+        });
+    }
+}
+
+/**
  * Pre-configured ResponseOptions for the Sieve (.NET) driver
  *
  * Sieve defines no response envelope (it returns an `IQueryable` the
