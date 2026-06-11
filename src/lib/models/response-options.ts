@@ -134,6 +134,36 @@ export class JsonApiResponseOptions extends ResponseOptions {
 }
 
 /**
+ * Pre-configured ResponseOptions for the json-server driver
+ *
+ * The json-server v1 envelope is `{ first, prev, next, last, pages,
+ * items, data }`, where `first`/`prev`/`next`/`last` are **page
+ * numbers**, not URLs — the strategy reads `prev`/`next` directly for
+ * position derivation and leaves the URL slots `undefined`, so the
+ * navigation-URL paths default to empty strings. `total` maps to
+ * `items` and `lastPage` to `pages`; `currentPage` and `perPage` have
+ * no body field and are derived.
+ */
+export class JsonServerResponseOptions extends ResponseOptions {
+    constructor(options: IPaginationConfig) {
+        super({
+            currentPage: options.currentPage || '',
+            data: options.data || 'data',
+            firstPageUrl: options.firstPageUrl || '',
+            from: options.from || '',
+            lastPage: options.lastPage || 'pages',
+            lastPageUrl: options.lastPageUrl || '',
+            nextPageUrl: options.nextPageUrl || '',
+            path: options.path || '',
+            perPage: options.perPage || '',
+            prevPageUrl: options.prevPageUrl || '',
+            to: options.to || '',
+            total: options.total || 'items'
+        });
+    }
+}
+
+/**
  * Pre-configured ResponseOptions for the NestJS driver
  *
  * Uses dot-notation paths to access nested values in the NestJS response format.
