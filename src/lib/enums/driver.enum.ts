@@ -15,6 +15,7 @@ export enum DriverEnum {
   NESTJS = 'nestjs',
   NESTJSX_CRUD = 'nestjsx-crud',
   ODATA = 'odata',
+  POCKETBASE = 'pocketbase',
   POSTGREST = 'postgrest',
   SIEVE = 'sieve',
   SPATIE = 'spatie',
