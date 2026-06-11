@@ -45,6 +45,39 @@ export class ResponseOptions {
 }
 
 /**
+ * Pre-configured ResponseOptions for the Directus driver
+ *
+ * The Directus envelope is `{ data, meta: { total_count, filter_count } }`
+ * (with `meta=total_count,filter_count` requested — the request strategy
+ * always emits it). `total` defaults to `meta.filter_count`, the count of
+ * items matching the current filter; point it at `meta.total_count` via
+ * `IPaginationConfig` for the unfiltered collection size. The envelope
+ * names no current page, page size, or navigation URLs, so those paths
+ * default to empty strings — the strategy falls back to page 1 and
+ * derives `lastPage`/`from`/`to` only when the response provably holds
+ * the whole filtered set. All paths are overridable (dot notation
+ * supported) for custom wrappers that do include paging fields.
+ */
+export class DirectusResponseOptions extends ResponseOptions {
+    constructor(options: IPaginationConfig) {
+        super({
+            currentPage: options.currentPage || '',
+            data: options.data || 'data',
+            firstPageUrl: options.firstPageUrl || '',
+            from: options.from || '',
+            lastPage: options.lastPage || '',
+            lastPageUrl: options.lastPageUrl || '',
+            nextPageUrl: options.nextPageUrl || '',
+            path: options.path || '',
+            perPage: options.perPage || '',
+            prevPageUrl: options.prevPageUrl || '',
+            to: options.to || '',
+            total: options.total || 'meta.filter_count'
+        });
+    }
+}
+
+/**
  * Pre-configured ResponseOptions for the Django REST Framework (DRF) driver
  *
  * DRF's `PageNumberPagination` envelope is `{ count, next, previous,
