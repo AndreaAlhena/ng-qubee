@@ -3,7 +3,7 @@ import { PaginationModeEnum } from '../enums/pagination-mode.enum';
 import { IPaginationConfig } from '../interfaces/pagination-config.interface';
 import { IRequestStrategy } from '../interfaces/request-strategy.interface';
 import { IResponseStrategy } from '../interfaces/response-strategy.interface';
-import { ApiPlatformResponseOptions, DirectusResponseOptions, DrfResponseOptions, FeathersResponseOptions, JsonApiResponseOptions, JsonServerResponseOptions, NestjsResponseOptions, NestjsxCrudResponseOptions, OdataResponseOptions, ResponseOptions, SieveResponseOptions, SpringResponseOptions, StrapiResponseOptions } from '../models/response-options';
+import { ApiPlatformResponseOptions, DirectusResponseOptions, DrfResponseOptions, FeathersResponseOptions, JsonApiResponseOptions, JsonServerResponseOptions, NestjsResponseOptions, NestjsxCrudResponseOptions, OdataResponseOptions, PocketbaseResponseOptions, ResponseOptions, SieveResponseOptions, SpringResponseOptions, StrapiResponseOptions } from '../models/response-options';
 import { ApiPlatformRequestStrategy } from '../strategies/api-platform-request.strategy';
 import { ApiPlatformResponseStrategy } from '../strategies/api-platform-response.strategy';
 import { DirectusRequestStrategy } from '../strategies/directus-request.strategy';
@@ -24,6 +24,8 @@ import { NestjsxCrudRequestStrategy } from '../strategies/nestjsx-crud-request.s
 import { NestjsxCrudResponseStrategy } from '../strategies/nestjsx-crud-response.strategy';
 import { OdataRequestStrategy } from '../strategies/odata-request.strategy';
 import { OdataResponseStrategy } from '../strategies/odata-response.strategy';
+import { PocketbaseRequestStrategy } from '../strategies/pocketbase-request.strategy';
+import { PocketbaseResponseStrategy } from '../strategies/pocketbase-response.strategy';
 import { PostgrestRequestStrategy } from '../strategies/postgrest-request.strategy';
 import { PostgrestResponseStrategy } from '../strategies/postgrest-response.strategy';
 import { SieveRequestStrategy } from '../strategies/sieve-request.strategy';
@@ -144,6 +146,12 @@ export const DRIVERS: Record<DriverEnum, IDriverDefinition> = {
     createRequestStrategy: () => new OdataRequestStrategy(),
     createResponseStrategy: () => new OdataResponseStrategy(),
     createResponseOptions: (config) => new OdataResponseOptions(config)
+  },
+
+  [DriverEnum.POCKETBASE]: {
+    createRequestStrategy: () => new PocketbaseRequestStrategy(),
+    createResponseStrategy: () => new PocketbaseResponseStrategy(),
+    createResponseOptions: (config) => new PocketbaseResponseOptions(config)
   },
 
   [DriverEnum.POSTGREST]: {
