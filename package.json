@@ -20,6 +20,7 @@
     "aspnetcore",
     "builder",
     "crud",
+    "directus",
     "django",
     "drf",
     "filter",
