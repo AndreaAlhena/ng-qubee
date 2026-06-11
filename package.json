@@ -30,6 +30,8 @@
     "nestjs",
     "nestjs-paginate",
     "nestjsx-crud",
+    "odata",
+    "odata-v4",
     "pagination",
     "postgrest",
     "query",
