@@ -53,13 +53,13 @@ qb.addFilter('id', 1, 2, 3);                // multi-value
 qb.deleteFilters('status');                  // remove
 ```
 
-Spatie / JSON:API: `filter[status]=active`. NestJS: `filter.status=active`. PostgREST: `status=eq.active` (single) or `status=in.(1,2,3)` (multi). Strapi: `filters[status][$eq]=active`. DRF: `status=active` (single) or `status__in=1,2,3` (multi). @nestjsx/crud: `filter=status||$eq||active` (single) or `filter=status||$in||1,2,3` (multi). Sieve: `filters=status==active` (single) or `filters=status==1|2|3` (multi). OData: `$filter=status eq 'active'` (single) or `$filter=status in (1,2,3)` (multi).
+Spatie / JSON:API: `filter[status]=active`. NestJS: `filter.status=active`. PostgREST: `status=eq.active` (single) or `status=in.(1,2,3)` (multi). Strapi: `filters[status][$eq]=active`. DRF: `status=active` (single) or `status__in=1,2,3` (multi). @nestjsx/crud: `filter=status||$eq||active` (single) or `filter=status||$in||1,2,3` (multi). Sieve: `filters=status==active` (single) or `filters=status==1|2|3` (multi). OData: `$filter=status eq 'active'` (single) or `$filter=status in (1,2,3)` (multi). Directus: `filter[status][_eq]=active` (single) or `filter[status][_in]=1,2,3` (multi).
 
 Triggers auto-reset.
 
 ### `addFilterOperator(field, operator, ...values)` / `deleteOperatorFilters(...fields)`
 
-Filters with explicit comparison operators. Supported by NestJS, @nestjsx/crud, OData, PostgREST, Sieve, Strapi, and DRF.
+Filters with explicit comparison operators. Supported by Directus, NestJS, @nestjsx/crud, OData, PostgREST, Sieve, Strapi, and DRF.
 
 ```typescript
 import { FilterOperatorEnum } from 'ng-qubee';
@@ -68,7 +68,7 @@ qb.addFilterOperator('age', FilterOperatorEnum.GTE, 18);
 qb.addFilterOperator('id', FilterOperatorEnum.IN, 1, 2, 3);
 ```
 
-The full operator list: `EQ`, `NOT`, `NULL`, `IN`, `GT`, `GTE`, `LT`, `LTE`, `BTW`, `ILIKE`, `SW`, `CONTAINS`. PostgREST adds `FTS`, `PLFTS`, `PHFTS`, `WFTS`. Per-driver support varies — DRF rejects `NOT` (no generic negation in django-filter) and the `FTS` family (PostgREST-only); Strapi, @nestjsx/crud, Sieve, and OData reject only the `FTS` family. See each driver's page for detailed mappings: [NestJS](./drivers/nestjs.md#operator-filters), [@nestjsx/crud](./drivers/nestjsx-crud.md#operator-filters), [OData](./drivers/odata.md#operator-filters), [PostgREST](./drivers/postgrest.md#operator-filters), [Sieve](./drivers/sieve.md#operator-filters), [Strapi](./drivers/strapi.md#operator-filters), [DRF](./drivers/drf.md#operator-filters).
+The full operator list: `EQ`, `NOT`, `NULL`, `IN`, `GT`, `GTE`, `LT`, `LTE`, `BTW`, `ILIKE`, `SW`, `CONTAINS`. PostgREST adds `FTS`, `PLFTS`, `PHFTS`, `WFTS`. Per-driver support varies — DRF rejects `NOT` (no generic negation in django-filter) and the `FTS` family (PostgREST-only); Strapi, @nestjsx/crud, Sieve, OData, and Directus reject only the `FTS` family. See each driver's page for detailed mappings: [Directus](./drivers/directus.md#operator-filters), [NestJS](./drivers/nestjs.md#operator-filters), [@nestjsx/crud](./drivers/nestjsx-crud.md#operator-filters), [OData](./drivers/odata.md#operator-filters), [PostgREST](./drivers/postgrest.md#operator-filters), [Sieve](./drivers/sieve.md#operator-filters), [Strapi](./drivers/strapi.md#operator-filters), [DRF](./drivers/drf.md#operator-filters).
 
 Triggers auto-reset.
 
@@ -84,13 +84,13 @@ qb.addSort('name', SortEnum.ASC);
 qb.deleteSorts('created_at');
 ```
 
-Spatie / JSON:API: `sort=-created_at,name`. NestJS: `sortBy=created_at:DESC,name:ASC`. PostgREST: `order=created_at.desc,name.asc`. Strapi: `sort[0]=created_at:desc&sort[1]=name:asc`. DRF: `ordering=-created_at,name`. @nestjsx/crud: `sort=created_at,DESC&sort=name,ASC`. Spring: `sort=created_at,desc&sort=name,asc`. Sieve: `sorts=-created_at,name`. OData: `$orderby=created_at desc,name asc`.
+Spatie / JSON:API: `sort=-created_at,name`. NestJS: `sortBy=created_at:DESC,name:ASC`. PostgREST: `order=created_at.desc,name.asc`. Strapi: `sort[0]=created_at:desc&sort[1]=name:asc`. DRF: `ordering=-created_at,name`. @nestjsx/crud: `sort=created_at,DESC&sort=name,ASC`. Spring: `sort=created_at,desc&sort=name,asc`. Sieve: `sorts=-created_at,name`. OData: `$orderby=created_at desc,name asc`. Directus: `sort=-created_at,name`.
 
 Triggers auto-reset.
 
 ## Column selection
 
-### `addSelect(...fields)` / `deleteSelect(...fields)` — NestJS / @nestjsx/crud / OData / PostgREST / Strapi
+### `addSelect(...fields)` / `deleteSelect(...fields)` — Directus / NestJS / @nestjsx/crud / OData / PostgREST / Strapi
 
 Flat column list:
 
@@ -112,7 +112,7 @@ qb.deleteFieldsByModel('users', 'email');
 
 Does **not** trigger auto-reset.
 
-## Includes — JSON:API / Spatie / Strapi / @nestjsx/crud / OData
+## Includes — JSON:API / Spatie / Strapi / @nestjsx/crud / OData / Directus
 
 ### `addIncludes(...models)` / `deleteIncludes(...models)`
 
@@ -123,7 +123,7 @@ qb.deleteIncludes('profile');
 
 Does **not** trigger auto-reset (related-resource shape, not record set).
 
-## Embedded resources — PostgREST / OData
+## Embedded resources — PostgREST / OData / Directus
 
 ### `addEmbedded(relation, ...columns)` / `deleteEmbedded(...relations)`
 
@@ -138,11 +138,11 @@ qb.addEmbedded('author', 'id', 'name')   // author(id,name)
 qb.deleteEmbedded('comments');           // removes the whole relation entry
 ```
 
-With embedded relations but no `addSelect`, the flat part defaults to `*` so the base row's columns stay in the projection. Repeated calls for the same relation merge-dedup the columns. On OData, embedded relations emit as `$expand=rel($select=col1,col2)` inline projections instead. Every other driver throws `UnsupportedEmbeddedError` — drivers with a standalone relation parameter expose it through `addIncludes` instead.
+With embedded relations but no `addSelect`, the flat part defaults to `*` so the base row's columns stay in the projection. Repeated calls for the same relation merge-dedup the columns. On OData, embedded relations emit as `$expand=rel($select=col1,col2)` inline projections instead; on Directus, as `rel.col` dot paths inside the `fields=` CSV. Every other driver throws `UnsupportedEmbeddedError` — drivers with a standalone relation parameter expose it through `addIncludes` instead.
 
 Does **not** trigger auto-reset (column shape change, not record set).
 
-## Search — NestJS / DRF / OData
+## Search — NestJS / DRF / OData / Directus
 
 ### `setSearch(term)` / `deleteSearch()`
 
