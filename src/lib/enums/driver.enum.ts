@@ -5,6 +5,7 @@
  * request building (URI generation) and response parsing.
  */
 export enum DriverEnum {
+  API_PLATFORM = 'api-platform',
   DIRECTUS = 'directus',
   DRF = 'drf',
   JSON_API = 'json-api',
