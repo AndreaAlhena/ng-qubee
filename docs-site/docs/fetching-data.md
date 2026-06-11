@@ -7,7 +7,7 @@ title: Fetching data
 
 `ng-qubee` builds the URI and parses the response, but it deliberately stays out of the HTTP layer — you bring your own `HttpClient`. This page shows how to wire the three pieces together in a typical service class.
 
-The recommended shape is a **reactive client paired with `provideNgQubeeInstance()`** — each feature component gets its own `NgQubeeService`, the client subscribes to that instance's `uri$` once, and any state mutation (filter, sort, page) is auto-published as a fresh fetch. The example assumes the **Spatie driver**, but the flow is identical for JSON:API, NestJS, @nestjsx/crud, Laravel, OData, Sieve, Strapi, Spring, and DRF. The PostgREST variant differs only in passing headers to `paginate()` — see the [end of the page](#variant-postgrest--supabase).
+The recommended shape is a **reactive client paired with `provideNgQubeeInstance()`** — each feature component gets its own `NgQubeeService`, the client subscribes to that instance's `uri$` once, and any state mutation (filter, sort, page) is auto-published as a fresh fetch. The example assumes the **Spatie driver**, but the flow is identical for Directus, JSON:API, NestJS, @nestjsx/crud, Laravel, OData, Sieve, Strapi, Spring, and DRF. The PostgREST variant differs only in passing headers to `paginate()` — see the [end of the page](#variant-postgrest--supabase).
 
 ## A complete `UserClient` service
 
@@ -194,7 +194,7 @@ public readonly users$: Observable<PaginatedCollection<User>> = this._qb.uri$.pi
 );
 ```
 
-`paginationHeaders()` returns `null` for all drivers other than PostgREST in RANGE mode, so spreading the result is safe even on the Spatie / NestJS / @nestjsx/crud / JSON:API / Laravel / OData / Sieve / Strapi / Spring / DRF path.
+`paginationHeaders()` returns `null` for all drivers other than PostgREST in RANGE mode, so spreading the result is safe even on the Directus / Spatie / NestJS / @nestjsx/crud / JSON:API / Laravel / OData / Sieve / Strapi / Spring / DRF path.
 
 ## Alternative: one-shot fetches (root-scoped clients)
 
