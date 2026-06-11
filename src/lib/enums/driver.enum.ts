@@ -8,6 +8,7 @@ export enum DriverEnum {
   DIRECTUS = 'directus',
   DRF = 'drf',
   JSON_API = 'json-api',
+  JSON_SERVER = 'json-server',
   LARAVEL = 'laravel',
   NESTJS = 'nestjs',
   NESTJSX_CRUD = 'nestjsx-crud',
