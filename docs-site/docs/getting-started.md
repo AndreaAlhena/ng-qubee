@@ -11,7 +11,7 @@ title: Getting Started
 - Pagination ready, with auto-sync from response to query state
 - Reactive — URIs emit through an RxJS Observable
 - Test-driven, 650+ specs covering every driver path
-- **Multi-driver:** Directus, Django REST Framework, JSON:API, json-server, Laravel (pagination-only), Spatie Query Builder, NestJS (nestjs-paginate), @nestjsx/crud, OData, PostgREST / Supabase, Sieve (.NET), Spring Data REST, Strapi
+- **Multi-driver:** API Platform (Symfony), Directus, Django REST Framework, JSON:API, json-server, Laravel (pagination-only), Spatie Query Builder, NestJS (nestjs-paginate), @nestjsx/crud, OData, PostgREST / Supabase, Sieve (.NET), Spring Data REST, Strapi
 
 ## Requirements
 
@@ -86,7 +86,7 @@ The exact URI shape depends on the driver. See the [Drivers](./drivers/json-api.
 
 ## Pick a driver
 
-Thirteen drivers ship out of the box:
+Fourteen drivers ship out of the box:
 
 | Driver | Best for |
 |---|---|
@@ -103,6 +103,7 @@ Thirteen drivers ship out of the box:
 | [**OData**](./drivers/odata.md) | [OData v4](https://www.odata.org/) (ASP.NET Core OData, SAP, Microsoft Graph) |
 | [**Directus**](./drivers/directus.md) | [Directus](https://directus.io/) headless CMS / data platform |
 | [**json-server**](./drivers/json-server.md) | [json-server](https://github.com/typicode/json-server) mock REST API for prototyping |
+| [**API Platform**](./drivers/api-platform.md) | [API Platform](https://api-platform.com/) for PHP/Symfony (Hydra/JSON-LD) |
 
 ## Next steps
 
