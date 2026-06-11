@@ -24,6 +24,8 @@
     "directus",
     "django",
     "drf",
+    "feathers",
+    "feathersjs",
     "filter",
     "hal",
     "headless-cms",
