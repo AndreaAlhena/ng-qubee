@@ -10,6 +10,7 @@ export enum DriverEnum {
   LARAVEL = 'laravel',
   NESTJS = 'nestjs',
   NESTJSX_CRUD = 'nestjsx-crud',
+  ODATA = 'odata',
   POSTGREST = 'postgrest',
   SIEVE = 'sieve',
   SPATIE = 'spatie',
