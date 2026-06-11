@@ -3,7 +3,9 @@ import { PaginationModeEnum } from '../enums/pagination-mode.enum';
 import { IPaginationConfig } from '../interfaces/pagination-config.interface';
 import { IRequestStrategy } from '../interfaces/request-strategy.interface';
 import { IResponseStrategy } from '../interfaces/response-strategy.interface';
-import { DrfResponseOptions, JsonApiResponseOptions, NestjsResponseOptions, NestjsxCrudResponseOptions, OdataResponseOptions, ResponseOptions, SieveResponseOptions, SpringResponseOptions, StrapiResponseOptions } from '../models/response-options';
+import { DirectusResponseOptions, DrfResponseOptions, JsonApiResponseOptions, NestjsResponseOptions, NestjsxCrudResponseOptions, OdataResponseOptions, ResponseOptions, SieveResponseOptions, SpringResponseOptions, StrapiResponseOptions } from '../models/response-options';
+import { DirectusRequestStrategy } from '../strategies/directus-request.strategy';
+import { DirectusResponseStrategy } from '../strategies/directus-response.strategy';
 import { DrfRequestStrategy } from '../strategies/drf-request.strategy';
 import { DrfResponseStrategy } from '../strategies/drf-response.strategy';
 import { JsonApiRequestStrategy } from '../strategies/json-api-request.strategy';
@@ -78,6 +80,12 @@ export interface IDriverDefinition {
  * `switch` blocks.
  */
 export const DRIVERS: Record<DriverEnum, IDriverDefinition> = {
+  [DriverEnum.DIRECTUS]: {
+    createRequestStrategy: () => new DirectusRequestStrategy(),
+    createResponseStrategy: () => new DirectusResponseStrategy(),
+    createResponseOptions: (config) => new DirectusResponseOptions(config)
+  },
+
   [DriverEnum.DRF]: {
     createRequestStrategy: () => new DrfRequestStrategy(),
     createResponseStrategy: () => new DrfResponseStrategy(),
