@@ -53,13 +53,13 @@ qb.addFilter('id', 1, 2, 3);                // multi-value
 qb.deleteFilters('status');                  // remove
 ```
 
-Spatie / JSON:API: `filter[status]=active`. NestJS: `filter.status=active`. PostgREST: `status=eq.active` (single) or `status=in.(1,2,3)` (multi). Strapi: `filters[status][$eq]=active`. DRF: `status=active` (single) or `status__in=1,2,3` (multi). @nestjsx/crud: `filter=status||$eq||active` (single) or `filter=status||$in||1,2,3` (multi). Sieve: `filters=status==active` (single) or `filters=status==1|2|3` (multi). OData: `$filter=status eq 'active'` (single) or `$filter=status in (1,2,3)` (multi). Directus: `filter[status][_eq]=active` (single) or `filter[status][_in]=1,2,3` (multi). json-server: `status=active` (single) or `status:in=1,2,3` (multi). API Platform: `status=active` (single) or `status[]=a&status[]=b` (multi); relation dot paths (`author.name=John`) pass through.
+Spatie / JSON:API: `filter[status]=active`. NestJS: `filter.status=active`. PostgREST: `status=eq.active` (single) or `status=in.(1,2,3)` (multi). Strapi: `filters[status][$eq]=active`. DRF: `status=active` (single) or `status__in=1,2,3` (multi). @nestjsx/crud: `filter=status||$eq||active` (single) or `filter=status||$in||1,2,3` (multi). Sieve: `filters=status==active` (single) or `filters=status==1|2|3` (multi). OData: `$filter=status eq 'active'` (single) or `$filter=status in (1,2,3)` (multi). Directus: `filter[status][_eq]=active` (single) or `filter[status][_in]=1,2,3` (multi). json-server: `status=active` (single) or `status:in=1,2,3` (multi). API Platform: `status=active` (single) or `status[]=a&status[]=b` (multi); relation dot paths (`author.name=John`) pass through. Feathers: `status=active` (single) or `status[$in][0]=active&status[$in][1]=pending` (multi).
 
 Triggers auto-reset.
 
 ### `addFilterOperator(field, operator, ...values)` / `deleteOperatorFilters(...fields)`
 
-Filters with explicit comparison operators. Supported by API Platform, Directus, json-server, NestJS, @nestjsx/crud, OData, PostgREST, Sieve, Strapi, and DRF.
+Filters with explicit comparison operators. Supported by API Platform, Directus, Feathers, json-server, NestJS, @nestjsx/crud, OData, PostgREST, Sieve, Strapi, and DRF.
 
 ```typescript
 import { FilterOperatorEnum } from 'ng-qubee';
@@ -68,7 +68,7 @@ qb.addFilterOperator('age', FilterOperatorEnum.GTE, 18);
 qb.addFilterOperator('id', FilterOperatorEnum.IN, 1, 2, 3);
 ```
 
-The full operator list: `EQ`, `NOT`, `NULL`, `IN`, `GT`, `GTE`, `LT`, `LTE`, `BTW`, `ILIKE`, `SW`, `CONTAINS`. PostgREST adds `FTS`, `PLFTS`, `PHFTS`, `WFTS`. Per-driver support varies — DRF and API Platform reject `NOT` (no generic negation filter) plus the `FTS` family (PostgREST-only); Strapi, @nestjsx/crud, Sieve, OData, and Directus reject only the `FTS` family; json-server additionally rejects `ILIKE` (no case-insensitive variant) and `NULL` (no null-check operator). See each driver's page for detailed mappings: [API Platform](./drivers/api-platform.md#operator-filters), [Directus](./drivers/directus.md#operator-filters), [json-server](./drivers/json-server.md#operator-filters), [NestJS](./drivers/nestjs.md#operator-filters), [@nestjsx/crud](./drivers/nestjsx-crud.md#operator-filters), [OData](./drivers/odata.md#operator-filters), [PostgREST](./drivers/postgrest.md#operator-filters), [Sieve](./drivers/sieve.md#operator-filters), [Strapi](./drivers/strapi.md#operator-filters), [DRF](./drivers/drf.md#operator-filters).
+The full operator list: `EQ`, `NOT`, `NULL`, `IN`, `GT`, `GTE`, `LT`, `LTE`, `BTW`, `ILIKE`, `SW`, `CONTAINS`. PostgREST adds `FTS`, `PLFTS`, `PHFTS`, `WFTS`. Per-driver support varies — DRF and API Platform reject `NOT` (no generic negation filter) plus the `FTS` family (PostgREST-only); Strapi, @nestjsx/crud, Sieve, OData, and Directus reject only the `FTS` family; json-server additionally rejects `ILIKE` (no case-insensitive variant) and `NULL` (no null-check operator); Feathers rejects `CONTAINS`/`ILIKE`/`SW` (LIKE-style matching is adapter-specific, not part of the common syntax) and `NULL` on top of the `FTS` family. See each driver's page for detailed mappings: [API Platform](./drivers/api-platform.md#operator-filters), [Directus](./drivers/directus.md#operator-filters), [Feathers](./drivers/feathers.md#operator-filters), [json-server](./drivers/json-server.md#operator-filters), [NestJS](./drivers/nestjs.md#operator-filters), [@nestjsx/crud](./drivers/nestjsx-crud.md#operator-filters), [OData](./drivers/odata.md#operator-filters), [PostgREST](./drivers/postgrest.md#operator-filters), [Sieve](./drivers/sieve.md#operator-filters), [Strapi](./drivers/strapi.md#operator-filters), [DRF](./drivers/drf.md#operator-filters).
 
 Triggers auto-reset.
 
@@ -84,13 +84,13 @@ qb.addSort('name', SortEnum.ASC);
 qb.deleteSorts('created_at');
 ```
 
-Spatie / JSON:API: `sort=-created_at,name`. NestJS: `sortBy=created_at:DESC,name:ASC`. PostgREST: `order=created_at.desc,name.asc`. Strapi: `sort[0]=created_at:desc&sort[1]=name:asc`. DRF: `ordering=-created_at,name`. @nestjsx/crud: `sort=created_at,DESC&sort=name,ASC`. Spring: `sort=created_at,desc&sort=name,asc`. Sieve: `sorts=-created_at,name`. OData: `$orderby=created_at desc,name asc`. Directus: `sort=-created_at,name`. json-server: `_sort=-created_at,name`. API Platform: `order[created_at]=desc&order[name]=asc`.
+Spatie / JSON:API: `sort=-created_at,name`. NestJS: `sortBy=created_at:DESC,name:ASC`. PostgREST: `order=created_at.desc,name.asc`. Strapi: `sort[0]=created_at:desc&sort[1]=name:asc`. DRF: `ordering=-created_at,name`. @nestjsx/crud: `sort=created_at,DESC&sort=name,ASC`. Spring: `sort=created_at,desc&sort=name,asc`. Sieve: `sorts=-created_at,name`. OData: `$orderby=created_at desc,name asc`. Directus: `sort=-created_at,name`. json-server: `_sort=-created_at,name`. API Platform: `order[created_at]=desc&order[name]=asc`. Feathers: `$sort[created_at]=-1&$sort[name]=1`.
 
 Triggers auto-reset.
 
 ## Column selection
 
-### `addSelect(...fields)` / `deleteSelect(...fields)` — Directus / NestJS / @nestjsx/crud / OData / PostgREST / Strapi
+### `addSelect(...fields)` / `deleteSelect(...fields)` — Directus / Feathers / NestJS / @nestjsx/crud / OData / PostgREST / Strapi
 
 Flat column list:
 

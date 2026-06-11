@@ -3,13 +3,15 @@ import { PaginationModeEnum } from '../enums/pagination-mode.enum';
 import { IPaginationConfig } from '../interfaces/pagination-config.interface';
 import { IRequestStrategy } from '../interfaces/request-strategy.interface';
 import { IResponseStrategy } from '../interfaces/response-strategy.interface';
-import { ApiPlatformResponseOptions, DirectusResponseOptions, DrfResponseOptions, JsonApiResponseOptions, JsonServerResponseOptions, NestjsResponseOptions, NestjsxCrudResponseOptions, OdataResponseOptions, ResponseOptions, SieveResponseOptions, SpringResponseOptions, StrapiResponseOptions } from '../models/response-options';
+import { ApiPlatformResponseOptions, DirectusResponseOptions, DrfResponseOptions, FeathersResponseOptions, JsonApiResponseOptions, JsonServerResponseOptions, NestjsResponseOptions, NestjsxCrudResponseOptions, OdataResponseOptions, ResponseOptions, SieveResponseOptions, SpringResponseOptions, StrapiResponseOptions } from '../models/response-options';
 import { ApiPlatformRequestStrategy } from '../strategies/api-platform-request.strategy';
 import { ApiPlatformResponseStrategy } from '../strategies/api-platform-response.strategy';
 import { DirectusRequestStrategy } from '../strategies/directus-request.strategy';
 import { DirectusResponseStrategy } from '../strategies/directus-response.strategy';
 import { DrfRequestStrategy } from '../strategies/drf-request.strategy';
 import { DrfResponseStrategy } from '../strategies/drf-response.strategy';
+import { FeathersRequestStrategy } from '../strategies/feathers-request.strategy';
+import { FeathersResponseStrategy } from '../strategies/feathers-response.strategy';
 import { JsonApiRequestStrategy } from '../strategies/json-api-request.strategy';
 import { JsonApiResponseStrategy } from '../strategies/json-api-response.strategy';
 import { JsonServerRequestStrategy } from '../strategies/json-server-request.strategy';
@@ -100,6 +102,12 @@ export const DRIVERS: Record<DriverEnum, IDriverDefinition> = {
     createRequestStrategy: () => new DrfRequestStrategy(),
     createResponseStrategy: () => new DrfResponseStrategy(),
     createResponseOptions: (config) => new DrfResponseOptions(config)
+  },
+
+  [DriverEnum.FEATHERS]: {
+    createRequestStrategy: () => new FeathersRequestStrategy(),
+    createResponseStrategy: () => new FeathersResponseStrategy(),
+    createResponseOptions: (config) => new FeathersResponseOptions(config)
   },
 
   [DriverEnum.JSON_API]: {
