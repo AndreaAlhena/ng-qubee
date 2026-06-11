@@ -137,6 +137,36 @@ export class DrfResponseOptions extends ResponseOptions {
 }
 
 /**
+ * Pre-configured ResponseOptions for the FeathersJS driver
+ *
+ * The Feathers adapter envelope is `{ total, limit, skip, data }` —
+ * offset-based, with no page number and no navigation URLs. `perPage`
+ * maps to the envelope's `limit` key and `total` to `total`; the
+ * strategy derives `currentPage` / `lastPage` / `from` / `to` from
+ * `skip` and `limit`, so the corresponding key paths default to empty
+ * strings (the `skip` key itself is fixed by the envelope and read
+ * directly by the strategy).
+ */
+export class FeathersResponseOptions extends ResponseOptions {
+    constructor(options: IPaginationConfig) {
+        super({
+            currentPage: options.currentPage || '',
+            data: options.data || 'data',
+            firstPageUrl: options.firstPageUrl || '',
+            from: options.from || '',
+            lastPage: options.lastPage || '',
+            lastPageUrl: options.lastPageUrl || '',
+            nextPageUrl: options.nextPageUrl || '',
+            path: options.path || '',
+            perPage: options.perPage || 'limit',
+            prevPageUrl: options.prevPageUrl || '',
+            to: options.to || '',
+            total: options.total || 'total'
+        });
+    }
+}
+
+/**
  * Pre-configured ResponseOptions for the JSON:API driver
  *
  * Uses dot-notation paths to access nested values in the JSON:API response format.
