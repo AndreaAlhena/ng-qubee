@@ -45,6 +45,35 @@ export class ResponseOptions {
 }
 
 /**
+ * Pre-configured ResponseOptions for the API Platform (Symfony) driver
+ *
+ * Uses dot-notation paths into the Hydra/JSON-LD envelope — the Hydra
+ * keys contain colons but no dots, so `hydra:view.hydra:next` traverses
+ * `response['hydra:view']['hydra:next']`. The `path` slot points at the
+ * view's `@id`, which the strategy parses for the current page and page
+ * size; `currentPage` / `perPage` / `lastPage` have no body field and
+ * default to empty paths (derived from the view URLs instead).
+ */
+export class ApiPlatformResponseOptions extends ResponseOptions {
+    constructor(options: IPaginationConfig) {
+        super({
+            currentPage: options.currentPage || '',
+            data: options.data || 'hydra:member',
+            firstPageUrl: options.firstPageUrl || 'hydra:view.hydra:first',
+            from: options.from || '',
+            lastPage: options.lastPage || '',
+            lastPageUrl: options.lastPageUrl || 'hydra:view.hydra:last',
+            nextPageUrl: options.nextPageUrl || 'hydra:view.hydra:next',
+            path: options.path || 'hydra:view.@id',
+            perPage: options.perPage || '',
+            prevPageUrl: options.prevPageUrl || 'hydra:view.hydra:previous',
+            to: options.to || '',
+            total: options.total || 'hydra:totalItems'
+        });
+    }
+}
+
+/**
  * Pre-configured ResponseOptions for the Directus driver
  *
  * The Directus envelope is `{ data, meta: { total_count, filter_count } }`
