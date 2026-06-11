@@ -13,8 +13,8 @@ NgQubee is a query builder for Angular. Compose your API requests without re-inv
 
 - Reactive — URIs emitted as RxJS observables, state held in Angular Signals
 - Pagination ready — typed `PaginatedCollection`, fluent navigation (`nextPage`, `lastPage`, `goToPage`)
-- Test-driven — 650+ specs
-- **Multi-driver support**: Django REST Framework, JSON:API, Laravel (pagination-only), Spatie Query Builder, NestJS (`nestjs-paginate`), @nestjsx/crud, PostgREST / Supabase, Sieve (.NET), Spring Data REST, and Strapi
+- Test-driven — 700+ specs
+- **Multi-driver support**: Django REST Framework, JSON:API, Laravel (pagination-only), Spatie Query Builder, NestJS (`nestjs-paginate`), @nestjsx/crud, OData, PostgREST / Supabase, Sieve (.NET), Spring Data REST, and Strapi
 
 ## 📚 Documentation
 
@@ -45,6 +45,7 @@ A driver **must** be specified in the configuration:
 | **Spatie** | [Spatie Laravel Query Builder](https://spatie.be/docs/laravel-query-builder) | `filter[field]=value`, `sort=-field` |
 | **NestJS** | [`nestjs-paginate`](https://github.com/ppetzold/nestjs-paginate) | `filter.field=$op:value`, `sortBy=field:DESC` |
 | **@nestjsx/crud** | [@nestjsx/crud](https://github.com/nestjsx/crud) for NestJS | `filter=field\|\|$eq\|\|value`, `sort=field,ASC`, `join=relation`, `page=N&limit=N` |
+| **OData** | [OData v4](https://www.odata.org/) (ASP.NET Core OData, SAP, Microsoft Graph) | `$filter=field eq 'value'`, `$orderby=field desc`, `$expand=rel($select=col)`, `$top=N&$skip=M` |
 | **PostgREST** | [PostgREST](https://postgrest.org/) / [Supabase](https://supabase.com/) | `col=eq.value`, `order=col.asc`, `select=col,rel(*)`, `limit=N&offset=M` |
 | **Sieve** | [Sieve](https://github.com/Biarity/Sieve) for ASP.NET Core | `filters=Field==Value,Other>=N`, `sorts=-field`, `page=N&pageSize=N` |
 | **Spring** | [Spring Data REST](https://spring.io/projects/spring-data-rest) (HAL) | `sort=field,asc` (repeatable), `page=N&size=N` (0-indexed page) |

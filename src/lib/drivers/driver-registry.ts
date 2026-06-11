@@ -3,7 +3,7 @@ import { PaginationModeEnum } from '../enums/pagination-mode.enum';
 import { IPaginationConfig } from '../interfaces/pagination-config.interface';
 import { IRequestStrategy } from '../interfaces/request-strategy.interface';
 import { IResponseStrategy } from '../interfaces/response-strategy.interface';
-import { DrfResponseOptions, JsonApiResponseOptions, NestjsResponseOptions, NestjsxCrudResponseOptions, ResponseOptions, SieveResponseOptions, SpringResponseOptions, StrapiResponseOptions } from '../models/response-options';
+import { DrfResponseOptions, JsonApiResponseOptions, NestjsResponseOptions, NestjsxCrudResponseOptions, OdataResponseOptions, ResponseOptions, SieveResponseOptions, SpringResponseOptions, StrapiResponseOptions } from '../models/response-options';
 import { DrfRequestStrategy } from '../strategies/drf-request.strategy';
 import { DrfResponseStrategy } from '../strategies/drf-response.strategy';
 import { JsonApiRequestStrategy } from '../strategies/json-api-request.strategy';
@@ -14,6 +14,8 @@ import { NestjsRequestStrategy } from '../strategies/nestjs-request.strategy';
 import { NestjsResponseStrategy } from '../strategies/nestjs-response.strategy';
 import { NestjsxCrudRequestStrategy } from '../strategies/nestjsx-crud-request.strategy';
 import { NestjsxCrudResponseStrategy } from '../strategies/nestjsx-crud-response.strategy';
+import { OdataRequestStrategy } from '../strategies/odata-request.strategy';
+import { OdataResponseStrategy } from '../strategies/odata-response.strategy';
 import { PostgrestRequestStrategy } from '../strategies/postgrest-request.strategy';
 import { PostgrestResponseStrategy } from '../strategies/postgrest-response.strategy';
 import { SieveRequestStrategy } from '../strategies/sieve-request.strategy';
@@ -104,6 +106,12 @@ export const DRIVERS: Record<DriverEnum, IDriverDefinition> = {
     createRequestStrategy: () => new NestjsxCrudRequestStrategy(),
     createResponseStrategy: () => new NestjsxCrudResponseStrategy(),
     createResponseOptions: (config) => new NestjsxCrudResponseOptions(config)
+  },
+
+  [DriverEnum.ODATA]: {
+    createRequestStrategy: () => new OdataRequestStrategy(),
+    createResponseStrategy: () => new OdataResponseStrategy(),
+    createResponseOptions: (config) => new OdataResponseOptions(config)
   },
 
   [DriverEnum.POSTGREST]: {
