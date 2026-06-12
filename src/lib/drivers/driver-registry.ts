@@ -38,6 +38,8 @@ import { SpringRequestStrategy } from '../strategies/spring-request.strategy';
 import { SpringResponseStrategy } from '../strategies/spring-response.strategy';
 import { StrapiRequestStrategy } from '../strategies/strapi-request.strategy';
 import { StrapiResponseStrategy } from '../strategies/strapi-response.strategy';
+import { WordpressRequestStrategy } from '../strategies/wordpress-request.strategy';
+import { WordpressResponseStrategy } from '../strategies/wordpress-response.strategy';
 
 /**
  * Per-driver factory bundle
@@ -190,5 +192,11 @@ export const DRIVERS: Record<DriverEnum, IDriverDefinition> = {
     createRequestStrategy: () => new StrapiRequestStrategy(),
     createResponseStrategy: () => new StrapiResponseStrategy(),
     createResponseOptions: (config) => new StrapiResponseOptions(config)
+  },
+
+  [DriverEnum.WORDPRESS]: {
+    createRequestStrategy: () => new WordpressRequestStrategy(),
+    createResponseStrategy: () => new WordpressResponseStrategy(),
+    createResponseOptions: (config) => new ResponseOptions(config)
   }
 };
