@@ -53,7 +53,7 @@ qb.addFilter('id', 1, 2, 3);                // multi-value
 qb.deleteFilters('status');                  // remove
 ```
 
-Spatie / JSON:API: `filter[status]=active`. NestJS: `filter.status=active`. PostgREST: `status=eq.active` (single) or `status=in.(1,2,3)` (multi). Strapi: `filters[status][$eq]=active`. DRF: `status=active` (single) or `status__in=1,2,3` (multi). @nestjsx/crud: `filter=status||$eq||active` (single) or `filter=status||$in||1,2,3` (multi). Sieve: `filters=status==active` (single) or `filters=status==1|2|3` (multi). OData: `$filter=status eq 'active'` (single) or `$filter=status in (1,2,3)` (multi). Directus: `filter[status][_eq]=active` (single) or `filter[status][_in]=1,2,3` (multi). json-server: `status=active` (single) or `status:in=1,2,3` (multi). API Platform: `status=active` (single) or `status[]=a&status[]=b` (multi); relation dot paths (`author.name=John`) pass through. Feathers: `status=active` (single) or `status[$in][0]=active&status[$in][1]=pending` (multi). PocketBase: `filter=(status='active')` (single) or `filter=((status='active' || status='pending'))` (multi). Payload: `where[status][equals]=active` (single) or `where[status][in]=active,pending` (multi).
+Spatie / JSON:API: `filter[status]=active`. NestJS: `filter.status=active`. PostgREST: `status=eq.active` (single) or `status=in.(1,2,3)` (multi). Strapi: `filters[status][$eq]=active`. DRF: `status=active` (single) or `status__in=1,2,3` (multi). @nestjsx/crud: `filter=status||$eq||active` (single) or `filter=status||$in||1,2,3` (multi). Sieve: `filters=status==active` (single) or `filters=status==1|2|3` (multi). OData: `$filter=status eq 'active'` (single) or `$filter=status in (1,2,3)` (multi). Directus: `filter[status][_eq]=active` (single) or `filter[status][_in]=1,2,3` (multi). json-server: `status=active` (single) or `status:in=1,2,3` (multi). API Platform: `status=active` (single) or `status[]=a&status[]=b` (multi); relation dot paths (`author.name=John`) pass through. Feathers: `status=active` (single) or `status[$in][0]=active&status[$in][1]=pending` (multi). PocketBase: `filter=(status='active')` (single) or `filter=((status='active' || status='pending'))` (multi). Payload: `where[status][equals]=active` (single) or `where[status][in]=active,pending` (multi). WordPress: `status=publish` (single) or `categories=2,3` (multi, CSV).
 
 Triggers auto-reset.
 
@@ -84,13 +84,13 @@ qb.addSort('name', SortEnum.ASC);
 qb.deleteSorts('created_at');
 ```
 
-Spatie / JSON:API: `sort=-created_at,name`. NestJS: `sortBy=created_at:DESC,name:ASC`. PostgREST: `order=created_at.desc,name.asc`. Strapi: `sort[0]=created_at:desc&sort[1]=name:asc`. DRF: `ordering=-created_at,name`. @nestjsx/crud: `sort=created_at,DESC&sort=name,ASC`. Spring: `sort=created_at,desc&sort=name,asc`. Sieve: `sorts=-created_at,name`. OData: `$orderby=created_at desc,name asc`. Directus: `sort=-created_at,name`. json-server: `_sort=-created_at,name`. API Platform: `order[created_at]=desc&order[name]=asc`. Feathers: `$sort[created_at]=-1&$sort[name]=1`. PocketBase: `sort=-created_at,name`. Payload: `sort=-created_at,name`.
+Spatie / JSON:API: `sort=-created_at,name`. NestJS: `sortBy=created_at:DESC,name:ASC`. PostgREST: `order=created_at.desc,name.asc`. Strapi: `sort[0]=created_at:desc&sort[1]=name:asc`. DRF: `ordering=-created_at,name`. @nestjsx/crud: `sort=created_at,DESC&sort=name,ASC`. Spring: `sort=created_at,desc&sort=name,asc`. Sieve: `sorts=-created_at,name`. OData: `$orderby=created_at desc,name asc`. Directus: `sort=-created_at,name`. json-server: `_sort=-created_at,name`. API Platform: `order[created_at]=desc&order[name]=asc`. Feathers: `$sort[created_at]=-1&$sort[name]=1`. PocketBase: `sort=-created_at,name`. Payload: `sort=-created_at,name`. WordPress: `orderby=created_at&order=desc` (single sort only — the first rule wins).
 
 Triggers auto-reset.
 
 ## Column selection
 
-### `addSelect(...fields)` / `deleteSelect(...fields)` — Directus / Feathers / NestJS / @nestjsx/crud / OData / Payload / PocketBase / PostgREST / Strapi
+### `addSelect(...fields)` / `deleteSelect(...fields)` — Directus / Feathers / NestJS / @nestjsx/crud / OData / Payload / PocketBase / PostgREST / Strapi / WordPress
 
 Flat column list:
 
@@ -112,7 +112,7 @@ qb.deleteFieldsByModel('users', 'email');
 
 Does **not** trigger auto-reset.
 
-## Includes — JSON:API / Spatie / Strapi / @nestjsx/crud / OData / Directus / PocketBase
+## Includes — JSON:API / Spatie / Strapi / @nestjsx/crud / OData / Directus / PocketBase / WordPress
 
 ### `addIncludes(...models)` / `deleteIncludes(...models)`
 
@@ -142,7 +142,7 @@ With embedded relations but no `addSelect`, the flat part defaults to `*` so the
 
 Does **not** trigger auto-reset (column shape change, not record set).
 
-## Search — NestJS / DRF / OData / Directus / json-server
+## Search — NestJS / DRF / OData / Directus / json-server / WordPress
 
 ### `setSearch(term)` / `deleteSearch()`
 

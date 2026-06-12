@@ -55,7 +55,9 @@
     "strapi",
     "supabase",
     "symfony",
-    "typescript"
+    "typescript",
+    "wordpress",
+    "wp-rest-api"
   ],
   "allowedNonPeerDependencies": [
     "qs"

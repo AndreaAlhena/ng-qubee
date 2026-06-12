@@ -90,3 +90,5 @@ export * from './lib/strategies/spring-request.strategy';
 export * from './lib/strategies/spring-response.strategy';
 export * from './lib/strategies/strapi-request.strategy';
 export * from './lib/strategies/strapi-response.strategy';
+export * from './lib/strategies/wordpress-request.strategy';
+export * from './lib/strategies/wordpress-response.strategy';

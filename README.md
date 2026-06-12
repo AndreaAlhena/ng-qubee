@@ -13,8 +13,8 @@ NgQubee is a query builder for Angular. Compose your API requests without re-inv
 
 - Reactive — URIs emitted as RxJS observables, state held in Angular Signals
 - Pagination ready — typed `PaginatedCollection`, fluent navigation (`nextPage`, `lastPage`, `goToPage`)
-- Test-driven — 700+ specs
-- **Multi-driver support**: API Platform (Symfony), Directus, Django REST Framework, FeathersJS, JSON:API, json-server, Laravel (pagination-only), Spatie Query Builder, NestJS (`nestjs-paginate`), @nestjsx/crud, OData, Payload CMS, PocketBase, PostgREST / Supabase, Sieve (.NET), Spring Data REST, and Strapi
+- Test-driven — 980+ specs
+- **Multi-driver support**: API Platform (Symfony), Directus, Django REST Framework, FeathersJS, JSON:API, json-server, Laravel (pagination-only), Spatie Query Builder, NestJS (`nestjs-paginate`), @nestjsx/crud, OData, Payload CMS, PocketBase, PostgREST / Supabase, Sieve (.NET), Spring Data REST, Strapi, and WordPress REST
 
 ## 📚 Documentation
 
@@ -56,6 +56,7 @@ A driver **must** be specified in the configuration:
 | **Sieve** | [Sieve](https://github.com/Biarity/Sieve) for ASP.NET Core | `filters=Field==Value,Other>=N`, `sorts=-field`, `page=N&pageSize=N` |
 | **Spring** | [Spring Data REST](https://spring.io/projects/spring-data-rest) (HAL) | `sort=field,asc` (repeatable), `page=N&size=N` (0-indexed page) |
 | **Strapi** | [Strapi](https://strapi.io/) v4 / v5 headless CMS | `filters[field][$eq]=value`, `sort[0]=field:asc`, `pagination[page]=N&pagination[pageSize]=N` |
+| **WordPress** | [WordPress REST API](https://developer.wordpress.org/rest-api/) | `field=value`, `orderby=field&order=desc`, `_fields=col`, `_embed=rel`, `search=term`, `page=N&per_page=M` |
 
 Per-driver guides — wire format, supported operators, response parsing, customisation — live on the [docs site](https://ng-qubee.andreatantimonaco.me/docs/getting-started).
 
