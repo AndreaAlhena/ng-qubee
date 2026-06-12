@@ -10,8 +10,8 @@ title: Getting Started
 - Easily retrieve URIs from a service
 - Pagination ready, with auto-sync from response to query state
 - Reactive — URIs emit through an RxJS Observable
-- Test-driven, 650+ specs covering every driver path
-- **Multi-driver:** API Platform (Symfony), Directus, Django REST Framework, FeathersJS, JSON:API, json-server, Laravel (pagination-only), Spatie Query Builder, NestJS (nestjs-paginate), @nestjsx/crud, OData, Payload CMS, PocketBase, PostgREST / Supabase, Sieve (.NET), Spring Data REST, Strapi
+- Test-driven, 980+ specs covering every driver path
+- **Multi-driver:** API Platform (Symfony), Directus, Django REST Framework, FeathersJS, JSON:API, json-server, Laravel (pagination-only), Spatie Query Builder, NestJS (nestjs-paginate), @nestjsx/crud, OData, Payload CMS, PocketBase, PostgREST / Supabase, Sieve (.NET), Spring Data REST, Strapi, WordPress REST
 
 ## Requirements
 
@@ -86,7 +86,7 @@ The exact URI shape depends on the driver. See the [Drivers](./drivers/json-api.
 
 ## Pick a driver
 
-Seventeen drivers ship out of the box:
+Eighteen drivers ship out of the box:
 
 | Driver | Best for |
 |---|---|
@@ -107,6 +107,7 @@ Seventeen drivers ship out of the box:
 | [**Feathers**](./drivers/feathers.md) | [FeathersJS](https://feathersjs.com/) realtime/REST framework for Node.js |
 | [**PocketBase**](./drivers/pocketbase.md) | [PocketBase](https://pocketbase.io/) single-binary backend (SQLite + realtime + auth) |
 | [**Payload**](./drivers/payload.md) | [Payload CMS](https://payloadcms.com/) and any `mongoose-paginate-v2` backend |
+| [**WordPress**](./drivers/wordpress.md) | [WordPress REST API](https://developer.wordpress.org/rest-api/) (every WP install since 4.7) |
 
 ## Next steps
 
