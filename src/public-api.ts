@@ -50,15 +50,23 @@ export * from './lib/interfaces/sort.interface';
 export * from './lib/tokens/ng-qubee.tokens';
 
 // Strategies
+export * from './lib/strategies/drf-request.strategy';
+export * from './lib/strategies/drf-response.strategy';
 export * from './lib/strategies/json-api-request.strategy';
 export * from './lib/strategies/json-api-response.strategy';
 export * from './lib/strategies/laravel-request.strategy';
 export * from './lib/strategies/laravel-response.strategy';
 export * from './lib/strategies/nestjs-request.strategy';
 export * from './lib/strategies/nestjs-response.strategy';
+export * from './lib/strategies/nestjsx-crud-request.strategy';
+export * from './lib/strategies/nestjsx-crud-response.strategy';
 export * from './lib/strategies/postgrest-request.strategy';
 export * from './lib/strategies/postgrest-response.strategy';
+export * from './lib/strategies/sieve-request.strategy';
+export * from './lib/strategies/sieve-response.strategy';
 export * from './lib/strategies/spatie-request.strategy';
 export * from './lib/strategies/spatie-response.strategy';
+export * from './lib/strategies/spring-request.strategy';
+export * from './lib/strategies/spring-response.strategy';
 export * from './lib/strategies/strapi-request.strategy';
 export * from './lib/strategies/strapi-response.strategy';
