@@ -307,6 +307,37 @@ export class OdataResponseOptions extends ResponseOptions {
 }
 
 /**
+ * Pre-configured ResponseOptions for the Payload CMS driver
+ *
+ * The envelope is the flat `mongoose-paginate-v2` shape: `{ docs,
+ * totalDocs, limit, totalPages, page, pagingCounter, hasPrevPage,
+ * hasNextPage, prevPage, nextPage }`. `pagingCounter` is the 1-indexed
+ * offset of the first doc on the page and maps onto `from`; `to` has no
+ * body field and is derived. `prevPage`/`nextPage` are page numbers,
+ * not URLs, so the navigation-URL paths default to empty strings. All
+ * paths are overridable via `IPaginationConfig` (dot notation
+ * supported) for custom wrappers.
+ */
+export class PayloadResponseOptions extends ResponseOptions {
+    constructor(options: IPaginationConfig) {
+        super({
+            currentPage: options.currentPage || 'page',
+            data: options.data || 'docs',
+            firstPageUrl: options.firstPageUrl || '',
+            from: options.from || 'pagingCounter',
+            lastPage: options.lastPage || 'totalPages',
+            lastPageUrl: options.lastPageUrl || '',
+            nextPageUrl: options.nextPageUrl || '',
+            path: options.path || '',
+            perPage: options.perPage || 'limit',
+            prevPageUrl: options.prevPageUrl || '',
+            to: options.to || '',
+            total: options.total || 'totalDocs'
+        });
+    }
+}
+
+/**
  * Pre-configured ResponseOptions for the PocketBase driver
  *
  * The records-list envelope is flat: `{ page, perPage, totalItems,
