@@ -58,7 +58,7 @@ this._http.get(uri).subscribe(body => {
 });
 ```
 
-For the **PostgREST** driver, also pass headers — the total count lives in `Content-Range`:
+For the **PostgREST** and **WordPress** drivers, also pass headers — the total count lives in `Content-Range` (PostgREST, opt-in via `Prefer: count=exact`) or `X-WP-Total` / `X-WP-TotalPages` (WordPress, always sent):
 
 ```typescript
 this._http.get(uri, { observe: 'response', headers: { 'Prefer': 'count=exact' } })
