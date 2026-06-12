@@ -40,6 +40,8 @@
     "odata",
     "odata-v4",
     "pagination",
+    "payload",
+    "payload-cms",
     "pocketbase",
     "postgrest",
     "query",
