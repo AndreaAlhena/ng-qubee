@@ -14,7 +14,7 @@ NgQubee is a query builder for Angular. Compose your API requests without re-inv
 - Reactive — URIs emitted as RxJS observables, state held in Angular Signals
 - Pagination ready — typed `PaginatedCollection`, fluent navigation (`nextPage`, `lastPage`, `goToPage`)
 - Test-driven — 700+ specs
-- **Multi-driver support**: API Platform (Symfony), Directus, Django REST Framework, FeathersJS, JSON:API, json-server, Laravel (pagination-only), Spatie Query Builder, NestJS (`nestjs-paginate`), @nestjsx/crud, OData, PocketBase, PostgREST / Supabase, Sieve (.NET), Spring Data REST, and Strapi
+- **Multi-driver support**: API Platform (Symfony), Directus, Django REST Framework, FeathersJS, JSON:API, json-server, Laravel (pagination-only), Spatie Query Builder, NestJS (`nestjs-paginate`), @nestjsx/crud, OData, Payload CMS, PocketBase, PostgREST / Supabase, Sieve (.NET), Spring Data REST, and Strapi
 
 ## 📚 Documentation
 
@@ -50,6 +50,7 @@ A driver **must** be specified in the configuration:
 | **NestJS** | [`nestjs-paginate`](https://github.com/ppetzold/nestjs-paginate) | `filter.field=$op:value`, `sortBy=field:DESC` |
 | **@nestjsx/crud** | [@nestjsx/crud](https://github.com/nestjsx/crud) for NestJS | `filter=field\|\|$eq\|\|value`, `sort=field,ASC`, `join=relation`, `page=N&limit=N` |
 | **OData** | [OData v4](https://www.odata.org/) (ASP.NET Core OData, SAP, Microsoft Graph) | `$filter=field eq 'value'`, `$orderby=field desc`, `$expand=rel($select=col)`, `$top=N&$skip=M` |
+| **Payload** | [Payload CMS](https://payloadcms.com/) / `mongoose-paginate-v2` backends | `where[field][equals]=value`, `sort=-field`, `select[col]=true`, `page=N&limit=M` |
 | **PocketBase** | [PocketBase](https://pocketbase.io/) single-binary backend | `filter=(field='value' && other>10)`, `sort=-field`, `expand=rel`, `fields=col`, `page=N&perPage=M` |
 | **PostgREST** | [PostgREST](https://postgrest.org/) / [Supabase](https://supabase.com/) | `col=eq.value`, `order=col.asc`, `select=col,rel(*)`, `limit=N&offset=M` |
 | **Sieve** | [Sieve](https://github.com/Biarity/Sieve) for ASP.NET Core | `filters=Field==Value,Other>=N`, `sorts=-field`, `page=N&pageSize=N` |
