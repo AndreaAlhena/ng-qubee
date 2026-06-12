@@ -11,7 +11,7 @@ title: Getting Started
 - Pagination ready, with auto-sync from response to query state
 - Reactive — URIs emit through an RxJS Observable
 - Test-driven, 650+ specs covering every driver path
-- **Multi-driver:** API Platform (Symfony), Directus, Django REST Framework, FeathersJS, JSON:API, json-server, Laravel (pagination-only), Spatie Query Builder, NestJS (nestjs-paginate), @nestjsx/crud, OData, PostgREST / Supabase, Sieve (.NET), Spring Data REST, Strapi
+- **Multi-driver:** API Platform (Symfony), Directus, Django REST Framework, FeathersJS, JSON:API, json-server, Laravel (pagination-only), Spatie Query Builder, NestJS (nestjs-paginate), @nestjsx/crud, OData, PocketBase, PostgREST / Supabase, Sieve (.NET), Spring Data REST, Strapi
 
 ## Requirements
 
@@ -86,7 +86,7 @@ The exact URI shape depends on the driver. See the [Drivers](./drivers/json-api.
 
 ## Pick a driver
 
-Fifteen drivers ship out of the box:
+Sixteen drivers ship out of the box:
 
 | Driver | Best for |
 |---|---|
@@ -105,6 +105,7 @@ Fifteen drivers ship out of the box:
 | [**json-server**](./drivers/json-server.md) | [json-server](https://github.com/typicode/json-server) mock REST API for prototyping |
 | [**API Platform**](./drivers/api-platform.md) | [API Platform](https://api-platform.com/) for PHP/Symfony (Hydra/JSON-LD) |
 | [**Feathers**](./drivers/feathers.md) | [FeathersJS](https://feathersjs.com/) realtime/REST framework for Node.js |
+| [**PocketBase**](./drivers/pocketbase.md) | [PocketBase](https://pocketbase.io/) single-binary backend (SQLite + realtime + auth) |
 
 ## Next steps
 

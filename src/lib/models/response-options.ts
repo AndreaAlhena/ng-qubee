@@ -307,6 +307,35 @@ export class OdataResponseOptions extends ResponseOptions {
 }
 
 /**
+ * Pre-configured ResponseOptions for the PocketBase driver
+ *
+ * The records-list envelope is flat: `{ page, perPage, totalItems,
+ * totalPages, items }`. The envelope carries no `from`/`to` indices and
+ * no navigation links, so those paths default to empty strings (the
+ * strategy derives `from`/`to` from `page` × `perPage` and leaves the
+ * URLs `undefined`); all paths are overridable via `IPaginationConfig`
+ * (dot notation supported) for custom wrappers.
+ */
+export class PocketbaseResponseOptions extends ResponseOptions {
+    constructor(options: IPaginationConfig) {
+        super({
+            currentPage: options.currentPage || 'page',
+            data: options.data || 'items',
+            firstPageUrl: options.firstPageUrl || '',
+            from: options.from || '',
+            lastPage: options.lastPage || 'totalPages',
+            lastPageUrl: options.lastPageUrl || '',
+            nextPageUrl: options.nextPageUrl || '',
+            path: options.path || '',
+            perPage: options.perPage || 'perPage',
+            prevPageUrl: options.prevPageUrl || '',
+            to: options.to || '',
+            total: options.total || 'totalItems'
+        });
+    }
+}
+
+/**
  * Pre-configured ResponseOptions for the Sieve (.NET) driver
  *
  * Sieve defines no response envelope (it returns an `IQueryable` the

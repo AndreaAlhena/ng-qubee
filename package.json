@@ -40,6 +40,7 @@
     "odata",
     "odata-v4",
     "pagination",
+    "pocketbase",
     "postgrest",
     "query",
     "query-builder",

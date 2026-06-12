@@ -30,7 +30,8 @@ const sidebars: SidebarsConfig = {
         'drivers/directus',
         'drivers/json-server',
         'drivers/api-platform',
-        'drivers/feathers'
+        'drivers/feathers',
+        'drivers/pocketbase'
       ]
     },
     'fetching-data',
