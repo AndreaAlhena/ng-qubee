@@ -21,5 +21,6 @@ export enum DriverEnum {
   SIEVE = 'sieve',
   SPATIE = 'spatie',
   SPRING = 'spring',
-  STRAPI = 'strapi'
+  STRAPI = 'strapi',
+  WORDPRESS = 'wordpress'
 }
