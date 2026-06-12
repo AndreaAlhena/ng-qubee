@@ -30,6 +30,7 @@ export class SpringRequestStrategy extends AbstractRequestStrategy {
    * or global search
    */
   public readonly capabilities: IStrategyCapabilities = {
+    embedded: false,
     fields: false,
     filters: false,
     includes: false,

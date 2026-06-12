@@ -26,6 +26,7 @@ export class NestjsRequestStrategy extends AbstractRequestStrategy {
    * per-model fields, no includes
    */
   public readonly capabilities: IStrategyCapabilities = {
+    embedded: false,
     fields: false,
     filters: true,
     includes: false,

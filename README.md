@@ -13,8 +13,8 @@ NgQubee is a query builder for Angular. Compose your API requests without re-inv
 
 - Reactive — URIs emitted as RxJS observables, state held in Angular Signals
 - Pagination ready — typed `PaginatedCollection`, fluent navigation (`nextPage`, `lastPage`, `goToPage`)
-- Test-driven — 650+ specs
-- **Multi-driver support**: Django REST Framework, JSON:API, Laravel (pagination-only), Spatie Query Builder, NestJS (`nestjs-paginate`), @nestjsx/crud, PostgREST / Supabase, Sieve (.NET), Spring Data REST, and Strapi
+- Test-driven — 980+ specs
+- **Multi-driver support**: API Platform (Symfony), Directus, Django REST Framework, FeathersJS, JSON:API, json-server, Laravel (pagination-only), Spatie Query Builder, NestJS (`nestjs-paginate`), @nestjsx/crud, OData, Payload CMS, PocketBase, PostgREST / Supabase, Sieve (.NET), Spring Data REST, Strapi, and WordPress REST
 
 ## 📚 Documentation
 
@@ -39,16 +39,24 @@ A driver **must** be specified in the configuration:
 
 | Driver | Backend | Wire format snapshot |
 |---|---|---|
+| **API Platform** | [API Platform](https://api-platform.com/) for PHP/Symfony | `field=value`, `price[between]=10..50`, `order[field]=desc`, `page=N&itemsPerPage=N` |
+| **Directus** | [Directus](https://directus.io/) headless CMS / data platform | `filter[field][_eq]=value`, `sort=-field`, `fields=col,rel.col`, `limit=N&page=N` |
 | **DRF** | [Django REST Framework](https://www.django-rest-framework.org/) + [django-filter](https://django-filter.readthedocs.io/) | `field=value`, `field__gte=N`, `ordering=-field`, `page=N&page_size=M` |
+| **Feathers** | [FeathersJS](https://feathersjs.com/) database adapters | `field=value`, `field[$gte]=N`, `$sort[field]=-1`, `$select[0]=col`, `$limit=N&$skip=M` |
 | **JSON:API** | Any [JSON:API](https://jsonapi.org/format/)-compliant backend | `filter[field]=value`, `sort=-field`, `page[number]=N&page[size]=N` |
+| **json-server** | [json-server](https://github.com/typicode/json-server) mock REST API | `field=value`, `field:gt=N`, `_sort=-field`, `q=term`, `_page=N&_per_page=N` |
 | **Laravel** | Plain Laravel pagination | `limit=N&page=N` (pagination only) |
 | **Spatie** | [Spatie Laravel Query Builder](https://spatie.be/docs/laravel-query-builder) | `filter[field]=value`, `sort=-field` |
 | **NestJS** | [`nestjs-paginate`](https://github.com/ppetzold/nestjs-paginate) | `filter.field=$op:value`, `sortBy=field:DESC` |
 | **@nestjsx/crud** | [@nestjsx/crud](https://github.com/nestjsx/crud) for NestJS | `filter=field\|\|$eq\|\|value`, `sort=field,ASC`, `join=relation`, `page=N&limit=N` |
-| **PostgREST** | [PostgREST](https://postgrest.org/) / [Supabase](https://supabase.com/) | `col=eq.value`, `order=col.asc`, `limit=N&offset=M` |
+| **OData** | [OData v4](https://www.odata.org/) (ASP.NET Core OData, SAP, Microsoft Graph) | `$filter=field eq 'value'`, `$orderby=field desc`, `$expand=rel($select=col)`, `$top=N&$skip=M` |
+| **Payload** | [Payload CMS](https://payloadcms.com/) / `mongoose-paginate-v2` backends | `where[field][equals]=value`, `sort=-field`, `select[col]=true`, `page=N&limit=M` |
+| **PocketBase** | [PocketBase](https://pocketbase.io/) single-binary backend | `filter=(field='value' && other>10)`, `sort=-field`, `expand=rel`, `fields=col`, `page=N&perPage=M` |
+| **PostgREST** | [PostgREST](https://postgrest.org/) / [Supabase](https://supabase.com/) | `col=eq.value`, `order=col.asc`, `select=col,rel(*)`, `limit=N&offset=M` |
 | **Sieve** | [Sieve](https://github.com/Biarity/Sieve) for ASP.NET Core | `filters=Field==Value,Other>=N`, `sorts=-field`, `page=N&pageSize=N` |
 | **Spring** | [Spring Data REST](https://spring.io/projects/spring-data-rest) (HAL) | `sort=field,asc` (repeatable), `page=N&size=N` (0-indexed page) |
 | **Strapi** | [Strapi](https://strapi.io/) v4 / v5 headless CMS | `filters[field][$eq]=value`, `sort[0]=field:asc`, `pagination[page]=N&pagination[pageSize]=N` |
+| **WordPress** | [WordPress REST API](https://developer.wordpress.org/rest-api/) | `field=value`, `orderby=field&order=desc`, `_fields=col`, `_embed=rel`, `search=term`, `page=N&per_page=M` |
 
 Per-driver guides — wire format, supported operators, response parsing, customisation — live on the [docs site](https://ng-qubee.andreatantimonaco.me/docs/getting-started).
 

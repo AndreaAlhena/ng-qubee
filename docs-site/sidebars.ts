@@ -25,7 +25,15 @@ const sidebars: SidebarsConfig = {
         'drivers/drf',
         'drivers/nestjsx-crud',
         'drivers/spring',
-        'drivers/sieve'
+        'drivers/sieve',
+        'drivers/odata',
+        'drivers/directus',
+        'drivers/json-server',
+        'drivers/api-platform',
+        'drivers/feathers',
+        'drivers/pocketbase',
+        'drivers/payload',
+        'drivers/wordpress'
       ]
     },
     'fetching-data',

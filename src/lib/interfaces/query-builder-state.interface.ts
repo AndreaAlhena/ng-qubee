@@ -2,6 +2,7 @@ import { IFields } from './fields.interface';
 import { IFilters } from './filters.interface';
 import { IOperatorFilter } from './operator-filter.interface';
 import { ISort } from './sort.interface';
+import { Embedded } from '../types/embedded.type';
 
 /**
  * Represents the complete query builder state
@@ -12,6 +13,8 @@ import { ISort } from './sort.interface';
 export interface IQueryBuilderState {
     /** The base URL to prepend to generated URIs */
     baseUrl: string;
+    /** Embedded-resource selection (PostgREST only) */
+    embedded: Embedded;
     /** Per-model field selection (Spatie only) */
     fields: IFields;
     /** Simple key-value filters (Spatie and NestJS) */

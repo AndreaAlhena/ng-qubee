@@ -3,17 +3,31 @@ import { PaginationModeEnum } from '../enums/pagination-mode.enum';
 import { IPaginationConfig } from '../interfaces/pagination-config.interface';
 import { IRequestStrategy } from '../interfaces/request-strategy.interface';
 import { IResponseStrategy } from '../interfaces/response-strategy.interface';
-import { DrfResponseOptions, JsonApiResponseOptions, NestjsResponseOptions, NestjsxCrudResponseOptions, ResponseOptions, SieveResponseOptions, SpringResponseOptions, StrapiResponseOptions } from '../models/response-options';
+import { ApiPlatformResponseOptions, DirectusResponseOptions, DrfResponseOptions, FeathersResponseOptions, JsonApiResponseOptions, JsonServerResponseOptions, NestjsResponseOptions, NestjsxCrudResponseOptions, OdataResponseOptions, PayloadResponseOptions, PocketbaseResponseOptions, ResponseOptions, SieveResponseOptions, SpringResponseOptions, StrapiResponseOptions } from '../models/response-options';
+import { ApiPlatformRequestStrategy } from '../strategies/api-platform-request.strategy';
+import { ApiPlatformResponseStrategy } from '../strategies/api-platform-response.strategy';
+import { DirectusRequestStrategy } from '../strategies/directus-request.strategy';
+import { DirectusResponseStrategy } from '../strategies/directus-response.strategy';
 import { DrfRequestStrategy } from '../strategies/drf-request.strategy';
 import { DrfResponseStrategy } from '../strategies/drf-response.strategy';
+import { FeathersRequestStrategy } from '../strategies/feathers-request.strategy';
+import { FeathersResponseStrategy } from '../strategies/feathers-response.strategy';
 import { JsonApiRequestStrategy } from '../strategies/json-api-request.strategy';
 import { JsonApiResponseStrategy } from '../strategies/json-api-response.strategy';
+import { JsonServerRequestStrategy } from '../strategies/json-server-request.strategy';
+import { JsonServerResponseStrategy } from '../strategies/json-server-response.strategy';
 import { LaravelRequestStrategy } from '../strategies/laravel-request.strategy';
 import { LaravelResponseStrategy } from '../strategies/laravel-response.strategy';
 import { NestjsRequestStrategy } from '../strategies/nestjs-request.strategy';
 import { NestjsResponseStrategy } from '../strategies/nestjs-response.strategy';
 import { NestjsxCrudRequestStrategy } from '../strategies/nestjsx-crud-request.strategy';
 import { NestjsxCrudResponseStrategy } from '../strategies/nestjsx-crud-response.strategy';
+import { OdataRequestStrategy } from '../strategies/odata-request.strategy';
+import { OdataResponseStrategy } from '../strategies/odata-response.strategy';
+import { PayloadRequestStrategy } from '../strategies/payload-request.strategy';
+import { PayloadResponseStrategy } from '../strategies/payload-response.strategy';
+import { PocketbaseRequestStrategy } from '../strategies/pocketbase-request.strategy';
+import { PocketbaseResponseStrategy } from '../strategies/pocketbase-response.strategy';
 import { PostgrestRequestStrategy } from '../strategies/postgrest-request.strategy';
 import { PostgrestResponseStrategy } from '../strategies/postgrest-response.strategy';
 import { SieveRequestStrategy } from '../strategies/sieve-request.strategy';
@@ -24,6 +38,8 @@ import { SpringRequestStrategy } from '../strategies/spring-request.strategy';
 import { SpringResponseStrategy } from '../strategies/spring-response.strategy';
 import { StrapiRequestStrategy } from '../strategies/strapi-request.strategy';
 import { StrapiResponseStrategy } from '../strategies/strapi-response.strategy';
+import { WordpressRequestStrategy } from '../strategies/wordpress-request.strategy';
+import { WordpressResponseStrategy } from '../strategies/wordpress-response.strategy';
 
 /**
  * Per-driver factory bundle
@@ -76,16 +92,40 @@ export interface IDriverDefinition {
  * `switch` blocks.
  */
 export const DRIVERS: Record<DriverEnum, IDriverDefinition> = {
+  [DriverEnum.API_PLATFORM]: {
+    createRequestStrategy: () => new ApiPlatformRequestStrategy(),
+    createResponseStrategy: () => new ApiPlatformResponseStrategy(),
+    createResponseOptions: (config) => new ApiPlatformResponseOptions(config)
+  },
+
+  [DriverEnum.DIRECTUS]: {
+    createRequestStrategy: () => new DirectusRequestStrategy(),
+    createResponseStrategy: () => new DirectusResponseStrategy(),
+    createResponseOptions: (config) => new DirectusResponseOptions(config)
+  },
+
   [DriverEnum.DRF]: {
     createRequestStrategy: () => new DrfRequestStrategy(),
     createResponseStrategy: () => new DrfResponseStrategy(),
     createResponseOptions: (config) => new DrfResponseOptions(config)
   },
 
+  [DriverEnum.FEATHERS]: {
+    createRequestStrategy: () => new FeathersRequestStrategy(),
+    createResponseStrategy: () => new FeathersResponseStrategy(),
+    createResponseOptions: (config) => new FeathersResponseOptions(config)
+  },
+
   [DriverEnum.JSON_API]: {
     createRequestStrategy: () => new JsonApiRequestStrategy(),
     createResponseStrategy: () => new JsonApiResponseStrategy(),
     createResponseOptions: (config) => new JsonApiResponseOptions(config)
+  },
+
+  [DriverEnum.JSON_SERVER]: {
+    createRequestStrategy: () => new JsonServerRequestStrategy(),
+    createResponseStrategy: () => new JsonServerResponseStrategy(),
+    createResponseOptions: (config) => new JsonServerResponseOptions(config)
   },
 
   [DriverEnum.LARAVEL]: {
@@ -104,6 +144,24 @@ export const DRIVERS: Record<DriverEnum, IDriverDefinition> = {
     createRequestStrategy: () => new NestjsxCrudRequestStrategy(),
     createResponseStrategy: () => new NestjsxCrudResponseStrategy(),
     createResponseOptions: (config) => new NestjsxCrudResponseOptions(config)
+  },
+
+  [DriverEnum.ODATA]: {
+    createRequestStrategy: () => new OdataRequestStrategy(),
+    createResponseStrategy: () => new OdataResponseStrategy(),
+    createResponseOptions: (config) => new OdataResponseOptions(config)
+  },
+
+  [DriverEnum.PAYLOAD]: {
+    createRequestStrategy: () => new PayloadRequestStrategy(),
+    createResponseStrategy: () => new PayloadResponseStrategy(),
+    createResponseOptions: (config) => new PayloadResponseOptions(config)
+  },
+
+  [DriverEnum.POCKETBASE]: {
+    createRequestStrategy: () => new PocketbaseRequestStrategy(),
+    createResponseStrategy: () => new PocketbaseResponseStrategy(),
+    createResponseOptions: (config) => new PocketbaseResponseOptions(config)
   },
 
   [DriverEnum.POSTGREST]: {
@@ -134,5 +192,11 @@ export const DRIVERS: Record<DriverEnum, IDriverDefinition> = {
     createRequestStrategy: () => new StrapiRequestStrategy(),
     createResponseStrategy: () => new StrapiResponseStrategy(),
     createResponseOptions: (config) => new StrapiResponseOptions(config)
+  },
+
+  [DriverEnum.WORDPRESS]: {
+    createRequestStrategy: () => new WordpressRequestStrategy(),
+    createResponseStrategy: () => new WordpressResponseStrategy(),
+    createResponseOptions: (config) => new ResponseOptions(config)
   }
 };

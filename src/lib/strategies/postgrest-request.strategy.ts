@@ -36,6 +36,7 @@ export class PostgrestRequestStrategy extends AbstractRequestStrategy {
    * search (per-column FTS via the operator family covers it)
    */
   public readonly capabilities: IStrategyCapabilities = {
+    embedded: true,
     fields: false,
     filters: true,
     includes: false,
@@ -314,20 +315,35 @@ export class PostgrestRequestStrategy extends AbstractRequestStrategy {
   }
 
   /**
-   * Append the select parameter as `select=col1,col2`
+   * Append the select parameter as `select=col1,col2,rel(col1,col2)`
    *
-   * PostgREST uses a `select` query param for column pruning, matching
-   * NestJS semantics.
+   * PostgREST uses a single `select` query param for both column pruning
+   * (matching NestJS semantics) and embedded-resource fetching — the
+   * embedded fragments from `addEmbedded` are spliced into the same
+   * param value, never emitted as a second `select`.
+   *
+   * Fragment shape per relation: `rel(col1,col2)` with explicit columns,
+   * `rel(*)` without. When embedded relations are present but no flat
+   * columns were selected, the flat part defaults to `*` so the base
+   * row's columns are not silently dropped from the projection.
    *
    * @param state - The current query builder state
    * @param options - The query parameter key name configuration
    * @param out - The accumulator the caller joins into the URI
    */
   private _appendSelect(state: IQueryBuilderState, options: QueryBuilderOptions, out: string[]): void {
-    if (!state.select.length) {
+    const embedded = Object.keys(state.embedded).map(relation => {
+      const columns = state.embedded[relation];
+
+      return columns.length ? `${relation}(${columns.join(',')})` : `${relation}(*)`;
+    });
+
+    if (!state.select.length && !embedded.length) {
       return;
     }
 
-    out.push(`${options.select}=${state.select.join(',')}`);
+    const columns = state.select.length ? state.select : ['*'];
+
+    out.push(`${options.select}=${[...columns, ...embedded].join(',')}`);
   }
 }

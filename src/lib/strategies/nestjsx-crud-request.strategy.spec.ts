@@ -13,6 +13,7 @@ describe('NestjsxCrudRequestStrategy', () => {
 
   const baseState: IQueryBuilderState = {
     baseUrl: '',
+    embedded: {},
     fields: {},
     filters: {},
     includes: [],
@@ -348,6 +349,7 @@ describe('NestjsxCrudRequestStrategy', () => {
     it('should build a complete @nestjsx/crud query URI', () => {
       const state: IQueryBuilderState = {
         baseUrl: 'https://api.example.com',
+        embedded: {},
         fields: {},
         filters: { status: ['published'] },
         includes: ['author'],

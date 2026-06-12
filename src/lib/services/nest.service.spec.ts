@@ -149,6 +149,81 @@ describe('NestService', () => {
 
   // Duplicate Prevention Tests
   describe('Duplicate Prevention', () => {
+    describe('addEmbedded', () => {
+      it('should prevent duplicate columns for the same relation', () => {
+        service.addEmbedded({
+          author: ['id', 'name']
+        });
+
+        service.addEmbedded({
+          author: ['name', 'email']
+        });
+
+        expect(service.nest().embedded).toEqual({
+          author: ['id', 'name', 'email']
+        });
+      });
+
+      it('should keep explicit columns when merging an empty column array', () => {
+        service.addEmbedded({
+          author: ['id', 'name']
+        });
+
+        service.addEmbedded({
+          author: []
+        });
+
+        expect(service.nest().embedded).toEqual({
+          author: ['id', 'name']
+        });
+      });
+
+      it('should store a relation with no columns as an empty array', () => {
+        service.addEmbedded({
+          comments: []
+        });
+
+        expect(service.nest().embedded).toEqual({
+          comments: []
+        });
+      });
+
+      it('should remove the whole relation via deleteEmbedded', () => {
+        service.addEmbedded({
+          author: ['id'],
+          comments: []
+        });
+
+        service.deleteEmbedded('author');
+
+        expect(service.nest().embedded).toEqual({
+          comments: []
+        });
+      });
+
+      it('should ignore deleteEmbedded for an unknown relation', () => {
+        service.addEmbedded({
+          author: ['id']
+        });
+
+        service.deleteEmbedded('comments');
+
+        expect(service.nest().embedded).toEqual({
+          author: ['id']
+        });
+      });
+
+      it('should clear embedded on reset', () => {
+        service.addEmbedded({
+          author: ['id']
+        });
+
+        service.reset();
+
+        expect(service.nest().embedded).toEqual({});
+      });
+    });
+
     describe('addFields', () => {
       it('should prevent duplicate fields for the same model', () => {
         service.addFields({
@@ -646,6 +721,7 @@ describe('NestService', () => {
 
         expect(service.nest()).toEqual({
           baseUrl: '',
+          embedded: {},
           fields: {},
           filters: {},
           includes: [],

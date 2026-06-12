@@ -26,6 +26,7 @@ export class JsonApiRequestStrategy extends AbstractRequestStrategy {
    * but with bracket-style pagination
    */
   public readonly capabilities: IStrategyCapabilities = {
+    embedded: false,
     fields: true,
     filters: true,
     includes: true,

@@ -36,6 +36,7 @@ export class SieveRequestStrategy extends AbstractRequestStrategy {
    * filters for partial matches)
    */
   public readonly capabilities: IStrategyCapabilities = {
+    embedded: false,
     fields: false,
     filters: true,
     includes: false,

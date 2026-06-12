@@ -47,6 +47,7 @@ export class StrapiRequestStrategy extends AbstractRequestStrategy {
    * `$contains` / `$containsi` operator filters instead)
    */
   public readonly capabilities: IStrategyCapabilities = {
+    embedded: false,
     fields: false,
     filters: true,
     includes: true,

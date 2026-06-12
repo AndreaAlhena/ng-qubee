@@ -9,6 +9,7 @@ import { SortEnum } from '../enums/sort.enum';
 // Errors
 import { InvalidPageNumberError } from '../errors/invalid-page-number.error';
 import { PaginationNotSyncedError } from '../errors/pagination-not-synced.error';
+import { UnsupportedEmbeddedError } from '../errors/unsupported-embedded.error';
 import { UnsupportedFieldSelectionError } from '../errors/unsupported-field-selection.error';
 import { UnsupportedFilterError } from '../errors/unsupported-filter.error';
 import { UnsupportedFilterOperatorError } from '../errors/unsupported-filter-operator.error';
@@ -87,6 +88,36 @@ export class NgQubeeService {
     if (!this._requestStrategy.capabilities[flag]) {
       throw error;
     }
+  }
+
+  /**
+   * Add an embedded resource to the select statement (PostgREST only)
+   *
+   * Splices `relation(col1,col2)` into the single `select=` query
+   * parameter alongside flat columns from `addSelect`. Omit the columns
+   * to project all of them (`relation(*)`):
+   *
+   * ```
+   * qb.addEmbedded('author', 'id', 'name')
+   *   .addEmbedded('comments')
+   *   .addSelect('title');
+   * // → select=title,author(id,name),comments(*)
+   * ```
+   *
+   * Calling repeatedly with the same relation merge-dedups the columns.
+   * Does not reset the page (column shape change, not record-set change).
+   *
+   * @param {string} relation - The related table / foreign-key name as PostgREST sees it
+   * @param {string[]} columns - Optional column projection; omit for `relation(*)`
+   * @returns {this}
+   * @throws {UnsupportedEmbeddedError} If the active driver does not support embedded resources
+   */
+  public addEmbedded(relation: string, ...columns: string[]): this {
+    this._assertCapability('embedded', new UnsupportedEmbeddedError());
+
+    this._nestService.addEmbedded({ [relation]: columns });
+
+    return this;
   }
 
   /**
@@ -226,6 +257,27 @@ export class NgQubeeService {
    */
   public currentPage(): number {
     return this._nestService.nest().page;
+  }
+
+  /**
+   * Remove embedded resources from the current query builder state (PostgREST only)
+   *
+   * Removes the whole relation entry, columns included.
+   *
+   * @param {string[]} relations - Relation names to remove
+   * @returns {this}
+   * @throws {UnsupportedEmbeddedError} If the active driver does not support embedded resources
+   */
+  public deleteEmbedded(...relations: string[]): this {
+    this._assertCapability('embedded', new UnsupportedEmbeddedError());
+
+    if (!relations.length) {
+      return this;
+    }
+
+    this._nestService.deleteEmbedded(...relations);
+
+    return this;
   }
 
   /**

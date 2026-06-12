@@ -9,6 +9,9 @@
  * strategy class — `NgQubeeService` does not need to be touched.
  */
 export interface IStrategyCapabilities {
+  /** Embedded-resource selection inside `select` (PostgREST `select=col,rel(col1)`) */
+  readonly embedded: boolean;
+
   /** Per-model field selection (e.g. JSON:API `fields[type]=col1,col2`) */
   readonly fields: boolean;
 

@@ -4,7 +4,7 @@
     "name": "Andrea Tantimonaco",
     "url": "https://andreatantimonaco.me"
   },
-  "version": "3.6.0",
+  "version": "3.7.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -17,20 +17,32 @@
   "keywords": [
     "angular",
     "api",
+    "api-platform",
     "aspnetcore",
     "builder",
     "crud",
+    "directus",
     "django",
     "drf",
+    "feathers",
+    "feathersjs",
     "filter",
     "hal",
     "headless-cms",
+    "hydra",
     "json-api",
+    "json-server",
     "laravel",
+    "mock-api",
     "nestjs",
     "nestjs-paginate",
     "nestjsx-crud",
+    "odata",
+    "odata-v4",
     "pagination",
+    "payload",
+    "payload-cms",
+    "pocketbase",
     "postgrest",
     "query",
     "query-builder",
@@ -42,7 +54,10 @@
     "spring-data-rest",
     "strapi",
     "supabase",
-    "typescript"
+    "symfony",
+    "typescript",
+    "wordpress",
+    "wp-rest-api"
   ],
   "allowedNonPeerDependencies": [
     "qs"

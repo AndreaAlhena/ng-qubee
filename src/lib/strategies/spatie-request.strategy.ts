@@ -26,6 +26,7 @@ export class SpatieRequestStrategy extends AbstractRequestStrategy {
    * select, no global search
    */
   public readonly capabilities: IStrategyCapabilities = {
+    embedded: false,
     fields: true,
     filters: true,
     includes: true,

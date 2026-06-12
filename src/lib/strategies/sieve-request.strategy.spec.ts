@@ -13,6 +13,7 @@ describe('SieveRequestStrategy', () => {
 
   const baseState: IQueryBuilderState = {
     baseUrl: '',
+    embedded: {},
     fields: {},
     filters: {},
     includes: [],
