@@ -24,8 +24,8 @@ This README is intentionally minimal. For everything beyond install + a five-lin
 
 ## Requirements
 
-- **Angular** ≥ 16 (uses Signals)
-- **RxJS** ^6.5.0 || ^7.0.0
+- **Angular** `>=17.0.0 <23.0.0` (uses Signals)
+- **RxJS** `^7.2.0`
 
 ## Install
 
