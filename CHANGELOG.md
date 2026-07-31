@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.8.0] - 2026-07-31
+
 ### Added
 - **Angular 22 support** (#77): the `@angular/core` peer range widens from `>=17.0.0 <22.0.0` to `>=17.0.0 <23.0.0`. Angular 22 applications previously could not install the package at all — npm rejected it with `ERESOLVE ... peer @angular/core@">=17.0.0 <22.0.0" from ng-qubee@3.7.0`. No library source change was required: because ng-packagr emits **partial-Ivy** output whose `minVersion` markers are `12.0.0`/`14.0.0`, the consuming application's linker compiles the declarations at its own version, so the Angular version the package is built with and the versions it runs on are decoupled. Verified by installing the packed artifact into real Angular 17, 20 and 22 applications and completing a production build in each, with zero residual `ngDeclare*` calls in the output bundles.
 - **Angular version compatibility matrix in CI** (#77): a new `compat` job packs the built artifact, scaffolds a genuine Angular application at the floor (17), the middle (20) and the ceiling (22) of the declared peer range, wires `provideNgQubee()` into it and builds it. It asserts both that the library survives into the bundle (not tree-shaken) and that no partial declarations remain unlinked, so the declared range stays continuously verified instead of verified once.
