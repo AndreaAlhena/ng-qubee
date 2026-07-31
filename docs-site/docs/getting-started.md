@@ -17,10 +17,12 @@ title: Getting Started
 
 | Dependency | Range |
 |---|---|
-| Angular | `>=16.0.0 <22.0.0` |
-| RxJS | `^6.5.0 || ^7.0.0` |
+| Angular | `>=17.0.0 <23.0.0` |
+| RxJS | `^7.2.0` |
 
-Angular 16+ is required because the library uses Angular Signals for state management.
+Angular 17+ is required because the library uses Angular Signals for state management, and Signals left developer preview in v17.
+
+RxJS 7.2+ is required because the library imports `filter` from the `rxjs` root, which only became a root export in 7.2.0.
 
 ## Installation
 
