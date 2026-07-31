@@ -6,7 +6,7 @@ Thank you for your interest in contributing to NgQubee! This document provides g
 
 ### Prerequisites
 
-- Node.js 20+
+- Node.js `^22.22.3 || ^24.15.0 || >=26.0.0` (the range Angular 22 requires)
 - npm 9+
 
 ### Getting Started
